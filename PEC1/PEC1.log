@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.24)  10 OCT 2019 12:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.24)  10 OCT 2019 13:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -293,10 +293,19 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <9> not available
  [1
 
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2] [3] [4]
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 115.
- [4] [5] [6]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 155.
+ [5] [6]
+
+LaTeX Warning: Reference `fig:gantt' on page 7 undefined on input line 248.
+
+<figures/gantt.png, id=137, 725.71124pt x 544.28343pt>
+File: figures/gantt.png Graphic file (type png)
+<use figures/gantt.png>
+Package pdftex.def Info: figures/gantt.png  used on input line 252.
+(pdftex.def)             Requested size: 390.25948pt x 292.69614pt.
+[7 <./figures/gantt.png>]
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ú in font cmr10!
@@ -304,13 +313,13 @@ Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ù in font cmr10!
 
-Underfull \hbox (badness 4819) in paragraph at lines 231--232
+Underfull \hbox (badness 4819) in paragraph at lines 278--279
 []\OT1/cmr/m/n/10.95 Brynjolfsson, Erik, and Tom Mitchell. What Can Ma-chine Le
 arn-ing Do? Work-
  []
 
 
-Underfull \hbox (badness 7595) in paragraph at lines 231--232
+Underfull \hbox (badness 7595) in paragraph at lines 278--279
 \OT1/cmr/m/n/10.95 force Im-pli-ca-tions. Sci-ence. Amer-i-can As-so-ci-a-tion 
 for the Ad-vance-ment of Sci-ence.
  []
@@ -320,26 +329,26 @@ Missing character: There is no ≥ in font cmr10!
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ì in font cmr10!
-
-Underfull \hbox (badness 10000) in paragraph at lines 236--237
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 283--284
 []\OT1/cmr/m/n/10.95 Tung Khuat, Nguyen Hung, Le Thi My Hanh, A Com-par-i-son o
 f Al-go-rithms
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 236--237
+Underfull \hbox (badness 10000) in paragraph at lines 283--284
 \OT1/cmr/m/n/10.95 used to mea-sure the Sim-i-lar-ity be-tween two doc-u-ments.
  In-ter-na-tional Jour-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 236--237
+Underfull \hbox (badness 10000) in paragraph at lines 283--284
 \OT1/cmr/m/n/10.95 nal of Ad-vanced Re-search in Com-puter En-gi-neer-ing & Tec
 h-nol-ogy (IJARCET),
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 239--240
+Underfull \hbox (badness 10000) in paragraph at lines 286--287
 []\OT1/cmr/m/n/10.95 Requirements En-gi-neer-ing - Tools and So-lu-tions Of-fer
 ed by Open-Req, Open-Req,
  []
@@ -351,24 +360,28 @@ Missing character: There is no √ in font cmr10!
 Missing character: There is no ≥ in font cmr10!
 Missing character: There is no √ in font cmr10!
 Missing character: There is no â in font cmr10!
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 244.
-[7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 244.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 291.
+[9]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 291.
  (./PEC1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 244.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 244.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 291.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 291.
 Package rerunfilecheck Info: File `PEC1.out' has not changed.
-(rerunfilecheck)             Checksum: F0D0175B5319DB9FE766325B7E5AE7A2;876.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 244.
+(rerunfilecheck)             Checksum: 1548C29FC1AE19B870C2F6F2B41137C6;883.
+
+
+LaTeX Warning: There were undefined references.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 291.
  ) 
 Here is how much of TeX's memory you used:
- 6291 strings out of 494820
- 96694 string characters out of 6177789
- 180344 words of memory out of 5000000
- 9552 multiletter control sequences out of 15000+600000
+ 6334 strings out of 494820
+ 97098 string characters out of 6177789
+ 179389 words of memory out of 5000000
+ 9564 multiletter control sequences out of 15000+600000
  10117 words of font info for 35 fonts, out of 8000000 for 9000
  62 hyphenation exceptions out of 8191
- 36i,7n,38p,855b,429s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,7n,39p,855b,472s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb></usr/share/te
@@ -379,10 +392,10 @@ st/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts
 /public/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfo
 nts/cm/cmti9.pfb>
-Output written on PEC1.pdf (7 pages, 158796 bytes).
+Output written on PEC1.pdf (9 pages, 211539 bytes).
 PDF statistics:
- 165 PDF objects out of 1000 (max. 8388607)
- 144 compressed objects within 2 object streams
- 36 named destinations out of 1000 (max. 500000)
- 105 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 210 PDF objects out of 1000 (max. 8388607)
+ 185 compressed objects within 2 object streams
+ 64 named destinations out of 1000 (max. 500000)
+ 110 words of extra memory for PDF output out of 10000 (max. 10000000)
 
