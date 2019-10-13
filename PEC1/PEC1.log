@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.24)  13 OCT 2019 10:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.24)  13 OCT 2019 11:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -325,34 +325,50 @@ Underfull \hbox (badness 7595) in paragraph at lines 279--280
 for the Ad-vance-ment of Sci-ence.
  []
 
-Missing character: There is no √ in font cmr10!
-Missing character: There is no ≥ in font cmr10!
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ú in font cmr10!
+Missing character: There is no ‚ in font cmr10!
+Missing character: There is no Ä in font cmr10!
+Missing character: There is no ù in font cmr10!
+
+Underfull \hbox (badness 4168) in paragraph at lines 280--281
+[]\OT1/cmr/m/n/10.95 Collobert, Ro-nan, Ja-son We-ston, Leon Bot-tou, Michael K
+arlen, Pavel Kuksa, and
+ []
+
+
+Underfull \hbox (badness 5847) in paragraph at lines 280--281
+\OT1/cmr/m/n/10.95 Ko-ray Kavukcuoglu. Nat-u-ral Lan-guage Pro-cess-ing (Al-mos
+t) from Scratch. arXiv.org.
+ []
+
 [8 <./figures/gantt.png>]
 Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ì in font cmr10!
 
 Underfull \hbox (badness 10000) in paragraph at lines 284--285
-[]\OT1/cmr/m/n/10.95 Tung Khuat, Nguyen Hung, Le Thi My Hanh, A Com-par-i-son o
-f Al-go-rithms
+[]\OT1/cmr/m/n/10.95 Tung Khuat, Nguyen Hung and Le Thi My Hanh. A Com-par-i-so
+n of Al-go-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 284--285
-\OT1/cmr/m/n/10.95 used to mea-sure the Sim-i-lar-ity be-tween two doc-u-ments.
- In-ter-na-tional Jour-
+Underfull \hbox (badness 5260) in paragraph at lines 284--285
+\OT1/cmr/m/n/10.95 rithms used to mea-sure the Sim-i-lar-ity be-tween two doc-u
+-ments. In-ter-na-tional Jour-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 284--285
 \OT1/cmr/m/n/10.95 nal of Ad-vanced Re-search in Com-puter En-gi-neer-ing & Tec
-h-nol-ogy (IJARCET),
+h-nol-ogy (IJARCET).
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 287--288
+Underfull \hbox (badness 10000) in paragraph at lines 286--287
 []\OT1/cmr/m/n/10.95 Requirements En-gi-neer-ing - Tools and So-lu-tions Of-fer
-ed by Open-Req, Open-Req,
+ed by Open-Req. Open-Req.
  []
 
 Missing character: There is no ‚ in font cmr10!
@@ -369,20 +385,20 @@ Missing character: There is no ‚ in font cmr10!
 Missing character: There is no Ä in font cmr10!
 Missing character: There is no ù in font cmr10!
 
-Underfull \hbox (badness 10000) in paragraph at lines 289--290
+Underfull \hbox (badness 10000) in paragraph at lines 288--289
 []\OT1/cmr/m/n/10.95 Schwaber, Ken, and Jeff Suther-land. The Scrum Guide. Scru
 m.org.
  []
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 293.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 292.
 [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 293.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 292.
  (./PEC1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 293.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 293.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 292.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 292.
 Package rerunfilecheck Info: File `PEC1.out' has not changed.
 (rerunfilecheck)             Checksum: 1548C29FC1AE19B870C2F6F2B41137C6;883.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 293.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 292.
  ) 
 Here is how much of TeX's memory you used:
  6327 strings out of 494820
@@ -399,7 +415,7 @@ xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fon
 ts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on PEC1.pdf (9 pages, 168592 bytes).
+Output written on PEC1.pdf (9 pages, 168614 bytes).
 PDF statistics:
  203 PDF objects out of 1000 (max. 8388607)
  181 compressed objects within 2 object streams
