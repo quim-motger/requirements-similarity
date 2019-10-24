@@ -1,0 +1,185 @@
+% Chapter 1
+
+\chapter{State of the art: systematic review} % Main chapter title
+
+\label{Chapter2} % For referencing the chapter elsewhere, use \ref{Chapter1} 
+
+%----------------------------------------------------------------------------------------
+
+In the following sections of chapter \ref{Chapter2} we introduce the details about the research method used to describe the state of the art of the similarity detection techniques in duplicate detection.
+
+\section{Definition of the research method}
+
+First of all, it is necessary to defined a protocol to carry on the research. In order to avoid a vague research methodology that could lead to poor results, we aim to define a review method based on a systematic review. Using this guidance, we ensure that the literature review of the field of interest (i.e., similarity detection in texts) is of significant scientific value. 
+
+For this purpose, it is proposed to follow the guidelines of B. Kitchenham's systematic review methodology \ref{b1}, which is focused on software engineering research. This guidelines include a series of well-defined stages and processes for both planning and conducting the review. 
+
+Therefore, we propose to design and implement the following steps for the systematic review, based on Kitchenham's proposal.
+
+\begin{enumerate}
+\item Planning the review (see section \ref{Planning})
+\begin{enumerate}
+\item Identifying the need for a review
+\item Specifying the review questions
+\item Developing a review protocol
+\end{enumerate}
+\item Conducting the review (see section \ref{Conducting})
+\begin{enumerate}
+\item Identification of the search
+\item Selection of primary studies
+\item Quality assessment study
+\item Data extraction
+\item Data synthesis
+\end{enumerate}
+\item Reporting the review (see section \ref{Reporting})
+\end{enumerate}
+
+\section{Planning the review}
+\label{Planning}
+
+The following subsections provide a description of the three main steps of the systematic review planning. 
+
+\subsection{Identifying the need for a review}
+
+\begin{itemize}
+\item Scopus \ref{Scopus}
+\item ACM Digital Library \ref{ACM}
+\item IEEE Xplorer \ref{IEEE}
+\item Science Direct \ref{ScienceDirect}
+\end{itemize}
+
+\begin{center}
+(similar*  OR  duplicat*  OR  paraphras* )  AND  ( "natural language"  OR  "machine learning"  OR  "artificial intelligence"  OR  "AI" OR  "NLP"  OR  "ML" )  AND  (review  OR  "state of the art")
+\end{center}
+
+\begin{itemize}
+\item Scopus - 1 result. Excluded (out of topic)
+\item ACM Digital Library - 1 result. Excluded (out of topic)
+\item IEEE Xplorer- 0 results.
+\item Science Direct - 0 results.
+\end{itemize}
+
+\subsection{Specifying the review question}
+
+Kitchenham's methodology states the need of defining three elements of the research to help designing and defining the review scope. These items are:
+
+\begin{itemize}
+\item Population: Software Engineering teams (developers, team managers...)
+\item Intervention: automated similarity detection using machine learning, natural language processing and artificial intelligence techniques in general
+\item Outcome: accuracy and performance improvement
+\end{itemize}
+
+\textit{How does the software engineering community handles automated similarity detection using Artificial Intelligence (i.e., Natural Language Processing and Machine Learning) and which are the results in terms of accuracy and performance?}
+
+\subsection{Developing a review protocol}
+
+\subsubsection{The search strategy: search \& selection procedures}
+
+\begin{enumerate}
+\item Use only Scopus, ACM Digital Library and Science Direct
+\item Title, keywords or abstract:
+\begin{enumerate}
+\item similar*, duplicat*, paraphras*
+\item NLP, ML and AI
+\end{enumerate}
+\end{enumerate}
+
+\begin{center}
+(similar*  OR  duplicat*  OR  paraphras* )  AND  ( "natural language"  OR  "machine learning"  OR  "artificial intelligence"  OR  "AI" OR  "NLP"  OR  "ML" )
+\end{center}
+
+\begin{enumerate}
+\item Search in the selected databases
+\item Remove duplicates
+\item Filter documents - Study selection criteria and procedures
+\begin{enumerate}
+\item First filter by title
+\item Second filter by abstract
+\item Third filter by general overview (introduction, structure, conclusions)
+\item Fourth filter by deep reading
+\end{enumerate}
+\end{enumerate}
+
+\subsubsection{Data extraction \& synthesis}
+
+\begin{itemize}
+\item Domain of the proposal
+\item Objects of the comparative algorithm (i.e., sentences, words, full documents...)
+\item Object contextual information (i.e. different attributes, metadata...)
+\item Algorithm description
+\item Frameworks and external tools
+\item Classification
+\item Experimentation & results
+\item Tools
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+
+\section{Conducting the review}
+
+\subsection{Conducting the search}
+
+Title \& keywords
+
+(similar*  OR  duplicat*  OR  paraphras* )  AND  ( "natural language processing"  OR  "machine learning"  OR  "artificial intelligence"  OR  "AI" OR  "NLP"  OR  "ML" )
+
+\begin{itemize}
+\item Scopus - 193 results
+\item ACM Digital Library - 121 results
+\item IEEE Xplorer- 38 results
+\item Science Direct - 6 results
+\end{itemize}
+
+\textbf{Total = 358}
+\textbf{Duplicates = 48}
+\textbf{Almost duplicates = 11}
+\textbf{Total final = 299}
+
+\subsection{Selection of primary studies}
+
+\textbf{First filter by title}
+From 299 to 74. Reasons:
+\begin{itemize}
+\item Medical field (proteins, medical image similarity, etc.)
+\item Hindi, Chinese language
+\item Label/classification purposes
+\item Applied to translation
+\end{itemize}
+\textbf{Second filter by abstract}
+From 74 to 34. Reasons:
+\begin{itemize}
+\item IFS: out of field
+\item Language (i.e. Turkish)
+\item Applied to non-semantical similarity: i.e., authorship
+\item Machine learning to find paraphrase from a dictionary corpus
+\item Similarity of web services
+\end{itemize}
+\textbf{Skimming (general overview)}
+From 33 to 15. 
+Reasons:
+\begin{itemize}
+\item Non-relevant contributions
+\item Poor results
+\item Word-to-word
+\item Ontology-based
+\item Missing detailed-specific process
+\item More language (not detected before)
+\item I.e. Semilar TOOL description (too general)
+Initially we keep those about plagiarism, with a skeptical mind. Also those related to sentences (i.e. subject vs subject, predicate vs predicate, etc.)
+\end{itemize}
+\textbf{Full reading}
+From ?? to ??. Reasons:
+\begin{itemize}
+\item A paper was too focused on plagiarism and it was more an index of tools and frameworks than a proposal or a technical description of a similarity process.
+\item 
+\end{itemize}
+
+\subsection{Study quality assessment}
+
+\subsection{Data extraction and synthesis}
+
+\section{Algorithm selection and technical analysis}
+
+\section{Algorithm comparative analysis}
+
+
