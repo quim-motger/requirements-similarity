@@ -1,11 +1,11 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.24)  14 OCT 2019 13:34
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.10.17)  31 OCT 2019 11:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **PEC1.tex
 (./PEC1.tex
 LaTeX2e <2017-04-15>
-Babel <3.18> and hyphenation patterns for 8 language(s) loaded.
+Babel <3.18> and hyphenation patterns for 12 language(s) loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
@@ -400,12 +400,12 @@ Package rerunfilecheck Info: File `PEC1.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 293.
  ) 
 Here is how much of TeX's memory you used:
- 6328 strings out of 494820
- 97015 string characters out of 6177789
- 180234 words of memory out of 5000000
- 9558 multiletter control sequences out of 15000+600000
+ 6328 strings out of 494747
+ 97015 string characters out of 6176206
+ 180482 words of memory out of 5000000
+ 9565 multiletter control sequences out of 15000+600000
  9218 words of font info for 32 fonts, out of 8000000 for 9000
- 62 hyphenation exceptions out of 8191
+ 107 hyphenation exceptions out of 8191
  36i,7n,39p,858b,452s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar

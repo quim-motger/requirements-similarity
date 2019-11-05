@@ -29,18 +29,18 @@
 \contentsline {section}{\numberline {1.9}In Closing}{10}{section.36}
 \contentsline {chapter}{\numberline {2}State of the art: systematic review}{11}{chapter.37}
 \contentsline {section}{\numberline {2.1}Definition of the research method}{11}{section.38}
-\contentsline {section}{\numberline {2.2}Planning the review}{11}{section.50}
-\contentsline {subsection}{\numberline {2.2.1}Identifying the need for a review}{12}{subsection.51}
-\contentsline {subsection}{\numberline {2.2.2}Specifying the review question}{12}{subsection.52}
-\contentsline {subsection}{\numberline {2.2.3}Developing a review protocol}{12}{subsection.53}
-\contentsline {subsubsection}{The search strategy: search \& selection procedures}{12}{section*.54}
-\contentsline {subsubsection}{Data extraction \& synthesis}{13}{section*.66}
-\contentsline {section}{\numberline {2.3}Conducting the review}{13}{section.67}
-\contentsline {subsection}{\numberline {2.3.1}Conducting the search}{13}{subsection.68}
-\contentsline {subsection}{\numberline {2.3.2}Selection of primary studies}{13}{subsection.69}
-\contentsline {subsection}{\numberline {2.3.3}Study quality assessment}{14}{subsection.70}
-\contentsline {subsection}{\numberline {2.3.4}Data extraction and synthesis}{14}{subsection.71}
-\contentsline {section}{\numberline {2.4}Algorithm selection and technical analysis}{14}{section.72}
-\contentsline {section}{\numberline {2.5}Algorithm comparative analysis}{14}{section.73}
-\contentsline {chapter}{\numberline {A}Frequently Asked Questions}{15}{appendix.74}
-\contentsline {section}{\numberline {A.1}How do I change the colors of links?}{15}{section.75}
+\contentsline {section}{\numberline {2.2}Planning the review}{11}{section.49}
+\contentsline {subsection}{\numberline {2.2.1}Identifying the need for a review}{12}{subsection.50}
+\contentsline {subsection}{\numberline {2.2.2}Specifying the review question}{13}{subsection.54}
+\contentsline {subsection}{\numberline {2.2.3}Developing a review protocol}{14}{subsection.57}
+\contentsline {subsubsection}{The search strategy: search \& selection procedures}{14}{section*.58}
+\contentsline {subsubsection}{Data extraction \& synthesis strategies}{15}{section*.68}
+\contentsline {section}{\numberline {2.3}Conducting the review}{15}{section.70}
+\contentsline {subsection}{\numberline {2.3.1}Conducting the search}{16}{subsection.71}
+\contentsline {subsection}{\numberline {2.3.2}Selection of primary studies}{16}{subsection.72}
+\contentsline {subsection}{\numberline {2.3.3}Study quality assessment}{18}{subsection.73}
+\contentsline {subsection}{\numberline {2.3.4}Data extraction and synthesis}{18}{subsection.74}
+\contentsline {section}{\numberline {2.4}Algorithm selection and technical analysis}{18}{section.75}
+\contentsline {section}{\numberline {2.5}Algorithm comparative analysis}{18}{section.76}
+\contentsline {chapter}{\numberline {A}Frequently Asked Questions}{19}{appendix.77}
+\contentsline {section}{\numberline {A.1}How do I change the colors of links?}{19}{section.78}
