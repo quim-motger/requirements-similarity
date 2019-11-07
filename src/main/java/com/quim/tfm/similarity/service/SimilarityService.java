@@ -2,6 +2,7 @@ package com.quim.tfm.similarity.service;
 
 import com.quim.tfm.similarity.entity.Requirement;
 import com.quim.tfm.similarity.model.Duplicate;
+import com.quim.tfm.similarity.model.Priority;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
@@ -36,6 +37,11 @@ public class SimilarityService {
 
     private static final double WF1 = 1.163;
     private static final double WF2 = 0.013;
+    private static final double WF3 = 2.285;
+    private static final double WF4 = 0.032;
+    private static final double WF5 = 0.772;
+    private static final double WF6 = 0.381;
+    private static final double WF7 = 2.427;
 
     @Autowired
     private RequirementService requirementService;
@@ -77,11 +83,15 @@ public class SimilarityService {
 
         for (Requirement compReq : requirements) {
             if (!compReq.getId().equals(requirement.getId())) {
-                double bm25f_score = bm25f_textPair(requirements, requirement, compReq,
+                double bm25fScore = bm25f_textPair(requirements, requirement, compReq,
                         summaryDocumentFrequency, requirements.size());
-                //TODO add other features
+                double projectScore = projectScore(requirement.getProject(), compReq.getProject());
+                double typeScore = typeScore(requirement.getType(), compReq.getType());
+                double componentScore = componentScore(requirement.getComponents(), compReq.getComponents());
+                double priorityScore = priorityScore(requirement.getPriority(), compReq.getPriority());
+                double versionScore = versionsScore(requirement.getVersions(), compReq.getVersions());
 
-                double score = bm25f_score;
+                double score = bm25fScore + projectScore + typeScore + componentScore + priorityScore + versionScore;
 
                 if (topDuplicates.size() < k || topDuplicates.get(k-1).getScore() < score) {
                     Duplicate duplicate = new Duplicate(requirement.getId(), compReq.getId(), score);
@@ -93,6 +103,33 @@ public class SimilarityService {
         logger.info("Finished BM25f");
         return topDuplicates;
 
+    }
+
+    private double projectScore(String project1, String project2) {
+        return project1.equals(project2) ? 1.0 * WF3 : 0.0;
+    }
+
+    private double typeScore(String type1, String type2) {
+        return type1.equals(type2) ? 1.0 * WF5 : 0.0;
+    }
+
+    private double componentScore(String[] components1, String[] components2) {
+        double sum = 0.0;
+        for (String component : components1) {
+            if (Arrays.asList(components2).contains(component)) {
+                sum += 1.0;
+            }
+        }
+        return sum / (double) components1.length;
+    }
+
+    private double priorityScore(Priority priority1, Priority priority2) {
+        return 1.0 / (1.0 + Math.abs((double) priority1.getValue() - (double) priority2.getValue()));
+    }
+
+    private double versionsScore(String[] versions1, String[] versions2) {
+        //TODO find a way to calculate distance between versions
+        return 0;
     }
 
     private void insertNewTopDuplicate(List<Duplicate> topDuplicates, Duplicate duplicate, int k) {

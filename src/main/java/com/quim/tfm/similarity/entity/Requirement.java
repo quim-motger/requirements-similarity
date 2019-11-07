@@ -1,6 +1,7 @@
 package com.quim.tfm.similarity.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.quim.tfm.similarity.model.Priority;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,13 +22,11 @@ public class Requirement implements Serializable {
     @NotNull
     @Column(length = 2000000, columnDefinition = "LONGTEXT")
     private String description;
-
-    private String priority;
+    private Priority priority;
     private String type;
     private String project;
-    private String[] component;
-    private String[] version;
-
+    private String[] components;
+    private String[] versions;
     @Column(length = 35000, columnDefinition = "LONGTEXT")
     private String[] summaryTokens;
     @Column(length = 2000000, columnDefinition = "LONGTEXT")
@@ -36,16 +35,16 @@ public class Requirement implements Serializable {
     public Requirement() {
     }
 
-    public Requirement(@NotNull String id, @NotNull String summary, @NotNull String description, String priority,
-                       String type, String project, String[] component, String[] version) {
+    public Requirement(@NotNull String id, @NotNull String summary, @NotNull String description, Priority priority,
+                       String type, String project, String[] components, String[] versions) {
         this.id = id;
         this.summary = summary;
         this.description = description;
         this.priority = priority;
         this.type = type;
         this.project = project;
-        this.component = component;
-        this.version = version;
+        this.components = components;
+        this.versions = versions;
     }
 
     public String getId() {
@@ -88,11 +87,11 @@ public class Requirement implements Serializable {
         this.descriptionTokens = descriptionTokens;
     }
 
-    public String getPriority() {
+    public Priority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(Priority priority) {
         this.priority = priority;
     }
 
@@ -112,19 +111,19 @@ public class Requirement implements Serializable {
         this.project = project;
     }
 
-    public void setComponent(String[] component) {
-        this.component = component;
+    public String[] getComponents() {
+        return components;
     }
 
-    public void setVersion(String[] version) {
-        this.version = version;
+    public void setComponents(String[] components) {
+        this.components = components;
     }
 
-    public String[] getComponent() {
-        return component;
+    public String[] getVersions() {
+        return versions;
     }
 
-    public String[] getVersion() {
-        return version;
+    public void setVersions(String[] versions) {
+        this.versions = versions;
     }
 }
