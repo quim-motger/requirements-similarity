@@ -16,23 +16,36 @@ public class Requirement implements Serializable {
     @NotNull
     private String id;
     @NotNull
-    @Column(length = 35000, columnDefinition = "text")
+    @Column(length = 35000, columnDefinition = "LONGTEXT")
     private String summary;
     @NotNull
-    @Column(length = 50000, columnDefinition = "text")
+    @Column(length = 2000000, columnDefinition = "LONGTEXT")
     private String description;
-    @Column(length = 35000, columnDefinition = "text")
+
+    private String priority;
+    private String type;
+    private String project;
+    private String[] component;
+    private String[] version;
+
+    @Column(length = 35000, columnDefinition = "LONGTEXT")
     private String[] summaryTokens;
-    @Column(length = 50000, columnDefinition = "text")
+    @Column(length = 2000000, columnDefinition = "LONGTEXT")
     private String[] descriptionTokens;
 
     public Requirement() {
     }
 
-    public Requirement(String id, String summary, String description) {
+    public Requirement(@NotNull String id, @NotNull String summary, @NotNull String description, String priority,
+                       String type, String project, String[] component, String[] version) {
         this.id = id;
         this.summary = summary;
         this.description = description;
+        this.priority = priority;
+        this.type = type;
+        this.project = project;
+        this.component = component;
+        this.version = version;
     }
 
     public String getId() {
@@ -73,5 +86,37 @@ public class Requirement implements Serializable {
 
     public void setDescriptionTokens(String[] descriptionTokens) {
         this.descriptionTokens = descriptionTokens;
+    }
+
+    public String getPriority() {
+        return priority;
+    }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public void setComponent(String[] component) {
+        this.component = component;
+    }
+
+    public void setVersion(String[] version) {
+        this.version = version;
     }
 }
