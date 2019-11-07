@@ -34,6 +34,10 @@ public class SimilarityService {
     private static final CharSequence[] specialChars = {"\\n","\\t","\\r"};
 
     private static final double K1 = 2.0;
+    private static final double K3 = 0.382;
+
+    private static final double WF1 = 1.163;
+    private static final double WF2 = 0.013;
 
     @Autowired
     private RequirementService requirementService;
@@ -88,14 +92,20 @@ public class SimilarityService {
 
     }
 
-    private List<String> getCollect(Requirement req1, Requirement req2) {
+    private List<String> getCollect(Requirement req1, Requirement req2, int n) {
+
+        String[] req1SummaryTokens = getNGrams(req1.getSummaryTokens(), n);
+        String[] req1DescriptionTokens = getNGrams(req1.getDescriptionTokens(), n);
+        String[] req2SummaryTokens = getNGrams(req2.getSummaryTokens(), n);
+        String[] req2DescriptionTokens = getNGrams(req2.getDescriptionTokens(), n);
+
         String[] req1Tokens = Arrays.stream(
-                Stream.of(req1.getSummaryTokens(), req1.getDescriptionTokens())
+                Stream.of(req1SummaryTokens, req1DescriptionTokens)
                         .flatMap(Stream::of)
                         .toArray(String[]::new))
                 .distinct().toArray(String[]::new);
         String[] req2Tokens = Arrays.stream(
-                Stream.of(req2.getSummaryTokens(), req2.getDescriptionTokens())
+                Stream.of(req2SummaryTokens, req2DescriptionTokens)
                         .flatMap(Stream::of)
                         .toArray(String[]::new))
                 .distinct().toArray(String[]::new);
@@ -104,21 +114,41 @@ public class SimilarityService {
                 .collect(Collectors.toList());
     }
 
+    private String[] getNGrams(String[] tokens, int n) {
+       List<String> ngrams = new ArrayList<>();
+        for (int i = 1; i < tokens.length; ++i) {
+            String ngram = tokens[i-n+1];
+            for (int j = 1; j < n; ++j) {
+                ngram += " " + tokens[i-n+1+j];
+            }
+            ngrams.add(ngram);
+        }
+        return ngrams.stream().toArray(String[]::new);
+    }
+
     private double bm25f_textPair(List<Requirement> requirements, Requirement req1, Requirement req2,
                                   HashMap<String, Integer> documentFrequency, int corpusSize) {
-        List<String> tokensIntersection = getCollect(req1, req2);
+        List<String> unigramIntersection = getCollect(req1, req2, 1);
+        List<String> bigramIntersection = getCollect(req1, req2, 2);
 
-        double res = 0.0;
-        for (String term : tokensIntersection) {
+        double resUnigram = computeScore(requirements, req1, req2, documentFrequency, corpusSize, unigramIntersection);
+        double resBigram = computeScore(requirements, req1, req2, documentFrequency, corpusSize, bigramIntersection);
+
+        return resUnigram * WF1 + resBigram * WF2;
+    }
+
+    private double computeScore(List<Requirement> requirements, Requirement req1, Requirement req2,
+                                HashMap<String, Integer> documentFrequency, int corpusSize, List<String> intersection) {
+        double score = 0.0;
+        for (String term : intersection) {
             double idf = idfService.idf(term, documentFrequency, corpusSize);
             double tf = idfService.tf(term, requirements, req1);
             double tfd = tf / (K1 + tf);
-            double wq = 1.0;
-            //TODO algorithm execution
-            res += idf * tfd * wq;
+            double tfq = idfService.tfq(term, req2);
+            double wq = (K3 + 1.0) * tfq / (K3 + tfq);
+            score += idf * tfd * wq;
         }
-
-        return res;
+        return score;
     }
 
     private void bm25fPreprocess(Requirement r) {
