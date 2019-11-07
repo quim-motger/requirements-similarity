@@ -119,4 +119,12 @@ public class Requirement implements Serializable {
     public void setVersion(String[] version) {
         this.version = version;
     }
+
+    public String[] getComponent() {
+        return component;
+    }
+
+    public String[] getVersion() {
+        return version;
+    }
 }
