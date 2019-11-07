@@ -1,6 +1,7 @@
 package com.quim.tfm.similarity.service;
 
 import com.quim.tfm.similarity.entity.Requirement;
+import com.quim.tfm.similarity.model.Duplicate;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
@@ -12,10 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,7 +64,7 @@ public class SimilarityService {
         }
     }
 
-    public void bm25f_req(Requirement requirement) {
+    public List<Duplicate> bm25f_req(Requirement requirement, int k) {
         logger.info("Init BM25f Preprocess for requirement " + requirement.getId());
         bm25fPreprocess(requirement);
 
@@ -75,21 +73,39 @@ public class SimilarityService {
 
         HashMap<String, Integer> summaryDocumentFrequency = idfService.getDocumentFrequency(requirements);
 
-        double maxScore = 0.0;
-        String maxReq = "";
+        List<Duplicate> topDuplicates = new ArrayList<>();
+
         for (Requirement compReq : requirements) {
             if (!compReq.getId().equals(requirement.getId())) {
                 double bm25f_score = bm25f_textPair(requirements, requirement, compReq,
                         summaryDocumentFrequency, requirements.size());
-                if (bm25f_score > maxScore) {
-                    maxScore = bm25f_score;
-                    maxReq = compReq.getId();
+                //TODO add other features
+
+                double score = bm25f_score;
+
+                if (topDuplicates.size() < k || topDuplicates.get(k-1).getScore() < score) {
+                    Duplicate duplicate = new Duplicate(requirement.getId(), compReq.getId(), score);
+                    insertNewTopDuplicate(topDuplicates, duplicate, k);
                 }
             }
         }
 
-        logger.info("Finished BM25f\t" + maxReq + "\t" + maxScore);
+        logger.info("Finished BM25f");
+        return topDuplicates;
 
+    }
+
+    private void insertNewTopDuplicate(List<Duplicate> topDuplicates, Duplicate duplicate, int k) {
+        boolean posFound = false;
+        int i = 0;
+        while (!posFound && i < k) {
+            if (i == topDuplicates.size() ||
+                    topDuplicates.get(i).getScore() < duplicate.getScore()) {
+                posFound = true;
+            } else ++i;
+        }
+        topDuplicates.add(i, duplicate);
+        if (topDuplicates.size() > k) topDuplicates.remove(k);
     }
 
     private List<String> getCollect(Requirement req1, Requirement req2, int n) {
