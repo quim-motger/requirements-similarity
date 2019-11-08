@@ -13,11 +13,6 @@ import java.util.stream.Stream;
 @Service
 public class IDFService {
 
-    private static final double WSF = 2.980;
-    private static final double WDF = 0.287;
-    private static final double BSF = 0.703;
-    private static final double BDF = 1.0;
-
     public HashMap<String, Integer> getDocumentFrequency(List<Requirement> requirements) {
         HashMap<String, Integer> documentFrequencyMap = new HashMap<>();
 
@@ -41,21 +36,21 @@ public class IDFService {
         return documentFrequency.containsKey(term) ? Math.log((double) corpusSize / (double) documentFrequency.get(term)) : 0;
     }
 
-    public double tf(String term, List<Requirement> requirements, Requirement req1) {
-        double summaryNum = WSF * ocurrences(term, req1.getSummaryTokens());
-        double summaryDen = 1 - BSF + BSF * (double) req1.getSummaryTokens().length /
+    public double tf(String term, List<Requirement> requirements, Requirement req1, double wsf, double bsf, double wdf, double bdf) {
+        double summaryNum = wsf * ocurrences(term, req1.getSummaryTokens());
+        double summaryDen = 1 - bsf + bsf * (double) req1.getSummaryTokens().length /
                 avgTokenBagSize(requirements.stream().map(Requirement::getSummaryTokens).collect(Collectors.toList()));
 
-        double descriptionNum = WDF * ocurrences(term, req1.getDescriptionTokens());
-        double descriptionDen = 1 - BDF + BDF * (double) req1.getDescriptionTokens().length /
+        double descriptionNum = wdf * ocurrences(term, req1.getDescriptionTokens());
+        double descriptionDen = 1 - bdf + bdf * (double) req1.getDescriptionTokens().length /
                 avgTokenBagSize(requirements.stream().map(Requirement::getDescriptionTokens).collect(Collectors.toList()));
 
         return summaryNum / summaryDen + descriptionNum / descriptionDen;
     }
 
-    public double tfq(String term, Requirement req2) {
-        double summaryTfq = WSF * ocurrences(term, req2.getSummaryTokens());
-        double descriptionTfq = WDF * ocurrences(term, req2.getDescriptionTokens());
+    public double tfq(String term, Requirement req2, double wsf, double wdf) {
+        double summaryTfq = wsf * ocurrences(term, req2.getSummaryTokens());
+        double descriptionTfq = wdf * ocurrences(term, req2.getDescriptionTokens());
         return summaryTfq + descriptionTfq;
     }
 

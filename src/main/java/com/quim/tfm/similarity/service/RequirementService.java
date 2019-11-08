@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -52,5 +53,16 @@ public class RequirementService {
 
     public void deleteAllRequirements() {
         requirementRepository.deleteAll();
+    }
+
+    public Requirement findRandomRequirement(List<String> forbiddenRequirements) {
+        boolean found = false;
+        List<Requirement> requirements = getRequirements();
+        Requirement r = null;
+        while (!found) {
+            r = requirements.get(new Random().nextInt(requirements.size()));
+            if (!forbiddenRequirements.contains(r.getId())) found = true;
+        }
+        return r;
     }
 }

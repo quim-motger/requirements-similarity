@@ -16,9 +16,19 @@ public class SimilarityController {
     @Autowired
     private SimilarityService similarityService;
 
-    @PostMapping("/bm25f_Req")
+    @PostMapping("/bm25f")
     public List<Duplicate> bm25fReq(@RequestBody @Valid Requirement requirement, @RequestParam Integer k) {
         return similarityService.bm25f_req(requirement, k);
+    }
+
+    @PostMapping("/bm25f_train")
+    public void bm25fTrain(@RequestBody List<Duplicate> duplicates) {
+        similarityService.bm25f_train(duplicates);
+    }
+
+    @PostMapping("/bm25f_test")
+    public void bm25fTest(@RequestParam Integer k, @RequestBody List<Duplicate> duplicates) {
+        similarityService.bm25f_test(duplicates, k);
     }
 
 }
