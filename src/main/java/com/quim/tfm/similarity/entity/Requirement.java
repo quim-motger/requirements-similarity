@@ -17,19 +17,20 @@ public class Requirement implements Serializable {
     @NotNull
     private String id;
     @NotNull
-    @Column(length = 35000, columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String summary;
     @NotNull
-    @Column(length = 2000000, columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
     private Priority priority;
     private String type;
     private String project;
     private String[] components;
+    @Column(columnDefinition = "LONGTEXT")
     private String[] versions;
-    @Column(length = 35000, columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String[] summaryTokens;
-    @Column(length = 2000000, columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String[] descriptionTokens;
 
     public Requirement() {

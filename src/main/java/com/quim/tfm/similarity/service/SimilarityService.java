@@ -106,30 +106,36 @@ public class SimilarityService {
     }
 
     private double projectScore(String project1, String project2) {
+        if (project1 == null || project2 == null) return 0.0;
         return project1.equals(project2) ? 1.0 * WF3 : 0.0;
     }
 
     private double typeScore(String type1, String type2) {
+        if (type1 == null || type2 == null) return 0.0;
         return type1.equals(type2) ? 1.0 * WF5 : 0.0;
     }
 
     private double componentScore(String[] components1, String[] components2) {
+        if (components1 == null || components2 == null) return 0.0;
         double sum = 0.0;
         for (String component : components1) {
             if (Arrays.asList(components2).contains(component)) {
                 sum += 1.0;
             }
         }
-        return sum / (double) components1.length;
+        return WF4 * sum / (double) components1.length;
     }
 
     private double priorityScore(Priority priority1, Priority priority2) {
-        return 1.0 / (1.0 + Math.abs((double) priority1.getValue() - (double) priority2.getValue()));
+        if (priority1 == null || priority2 == null) return 0.0;
+        return WF6 * 1.0 / (1.0 + Math.abs((double) priority1.getValue() - (double) priority2.getValue()));
     }
 
     private double versionsScore(String[] versions1, String[] versions2) {
-        //TODO find a way to calculate distance between versions
-        return 0;
+        if (versions1 == null || versions2 == null || versions1.length == 0 || versions2.length == 0) return 0.0;
+        String version1 = Arrays.stream(versions1).max(String::compareTo).orElse(null);
+        String version2 = Arrays.stream(versions2).max(String::compareTo).orElse(null);
+        return WF7 * 1.0 / (1.0 + Math.abs(version1.compareTo(version2)));
     }
 
     private void insertNewTopDuplicate(List<Duplicate> topDuplicates, Duplicate duplicate, int k) {
