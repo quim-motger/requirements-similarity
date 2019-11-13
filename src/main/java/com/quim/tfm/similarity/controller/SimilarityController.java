@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -27,8 +28,8 @@ public class SimilarityController {
     }
 
     @PostMapping("/bm25f_test")
-    public void bm25fTest(@RequestParam Integer k, @RequestBody List<Duplicate> duplicates) {
-        similarityService.bm25f_test(duplicates, k);
+    public HashMap<Integer, Double> bm25fTest(@RequestParam Integer k, @RequestBody List<Duplicate> duplicates) {
+        return similarityService.bm25f_test(duplicates, k);
     }
 
 }

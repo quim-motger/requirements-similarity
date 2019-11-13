@@ -1,0 +1,143 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\usepackage{onecolceurws}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+
+\makeatletter
+\def\and{%                  % \begin{tabular}[t]{c}
+  \end{tabular}%
+  \hskip -0.3em \@plus.17 fil%
+  \begin{tabular}[t]{c}}%   % \end{tabular}
+\makeatother
+
+\title{Automated similarity detection:\\ identifying duplicated requirements\\\textit{PEC2 - Project development}}
+
+\author{
+%
+Quim Motger de la Encarnación
+%}
+\institution{Universitat Oberta de Catalunya\\Universitat Politecnica de Catalunya}
+}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{sec:introduction}
+
+This project is the first review report of the master thesis titled \textit{``Automated similarity detection: identifying duplicated requirements"}. The following sections summarize the status of the planned tasks and goals of the project in correlation with the current status of their development. Additionally, all changes and deviations from the original plan depicted in previous deliverables are described and justified in this report. Finally we enumerate the list of partial results obtained until the date of this report.
+
+\section{Project development status}
+\label{sec:project_status}
+
+As an introduction to the project development status, it can be stated that the project has not suffered from major deviations from its scope perspective (see sec. \ref{sec:goal_changes} for more details). As the tasks work plan depicted in the previous deliverable, development work has been focused on satisfying each one of the specific goals. This has allowed to follow track of goal achievement from the beginning of the thesis development with enough detail to avoid major deviations (see sec. \ref{sec:finished_tasks} for more details about work plan).
+
+We focus now on two topics related to the project development status: first, we enumerate and evaluate the satisfaction status of each of the specific goals listed in the work plan; second, we justify the absence of project goals changes using the previous evaluation as a prove.
+
+\subsection{Goal achievement and expected results}
+\label{sec:goal_and_results}
+
+In order to provide an exhaustive evaluation of the specific goals, we enumerate all specific objectives and we use a 3-tag model to determine its achievement status:
+
+\begin{enumerate}
+\item \textit{Not achieved}: the objective has not been addressed yet and there are not available results for its satisfaction
+\item \textit{Partially achieved}: the objective is partially satisfied, meaning that there is important work and partial results but there are still remaining tasks for its complete achievement
+\item \textit{Achieved}: the objective has been completely achieved and there are partial results to justify it
+\end{enumerate}
+
+For each goal we give further details about its status and its expected development until the next report. Notice that this is a general overview from a goal perspective: all details related to specific tasks are extended in section \ref{sec:finished_tasks}.
+
+\begin{enumerate}
+\item[O1.1.] To study the current status of similarity detection in the RE field from a general point of view.
+\begin{itemize}
+\item \textit{Status:} Achieved
+\item \textit{Description:} the state of the art review has been fully achieved and its only pending to be fully documented in the master thesis final deliverable. Currently a set of provisional artifacts (i.e. lists of publication references, summaries, schemes...) are available and are being used as an input for development tasks.
+\end{itemize}
+\item[O1.2.] To review and to enumerate similarity detection techniques/algorithms, and to be specific the ML and NLP techniques that represent the state-of-the-art of the field.
+\begin{itemize}
+\item \textit{Status:} Achieved
+\item \textit{Description:} as part of the state of the art, and as a step of the systematic review carried out (see \ref{sec:non_planned_tasks} for further details) this literature review has been used to identify the state of the art from 3 main fields: from a general algorithmic solution view; from a set of NLP measures and preprocessing techniques view; and from a ML classification view. As a result is has been possible to identify and to study the most representative techniques from the areas of interest.
+\end{itemize}
+\item[O1.3.] To identify potential suitable algorithm candidates for the master thesis and the use case to be validated with.
+\begin{itemize}
+\item \textit{Status:} Achieved
+\item \textit{Description:} two different solutions have been chosen to develop and to evaluate in this master thesis. These two approaches have proven to be some of the most integrative and up-to-date solutions from similarity detection in natural language, and additionally have a reason of interest in its applicability to requirements similarity detection.
+\end{itemize}
+\item[O2.1.] To elaborate a development proposal for the implementation of the selected algorithms.
+\begin{itemize}
+\item \textit{Status:} Partially achieved
+\item \textit{Description:} currently the development of the project is limited to an initial PoC version of one of the two algorithms. However this version is fully usable and it is only pending to be improved by applying additional optimization techniques suggested in some research papers to improve its results. Partial results are already available for real use case data. Therefore we can conclude that this goal has been partially achieved, pending to finish the implementation of the first algorithm and to develop the second one.
+\end{itemize}
+\item[O2.2.] To integrate the algorithms with a unique tool to use and to test the different similarity detection scenarios.
+\begin{itemize}
+\item \textit{Status:} Partially achieved
+\item \textit{Description:} due to development requirements and the platforms and technologies required for developing the project in Java, which has been the programming language selected for this purpose, there is already an integrative tool prepared to work with different algorithms. It basically consists on a RESTful API developed with Spring which focuses on CRUD functionalities for requirement items and separated methods for applying the different similarity techniques. When objective \textit{O2.1} is fulfilled with the second algorithm, it can be easily coupled in this integrative tool.
+\end{itemize}
+\item[O3.1] To evaluate the requirements input data of the algorithms, in order to guarantee a comprehensive analysis of the results.
+\begin{itemize}
+\item \textit{Status:} Partially achieved
+\item \textit{Description:} Import/export functionalities, adaptation of algorithms...
+\end{itemize}
+\item[O3.2] To optimize and to adapt the algorithms based on the use case requirements.
+\begin{itemize}
+\item \textit{Status:} Partially achieved
+\item \textit{Description:} same as above
+\end{itemize}
+\item[O3.3] To analyze and to prepare a use case dataset for all scenarios (i.e. all the different similarity detection algorithms).
+\begin{itemize}
+\item \textit{Status:} Partially achieved
+\item \textit{Description:} same as above
+\end{itemize}
+\item[O3.4] To carry out the experiments using the developed algorithms.
+\begin{itemize}
+\item \textit{Status:} Not achieved
+\item \textit{Description:} 
+\end{itemize}
+\item[O3.5] To perform a comparative analysis between algorithms.
+\begin{itemize}
+\item \textit{Status:} Not achieved
+\item \textit{Description:} 
+\end{itemize}
+\item[O3.6] To extract conclusions in terms of reliability of the results and performance of the algorithms.
+\begin{itemize}
+\item \textit{Status:} Not achieved
+\item \textit{Description:} 
+\end{itemize}
+\end{enumerate}
+
+\subsection{Project goals changes}
+\label{sec:goal_changes}
+
+
+
+\section{Relation of finished tasks}
+\label{sec:finished_tasks}
+
+
+
+\subsection{Tasks included in the work plan}
+\label{sec:tasks_work_plan}
+
+
+
+\subsection{Non-planned tasks}
+\label{sec:non_planned_tasks}
+
+\section{Time plan deviations and mitigation techniques}
+\label{sec:time_deviations}
+
+\section{Partial results}
+\label{sec:partial_results}
+
+
+\begin{thebibliography}{99}
+
+\end{thebibliography}
+
+\end{document}
+
+

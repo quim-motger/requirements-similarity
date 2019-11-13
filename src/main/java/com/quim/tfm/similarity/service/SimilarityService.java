@@ -1,6 +1,7 @@
 package com.quim.tfm.similarity.service;
 
 import com.quim.tfm.similarity.entity.Requirement;
+import com.quim.tfm.similarity.exception.NotFoundCustomException;
 import com.quim.tfm.similarity.model.Duplicate;
 import com.quim.tfm.similarity.model.Priority;
 import com.quim.tfm.similarity.model.TrainTripletBM25F;
@@ -56,27 +57,8 @@ public class SimilarityService {
                     .build();
 
             freeParameters = new HashMap<>();
-            /*freeParameters.put("WF1", 0.9);
-            freeParameters.put("WF2", 0.2);
-            freeParameters.put("WF3", 2.0);
-            freeParameters.put("WF4", 0.0);
-            freeParameters.put("WF5", 0.7);
-            freeParameters.put("WF6", 0.0);
-            freeParameters.put("WF7", 0.0);
-
-            freeParameters.put("WSF1", 3.0);
-            freeParameters.put("WDF1", 1.0);
-            freeParameters.put("BSF1", 0.5);
-            freeParameters.put("BDF1", 1.0);
-            freeParameters.put("K1F1", 2.0);
-            freeParameters.put("K3F1", 0.0);
-
-            freeParameters.put("WSF2", 3.0);
-            freeParameters.put("WDF2", 1.0);
-            freeParameters.put("BSF2", 0.5);
-            freeParameters.put("BDF2", 1.0);
-            freeParameters.put("K1F2", 2.0);
-            freeParameters.put("K3F2", 0.0);*/
+            initFreeParameters();
+            /*
             freeParameters.put("WF1", 1.163);
             freeParameters.put("WF2", 0.013);
             freeParameters.put("WF3", 2.285);
@@ -98,10 +80,35 @@ public class SimilarityService {
             freeParameters.put("BDF2", 1.000);
             freeParameters.put("K1F2", 2.000);
             freeParameters.put("K3F2", 0.001);
+            */
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void initFreeParameters() {
+        freeParameters.put("WF1", 0.9);
+        freeParameters.put("WF2", 0.2);
+        freeParameters.put("WF3", 2.0);
+        freeParameters.put("WF4", 0.0);
+        freeParameters.put("WF5", 0.7);
+        freeParameters.put("WF6", 0.0);
+        freeParameters.put("WF7", 0.0);
+
+        freeParameters.put("WSF1", 3.0);
+        freeParameters.put("WDF1", 1.0);
+        freeParameters.put("BSF1", 0.5);
+        freeParameters.put("BDF1", 1.0);
+        freeParameters.put("K1F1", 2.0);
+        freeParameters.put("K3F1", 0.0);
+
+        freeParameters.put("WSF2", 3.0);
+        freeParameters.put("WDF2", 1.0);
+        freeParameters.put("BSF2", 0.5);
+        freeParameters.put("BDF2", 1.0);
+        freeParameters.put("K1F2", 2.0);
+        freeParameters.put("K3F2", 0.0);
     }
 
     public void preprocessRequirementList(List<Requirement> requirements) {
@@ -111,11 +118,15 @@ public class SimilarityService {
     }
 
     public List<Duplicate> bm25f_req(Requirement requirement, int k) {
+        documentFrequency = idfService.getDocumentFrequency(requirements);
+        return bm25f(requirement, k, true);
+    }
+
+    public List<Duplicate> bm25f(Requirement requirement, int k, boolean withPreprocess) {
         logger.info("Init BM25f Preprocess for requirement " + requirement.getId());
-        bm25fPreprocess(requirement);
+        if (withPreprocess) bm25fPreprocess(requirement);
 
         requirements = requirementService.getRequirements();
-        documentFrequency = idfService.getDocumentFrequency(requirements);
         requirements.add(requirement);
 
         List<Duplicate> topDuplicates = new ArrayList<>();
@@ -164,7 +175,7 @@ public class SimilarityService {
                 sum += 1.0;
             }
         }
-        return sum / (double) components1.length;
+        return components1.length == 0 ? 0 : sum / (double) components1.length;
     }
 
     private double priorityScore(Priority priority1, Priority priority2) {
@@ -246,10 +257,10 @@ public class SimilarityService {
         double score = 0.0;
         for (String term : intersection) {
             double idf = idfService.idf(term, documentFrequency, corpusSize);
-            double tf = idfService.tf(term, requirements, req1, wsf, bsf, wdf, bdf);
-            double tfd = tf / (k1 + tf);
+            double tf = idfService.tf(term, req1, wsf, bsf, wdf, bdf);
+            double tfd = (k1 + tf) == 0 ? 0 : tf / (k1 + tf);
             double tfq = idfService.tfq(term, req2, wsf, wdf);
-            double wq = (k3 + 1.0) * tfq / (k3 + tfq);
+            double wq = k3 + tfq == 0 ? 0 :(k3 + 1.0) * tfq / (k3 + tfq);
             score += idf * tfd * wq;
         }
         return score;
@@ -280,70 +291,92 @@ public class SimilarityService {
     }
 
     public void bm25f_train(List<Duplicate> duplicates) {
+
+        requirements = requirementService.getRequirements();
+        documentFrequency = idfService.getDocumentFrequency(requirements);
+
         List<TrainTripletBM25F> trainTripletBM25FS = new ArrayList<>();
         for (Duplicate d : duplicates) {
-            Requirement irrel = requirementService.findRandomRequirement(Arrays.asList(d.getReq1Id(), d.getReq2Id()));
+            Requirement irrel = requirementService.findRandomRequirement(Arrays.asList(d.getReq1Id(), d.getReq2Id()), requirements);
             trainTripletBM25FS.add(new TrainTripletBM25F(d.getReq1Id(), d.getReq2Id(), irrel.getId()));
         }
+
+        initFreeParameters();
         tuneParameters(trainTripletBM25FS);
     }
 
     private void tuneParameters(List<TrainTripletBM25F> trainTripletBM25FS) {
-        int nIters = 100;
+        int nIters = 24;
         double tunningRate = 0.001;
+        logger.info("Starting tunning parameters.");
         for (int i = 0; i < nIters; ++i) {
             Collections.shuffle(trainTripletBM25FS);
+            logger.info("Iteration nº:\t" + (i+1));
             for (int j = 0; j < trainTripletBM25FS.size(); ++j) {
+                if (j%100 == 0) logger.info("Iteration nº:\t" + (i+1) + ", triplet " + (j+1));
                 for (String key : freeParameters.keySet()) {
-                    double newValue = freeParameters.get(key)
-                            - tunningRate * partialDerivativeRFC(trainTripletBM25FS.get(j), key);
-                    freeParameters.put(key, newValue);
+                    double pd = partialDerivativeRFC(trainTripletBM25FS.get(j), key);
+                    if (pd != -1.0) {
+                        double newValue = freeParameters.get(key) - tunningRate * pd;
+                        freeParameters.put(key, newValue);
+                    }
                 }
             }
         }
     }
 
     private double partialDerivativeRFC(TrainTripletBM25F trainTripletBM25F, String key) {
-        Requirement q = requirementService.getRequirement(trainTripletBM25F.getQ());
-        Requirement irrel = requirementService.getRequirement(trainTripletBM25F.getIrrel());
-        Requirement rel = requirementService.getRequirement(trainTripletBM25F.getRel());
+        try {
+            Requirement q = requirementService.getRequirement(trainTripletBM25F.getQ());
+            Requirement irrel = requirementService.getRequirement(trainTripletBM25F.getIrrel());
+            Requirement rel = requirementService.getRequirement(trainTripletBM25F.getRel());
 
-        if (key.equals("WF1") || key.equals("WF2") || key.equals("WF3") || key.equals("WF4") ||
-                key.equals("WF5") || key.equals("WF6") || key.equals("WF7") ) {
-            double b, d;
-            if (key.equals("WF1")) {
-                b = bm25f_textPairUnigram(q, irrel);
-                d = bm25f_textPairUnigram(q, rel);
-            } else if (key.equals("WF2")) {
-                b = bm25f_textPairBigram(q, irrel);
-                d = bm25f_textPairBigram(q, rel);
-            } else if (key.equals("WF3")) {
-                b = projectScore(q.getProject(), irrel.getProject());
-                d = projectScore(q.getProject(), rel.getProject());
-            } else if (key.equals("WF4")) {
-                b = typeScore(q.getType(), irrel.getType());
-                d = typeScore(q.getType(), rel.getType());
-            } else if (key.equals("WF5")) {
-                b = componentScore(q.getComponents(), irrel.getComponents());
-                d = componentScore(q.getComponents(), rel.getComponents());
-            } else if (key.equals("WF6")) {
-                b = priorityScore(q.getPriority(), irrel.getPriority());
-                d = priorityScore(q.getPriority(), rel.getPriority());
-            } else {
-                b = versionsScore(q.getVersions(), irrel.getVersions());
-                d = versionsScore(q.getVersions(), rel.getVersions());
+            if (key.equals("WF1") || key.equals("WF2") || key.equals("WF3") || key.equals("WF4") ||
+                    key.equals("WF5") || key.equals("WF6") || key.equals("WF7")) {
+                double b, d;
+                switch (key) {
+                    case "WF1":
+                        b = bm25f_textPairUnigram(q, irrel);
+                        d = bm25f_textPairUnigram(q, rel);
+                        break;
+                    case "WF2":
+                        b = bm25f_textPairBigram(q, irrel);
+                        d = bm25f_textPairBigram(q, rel);
+                        break;
+                    case "WF3":
+                        b = projectScore(q.getProject(), irrel.getProject());
+                        d = projectScore(q.getProject(), rel.getProject());
+                        break;
+                    case "WF4":
+                        b = typeScore(q.getType(), irrel.getType());
+                        d = typeScore(q.getType(), rel.getType());
+                        break;
+                    case "WF5":
+                        b = componentScore(q.getComponents(), irrel.getComponents());
+                        d = componentScore(q.getComponents(), rel.getComponents());
+                        break;
+                    case "WF6":
+                        b = priorityScore(q.getPriority(), irrel.getPriority());
+                        d = priorityScore(q.getPriority(), rel.getPriority());
+                        break;
+                    default:
+                        b = versionsScore(q.getVersions(), irrel.getVersions());
+                        d = versionsScore(q.getVersions(), rel.getVersions());
+                        break;
+                }
+
+                //e^(sim(q,irrel) - sim(q,rel))
+                double ef = Math.exp(sim(q, irrel) - sim(q, rel));
+                //(b-d)*log(e)*e^(sim(q,irrel) - sim(q,rel))
+                double num = (b - d) * Math.log(Math.exp(1)) * ef;
+                //e^(sim(q,irrel) - sim(q,rel)) + 1
+                double den = ef + 1;
+                return num / den;
             }
-
-            //e^(sim(q,irrel) - sim(q,rel))
-            double ef = Math.exp(sim(q, irrel) - sim (q, rel));
-            //(b-d)*log(e)*e^(sim(q,irrel) - sim(q,rel))
-            double num = (b - d) * Math.log(Math.exp(1)) * ef;
-            //e^(sim(q,irrel) - sim(q,rel)) + 1
-            double den = ef + 1;
-            return num / den;
-        } else {
-            return 0.0;
+        } catch (NotFoundCustomException e) {
+            //logger.error("Bug not found. Skipping for optimization");
         }
+        return -1.0;
     }
 
     private double RCF(TrainTripletBM25F trainTripletBM25F) {
@@ -354,7 +387,34 @@ public class SimilarityService {
         return Math.log(1 + Math.exp(sim(q, irrel) - sim(q, rel)));
     }
 
-    public void bm25f_test(List<Duplicate> duplicates, Integer k) {
+    public HashMap<Integer, Double> bm25f_test(List<Duplicate> duplicates, Integer k) {
         requirements = requirementService.getRequirements();
+        HashMap<String, List<Duplicate>> duplicateMap = new HashMap<>();
+        HashMap<Integer, Double> recallMap = new HashMap<>();
+        int count = 0;
+        documentFrequency = idfService.getDocumentFrequency(requirements);
+        for (Requirement r1 : requirements) {
+            List<Duplicate> foundDuplicates = bm25f(r1, k, false);
+            duplicateMap.put(r1.getId(), foundDuplicates);
+            ++count;
+            logger.info("Requirement nº " + count + " (from " + requirements.size() + ")");
+        }
+        for (Duplicate d : duplicates) {
+            for (int i = 1; i <= k; ++i) {
+                if (duplicateMap.containsKey(d.getReq1Id())) {
+                    List<Duplicate> foundDuplicates = duplicateMap.get(d.getReq1Id());
+                    if (foundDuplicates.size() >= i) foundDuplicates = foundDuplicates.subList(0, i);
+                    if (foundDuplicates.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq2Id()))) {
+                        if (recallMap.containsKey(i)) recallMap.put(i, recallMap.get(i) + 1.0);
+                        else recallMap.put(i, 1.0);
+                    }
+                }
+            }
+        }
+        for (int i = 1; i <= k; ++i) {
+            recallMap.put(i, recallMap.get(i) / duplicates.size());
+        }
+        //recall rate@k
+        return recallMap;
     }
 }

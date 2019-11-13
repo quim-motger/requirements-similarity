@@ -55,9 +55,8 @@ public class RequirementService {
         requirementRepository.deleteAll();
     }
 
-    public Requirement findRandomRequirement(List<String> forbiddenRequirements) {
+    public Requirement findRandomRequirement(List<String> forbiddenRequirements, List<Requirement> requirements) {
         boolean found = false;
-        List<Requirement> requirements = getRequirements();
         Requirement r = null;
         while (!found) {
             r = requirements.get(new Random().nextInt(requirements.size()));
