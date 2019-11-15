@@ -111,22 +111,21 @@ public class SimilarityService {
         freeParameters.put("K3F2", 0.0);
     }
 
-    public void preprocessRequirementList(List<Requirement> requirements) {
-        for (Requirement r : requirements) {
-            bm25fPreprocess(r);
-        }
+    private void init() {
+        requirements = requirementService.getRequirements();
+        documentFrequency = idfService.getDocumentFrequency(requirements);
     }
 
     public List<Duplicate> bm25f_req(Requirement requirement, int k) {
-        documentFrequency = idfService.getDocumentFrequency(requirements);
+        init();
         return bm25f(requirement, k, true);
     }
 
-    public List<Duplicate> bm25f(Requirement requirement, int k, boolean withPreprocess) {
+    private List<Duplicate> bm25f(Requirement requirement, int k, boolean withPreprocess) {
         logger.info("Init BM25f Preprocess for requirement " + requirement.getId());
-        if (withPreprocess) bm25fPreprocess(requirement);
+        init();
 
-        requirements = requirementService.getRequirements();
+        if (withPreprocess) bm25fPreprocess(requirement);
         requirements.add(requirement);
 
         List<Duplicate> topDuplicates = new ArrayList<>();
@@ -292,8 +291,7 @@ public class SimilarityService {
 
     public void bm25f_train(List<Duplicate> duplicates) {
 
-        requirements = requirementService.getRequirements();
-        documentFrequency = idfService.getDocumentFrequency(requirements);
+        init();
 
         List<TrainTripletBM25F> trainTripletBM25FS = new ArrayList<>();
         for (Duplicate d : duplicates) {
@@ -388,11 +386,10 @@ public class SimilarityService {
     }
 
     public HashMap<Integer, Double> bm25f_test(List<Duplicate> duplicates, Integer k) {
-        requirements = requirementService.getRequirements();
+        init();
         HashMap<String, List<Duplicate>> duplicateMap = new HashMap<>();
         HashMap<Integer, Double> recallMap = new HashMap<>();
         int count = 0;
-        documentFrequency = idfService.getDocumentFrequency(requirements);
         for (Requirement r1 : requirements) {
             List<Duplicate> foundDuplicates = bm25f(r1, k, false);
             duplicateMap.put(r1.getId(), foundDuplicates);

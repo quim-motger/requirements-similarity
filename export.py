@@ -74,8 +74,10 @@ with io.open('duplicates.json', 'r', encoding='utf-8-sig') as json_file:
 					versions.append(cr[row][version_index])
 			req['versions'] = versions
 
-			out_reqs.append(req)
+			if (len(req['description']) <= 10000):
+				out_reqs.append(req)
 			row += 1
 
-	with open('export.json', 'w') as f:
+	with open('export-test.json', 'w') as f:
+		print(len(out_reqs))
 		json.dump(out_reqs, f)

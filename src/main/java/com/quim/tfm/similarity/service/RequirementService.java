@@ -25,8 +25,8 @@ public class RequirementService {
     private SimilarityService similarityService;
 
     public void addRequirements(List<Requirement> requirements) {
-        logger.info("Starting preprocess of requirement list...");
-        similarityService.preprocessRequirementList(requirements);
+        /*logger.info("Starting preprocess of requirement list...");
+        similarityService.preprocessRequirementList(requirements);*/
         logger.info("Storing requirement list...");
         requirementRepository.saveAll(requirements);
         logger.info("Requirement list stored");
