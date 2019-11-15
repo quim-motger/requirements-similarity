@@ -10,6 +10,7 @@ public class Duplicate implements Serializable {
     private String req1Id;
     private String req2Id;
     private double score;
+    private DuplicateTag tag;
 
     public Duplicate() {
 
@@ -43,5 +44,13 @@ public class Duplicate implements Serializable {
 
     public void setScore(double score) {
         this.score = score;
+    }
+
+    public DuplicateTag getTag() {
+        return tag;
+    }
+
+    public void setTag(DuplicateTag tag) {
+        this.tag = tag;
     }
 }

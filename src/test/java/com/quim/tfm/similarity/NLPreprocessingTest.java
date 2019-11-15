@@ -1,7 +1,6 @@
 package com.quim.tfm.similarity;
 
-import com.quim.tfm.similarity.entity.Requirement;
-import com.quim.tfm.similarity.service.SimilarityService;
+import com.quim.tfm.similarity.service.BM25FService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class NLPreprocessingTest {
 
     @Autowired
-    private SimilarityService similarityService;
+    private BM25FService BM25FService;
 
     @Test
     void NLPreprocessPipeline() {

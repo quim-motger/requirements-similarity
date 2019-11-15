@@ -5,86 +5,61 @@ import com.quim.tfm.similarity.exception.NotFoundCustomException;
 import com.quim.tfm.similarity.model.Duplicate;
 import com.quim.tfm.similarity.model.Priority;
 import com.quim.tfm.similarity.model.TrainTripletBM25F;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.custom.CustomAnalyzer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 @Service
-public class SimilarityService {
+public class BM25FService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimilarityService.class);
-
-    private static final String FIELD_NAME = "NLP-PREPROCESS";
-    private static final String STANDARD = "standard";
-    private static final String STOPWORD = "stop";
-    private static final String STEM = "porterstem";
-    private static final String LOWERCASE = "lowercase";
-
-    private static final CharSequence[] specialChars = {"\\n","\\t","\\r"};
+    private static final Logger logger = LoggerFactory.getLogger(BM25FService.class);
 
     private HashMap<String, Double> freeParameters;
 
     @Autowired
     private RequirementService requirementService;
-
     @Autowired
     private IDFService idfService;
-
-    private Analyzer analyzer;
+    @Autowired
+    private PreprocessService preprocessService;
 
     private List<Requirement> requirements;
     private HashMap<String, Integer> documentFrequency;
 
-    public SimilarityService() {
-        try {
-            analyzer = CustomAnalyzer.builder()
-                    .withTokenizer(STANDARD)
-                    .addTokenFilter(STOPWORD)
-                    .addTokenFilter(STEM)
-                    .addTokenFilter(LOWERCASE)
-                    .build();
+    public BM25FService() {
 
-            freeParameters = new HashMap<>();
-            initFreeParameters();
-            /*
-            freeParameters.put("WF1", 1.163);
-            freeParameters.put("WF2", 0.013);
-            freeParameters.put("WF3", 2.285);
-            freeParameters.put("WF4", 0.032);
-            freeParameters.put("WF5", 0.772);
-            freeParameters.put("WF6", 0.381);
-            freeParameters.put("WF7", 2.427);
+        freeParameters = new HashMap<>();
+        initFreeParameters();
+        /*
+        freeParameters.put("WF1", 1.163);
+        freeParameters.put("WF2", 0.013);
+        freeParameters.put("WF3", 2.285);
+        freeParameters.put("WF4", 0.032);
+        freeParameters.put("WF5", 0.772);
+        freeParameters.put("WF6", 0.381);
+        freeParameters.put("WF7", 2.427);
 
-            freeParameters.put("WSF1", 2.980);
-            freeParameters.put("WDF1", 0.287);
-            freeParameters.put("BSF1", 0.703);
-            freeParameters.put("BDF1", 1.000);
-            freeParameters.put("K1F1", 2.000);
-            freeParameters.put("K3F1", 0.382);
+        freeParameters.put("WSF1", 2.980);
+        freeParameters.put("WDF1", 0.287);
+        freeParameters.put("BSF1", 0.703);
+        freeParameters.put("BDF1", 1.000);
+        freeParameters.put("K1F1", 2.000);
+        freeParameters.put("K3F1", 0.382);
 
-            freeParameters.put("WSF2", 2.999);
-            freeParameters.put("WDF2", 0.994);
-            freeParameters.put("BSF2", 0.504);
-            freeParameters.put("BDF2", 1.000);
-            freeParameters.put("K1F2", 2.000);
-            freeParameters.put("K3F2", 0.001);
-            */
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        freeParameters.put("WSF2", 2.999);
+        freeParameters.put("WDF2", 0.994);
+        freeParameters.put("BSF2", 0.504);
+        freeParameters.put("BDF2", 1.000);
+        freeParameters.put("K1F2", 2.000);
+        freeParameters.put("K3F2", 0.001);
+        */
     }
 
     private void initFreeParameters() {
@@ -125,7 +100,7 @@ public class SimilarityService {
         logger.info("Init BM25f Preprocess for requirement " + requirement.getId());
         init();
 
-        if (withPreprocess) bm25fPreprocess(requirement);
+        if (withPreprocess) preprocessService.preprocessRequirement(requirement);
         requirements.add(requirement);
 
         List<Duplicate> topDuplicates = new ArrayList<>();
@@ -265,29 +240,7 @@ public class SimilarityService {
         return score;
     }
 
-    private void bm25fPreprocess(Requirement r) {
-        r.setSummaryTokens(analyze(r.getSummary()).stream().toArray(String[]::new));
-        r.setDescriptionTokens(analyze(r.getDescription()).stream().toArray(String[]::new));
-    }
 
-    private List<String> analyze(String text) {
-        List<String> tokens = new ArrayList<>();
-        try {
-            for (CharSequence cs : specialChars)
-                text = text.replace(cs, " ");
-            TokenStream tokenStream = analyzer.tokenStream(FIELD_NAME, text);
-            CharTermAttribute attr = tokenStream.addAttribute(CharTermAttribute.class);
-            tokenStream.reset();
-
-            while (tokenStream.incrementToken()) {
-                tokens.add(attr.toString());
-            }
-            tokenStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return tokens;
-    }
 
     public void bm25f_train(List<Duplicate> duplicates) {
 

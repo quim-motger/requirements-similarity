@@ -22,11 +22,11 @@ public class RequirementService {
     private RequirementRepository requirementRepository;
 
     @Autowired
-    private SimilarityService similarityService;
+    private PreprocessService preprocessService;
 
     public void addRequirements(List<Requirement> requirements) {
-        /*logger.info("Starting preprocess of requirement list...");
-        similarityService.preprocessRequirementList(requirements);*/
+        logger.info("Starting preprocess of requirement list...");
+        preprocessService.preprocessRequirementList(requirements);
         logger.info("Storing requirement list...");
         requirementRepository.saveAll(requirements);
         logger.info("Requirement list stored");
