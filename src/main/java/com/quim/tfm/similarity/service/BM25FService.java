@@ -201,10 +201,10 @@ public class BM25FService {
 
     private String[] getNGrams(String[] tokens, int n) {
        List<String> ngrams = new ArrayList<>();
-        for (int i = 1; i < tokens.length; ++i) {
-            String ngram = tokens[i-n+1];
+        for (int i = 0; i < tokens.length - n + 1; ++i) {
+            String ngram = tokens[i];
             for (int j = 1; j < n; ++j) {
-                ngram += " " + tokens[i-n+1+j];
+                ngram += " " + tokens[i+j];
             }
             ngrams.add(ngram);
         }
