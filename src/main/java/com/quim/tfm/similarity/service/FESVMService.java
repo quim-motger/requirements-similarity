@@ -40,7 +40,7 @@ public class FESVMService {
 
     public FESVMService() {
         try {
-            C = 10;
+            C = 1.0;
             svm = new SVM(new LinearKernel(), C);
             dictionary = Dictionary.getDefaultResourceInstance();
         } catch (JWNLException e) {
