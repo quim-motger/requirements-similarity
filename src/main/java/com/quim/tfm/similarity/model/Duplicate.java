@@ -9,8 +9,11 @@ public class Duplicate implements Serializable {
 
     private String req1Id;
     private String req2Id;
-    private double score;
+    private Double score;
     private DuplicateTag tag;
+    private double wordOverlapScore;
+    private double unigramMatchScore;
+    private double bigramMatchScore;
 
     public Duplicate() {
 
@@ -38,11 +41,11 @@ public class Duplicate implements Serializable {
         this.req2Id = req2Id;
     }
 
-    public double getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
@@ -52,5 +55,29 @@ public class Duplicate implements Serializable {
 
     public void setTag(DuplicateTag tag) {
         this.tag = tag;
+    }
+
+    public double getWordOverlapScore() {
+        return wordOverlapScore;
+    }
+
+    public void setWordOverlapScore(double wordOverlapScore) {
+        this.wordOverlapScore = wordOverlapScore;
+    }
+
+    public double getUnigramMatchScore() {
+        return unigramMatchScore;
+    }
+
+    public void setUnigramMatchScore(double unigramMatchScore) {
+        this.unigramMatchScore = unigramMatchScore;
+    }
+
+    public double getBigramMatchScore() {
+        return bigramMatchScore;
+    }
+
+    public void setBigramMatchScore(double bigramMatchScore) {
+        this.bigramMatchScore = bigramMatchScore;
     }
 }

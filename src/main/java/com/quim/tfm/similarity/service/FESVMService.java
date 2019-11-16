@@ -1,9 +1,9 @@
 package com.quim.tfm.similarity.service;
 
+import com.google.common.collect.Lists;
 import com.quim.tfm.similarity.entity.Requirement;
-import com.quim.tfm.similarity.model.Duplicate;
-import com.quim.tfm.similarity.model.DuplicateFeatures;
-import com.quim.tfm.similarity.model.Token;
+import com.quim.tfm.similarity.exception.NotFoundCustomException;
+import com.quim.tfm.similarity.model.*;
 import edu.stanford.nlp.pipeline.Annotation;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import smile.classification.SVM;
+import smile.math.kernel.LinearKernel;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ public class FESVMService {
 
     private double WS;
     private double WD;
+    private double C;
 
     @Autowired
     private RequirementService requirementService;
@@ -33,9 +36,12 @@ public class FESVMService {
     private StanfordPreprocessService stanfordPreprocessService;
 
     private Dictionary dictionary;
+    private SVM svm;
 
     public FESVMService() {
         try {
+            C = 10;
+            svm = new SVM(new LinearKernel(), C);
             dictionary = Dictionary.getDefaultResourceInstance();
         } catch (JWNLException e) {
             e.printStackTrace();
@@ -46,33 +52,119 @@ public class FESVMService {
     }
 
     public void train(List<Duplicate> duplicates) {
-
+        duplicates = featureExtraction(duplicates);
+        double[][] objects = getObjectsAsMatrix(duplicates);
+        int[] classes = getClasses(duplicates);
+        svm.learn(objects, classes);
     }
 
-    public void test(List<Duplicate> duplicates) {
-        HashMap<Duplicate, DuplicateFeatures> duplicateFeaturesHashMap = new HashMap<>();
-        for (Duplicate d : duplicates) {
-
-            Requirement r1 = requirementService.getRequirement(d.getReq1Id());
-            Requirement r2 = requirementService.getRequirement(d.getReq2Id());
-
-            Annotation summaryReq1 = stanfordPreprocessService.preprocess(r1.getSummary());
-            Annotation descriptionReq1 = stanfordPreprocessService.preprocess(r1.getDescription());
-            Annotation summaryReq2 = stanfordPreprocessService.preprocess(r2.getSummary());
-            Annotation descriptionReq2 = stanfordPreprocessService.preprocess(r2.getDescription());
-
-            DuplicateFeatures duplicateFeatures = extractFeatures(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2);
-            duplicateFeaturesHashMap.put(d, duplicateFeatures);
+    public List<Duplicate> test(List<Duplicate> duplicates) {
+        duplicates = featureExtraction(duplicates);
+        int[] classes = svm.predict(transformDuplicateFeaturesIntoMatrix(duplicates.toArray(new Duplicate[0])));
+        for (int i = 0; i < duplicates.size(); ++i) {
+            duplicates.get(i).setTag(DuplicateTag.fromValue(classes[i]));
         }
+        return duplicates;
     }
 
-    private DuplicateFeatures extractFeatures(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
-        DuplicateFeatures duplicateFeatures = new DuplicateFeatures();
-        duplicateFeatures.setWordOverlapScore(wordOverlapScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-        duplicateFeatures.setUnigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
-        duplicateFeatures.setBigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
+    public List<Stats> trainAndTest(List<Duplicate> duplicates, int k) {
+        Collections.shuffle(duplicates);
+        List<Stats> stats = new ArrayList<>();
+
+        logger.info("Starting feature extraction process...");
+        duplicates = featureExtraction(duplicates);
+        logger.info("Finished feature extraction");
+        List<List<Duplicate>> chunks = Lists.partition(duplicates, duplicates.size() / k);
+
+        for (int i = 0; i < k; ++i) {
+            logger.info("Starting test " + (i+1));
+            SVM trainAndTestSVM = new SVM(new LinearKernel(), C);
+            List<Duplicate> testSet = chunks.get(i);
+            List<Duplicate> trainSet = new ArrayList<>();
+            for (int j = 0; j < k; ++j) {
+                if (i != j) trainSet.addAll(chunks.get(j));
+            }
+
+            double[][] matrix = getObjectsAsMatrix(trainSet);
+            int[] classes = getClasses(trainSet);
+            trainAndTestSVM.learn(matrix, classes);
+
+            int tp, tn, fp, fn;
+            tp = tn = fp = fn = 0;
+
+            for (Duplicate d : testSet) {
+                DuplicateTag predictedTag = DuplicateTag.fromValue(trainAndTestSVM.predict(getDoubles(d)));
+                if (predictedTag == DuplicateTag.DUPLICATE && d.getTag() == DuplicateTag.DUPLICATE)
+                    ++tp;
+                else if (predictedTag == DuplicateTag.NOT_DUPLICATE && d.getTag() == DuplicateTag.NOT_DUPLICATE)
+                    ++tn;
+                else if (predictedTag == DuplicateTag.NOT_DUPLICATE && d.getTag() == DuplicateTag.DUPLICATE)
+                    ++fn;
+                else
+                    ++fp;
+            }
+
+            stats.add(new Stats(tp, tn, fp, fn));
+        }
+        return stats;
+    }
+
+    private int[] getClasses(List<Duplicate> duplicateFeaturesList) {
+        return duplicateFeaturesList.stream()
+                .map(Duplicate::getTag)
+                .mapToInt(DuplicateTag::getValue)
+                .toArray();
+    }
+
+    private double[][] getObjectsAsMatrix(List<Duplicate> duplicateFeaturesList) {
+        Duplicate[] duplicateArray = duplicateFeaturesList.toArray(new Duplicate[0]);
+        return transformDuplicateFeaturesIntoMatrix(duplicateArray);
+    }
+
+    private double[][] transformDuplicateFeaturesIntoMatrix(Duplicate[] duplicateArray) {
+        double[][] matrix = new double[duplicateArray.length][];
+        for (int i = 0; i < duplicateArray.length; ++i) {
+            Duplicate df = duplicateArray[i];
+            double[] attributes = getDoubles(df);
+            matrix[i] = attributes;
+        }
+        return matrix;
+    }
+
+    private double[] getDoubles(Duplicate df) {
+        return new double[]{df.getWordOverlapScore(), df.getUnigramMatchScore(), df.getBigramMatchScore()};
+    }
+
+    private List<Duplicate> featureExtraction(List<Duplicate> duplicates) {
+        List<Duplicate> filteredList = new ArrayList<>();
+        int i = 0;
+        for (Duplicate d : duplicates) {
+            if ((i+1) %10 == 0) logger.info("Duplicate " + (i+1) + " out of " + duplicates.size());
+            try {
+                Requirement r1 = requirementService.getRequirement(d.getReq1Id());
+                Requirement r2 = requirementService.getRequirement(d.getReq2Id());
+
+                Annotation summaryReq1 = stanfordPreprocessService.preprocess(r1.getSummary());
+                Annotation descriptionReq1 = stanfordPreprocessService.preprocess(r1.getDescription());
+                Annotation summaryReq2 = stanfordPreprocessService.preprocess(r2.getSummary());
+                Annotation descriptionReq2 = stanfordPreprocessService.preprocess(r2.getDescription());
+
+                extractFeatures(d, summaryReq1, summaryReq2, descriptionReq1, descriptionReq2);
+                filteredList.add(d);
+            } catch (NotFoundCustomException e) {
+                logger.error("Entity not found. Skipping");
+            }
+            ++i;
+        }
+        return filteredList;
+    }
+
+    private void extractFeatures(Duplicate duplicate, Annotation summaryReq1, Annotation summaryReq2,
+                                              Annotation descriptionReq1, Annotation descriptionReq2) {
+        duplicate.setWordOverlapScore(wordOverlapScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
+        duplicate.setUnigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
+        duplicate.setBigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
         //TODO other features
-        return duplicateFeatures;
     }
 
     private double unigramMatchScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2, int n) {

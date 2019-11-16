@@ -1,14 +1,11 @@
 package com.quim.tfm.similarity.controller;
 
-import com.quim.tfm.similarity.entity.Requirement;
 import com.quim.tfm.similarity.model.Duplicate;
-import com.quim.tfm.similarity.service.BM25FService;
+import com.quim.tfm.similarity.model.Stats;
 import com.quim.tfm.similarity.service.FESVMService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -24,8 +21,13 @@ public class FESVMController {
     }
 
     @PostMapping("/test")
-    public void FESVMTest(@RequestBody List<Duplicate> duplicates) {
-        fesvmService.test(duplicates);
+    public List<Duplicate> FESVMTest(@RequestBody List<Duplicate> duplicates) {
+        return fesvmService.test(duplicates);
+    }
+
+    @PostMapping("/train_and_test")
+    public List<Stats> FESVMTrainAndTest(@RequestBody List<Duplicate> duplicates, @RequestParam int k) {
+        return fesvmService.trainAndTest(duplicates, k);
     }
 
 }
