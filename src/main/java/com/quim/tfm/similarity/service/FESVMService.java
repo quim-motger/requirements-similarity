@@ -3,7 +3,9 @@ package com.quim.tfm.similarity.service;
 import com.google.common.collect.Lists;
 import com.quim.tfm.similarity.entity.Requirement;
 import com.quim.tfm.similarity.exception.NotFoundCustomException;
+import com.quim.tfm.similarity.exception.NotImplementedKernel;
 import com.quim.tfm.similarity.model.*;
+import com.quim.tfm.similarity.repository.DuplicateRepository;
 import edu.stanford.nlp.pipeline.Annotation;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import smile.classification.SVM;
+import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.LinearKernel;
 
 import java.util.*;
@@ -28,20 +31,26 @@ public class FESVMService {
 
     private double WS;
     private double WD;
-    private double C;
+
+    public static double C;
+    public static double sigma;
 
     @Autowired
     private RequirementService requirementService;
     @Autowired
     private StanfordPreprocessService stanfordPreprocessService;
 
+    @Autowired
+    private DuplicateRepository duplicateRepository;
+
     private Dictionary dictionary;
-    private SVM svm;
+    private SVM svmClassifier;
 
     public FESVMService() {
         try {
-            C = 1.0;
-            svm = new SVM(new LinearKernel(), C);
+            C = 10;
+            sigma = 0.01;
+            svmClassifier = new SVM(new GaussianKernel(sigma), C);
             dictionary = Dictionary.getDefaultResourceInstance();
         } catch (JWNLException e) {
             e.printStackTrace();
@@ -53,47 +62,60 @@ public class FESVMService {
 
     public void train(List<Duplicate> duplicates) {
         duplicates = featureExtraction(duplicates);
-        double[][] objects = getObjectsAsMatrix(duplicates);
-        int[] classes = getClasses(duplicates);
-        svm.learn(objects, classes);
+        double[][] objects = getObjectsAsDoubleMatrix(duplicates);
+        int[] classes = getIntClasses(duplicates);
+        svmClassifier.learn(objects, classes);
     }
 
     public List<Duplicate> test(List<Duplicate> duplicates) {
         duplicates = featureExtraction(duplicates);
-        int[] classes = svm.predict(transformDuplicateFeaturesIntoMatrix(duplicates.toArray(new Duplicate[0])));
+        int[] classes = svmClassifier.predict(transformDuplicateFeaturesIntoDoubleMatrix(duplicates.toArray(new Duplicate[0])));
         for (int i = 0; i < duplicates.size(); ++i) {
             duplicates.get(i).setTag(DuplicateTag.fromValue(classes[i]));
         }
         return duplicates;
     }
 
-    public List<Stats> trainAndTest(List<Duplicate> duplicates, int k) {
+    public Stats trainAndTest(List<Duplicate> duplicates, int k, Kernel kernel, double C, double sigma) {
         Collections.shuffle(duplicates);
-        List<Stats> stats = new ArrayList<>();
 
         logger.info("Starting feature extraction process...");
-        duplicates = featureExtraction(duplicates);
+        //duplicates = featureExtraction(duplicates);
+        duplicates = findDuplicates(duplicates);
         logger.info("Finished feature extraction");
+
         List<List<Duplicate>> chunks = Lists.partition(duplicates, duplicates.size() / k);
+
+        int tp, tn, fp, fn;
+        tp = tn = fp = fn = 0;
 
         for (int i = 0; i < k; ++i) {
             logger.info("Starting test " + (i+1));
-            SVM trainAndTestSVM = new SVM(new LinearKernel(), C);
+
+            SVM classifier;
+            switch (kernel) {
+                case LINEAR:
+                    classifier = new SVM(new LinearKernel(), C);
+                    break;
+                case RBF:
+                    classifier = new SVM(new GaussianKernel(sigma), C);
+                    break;
+                default:
+                    throw new NotImplementedKernel();
+            }
+
             List<Duplicate> testSet = chunks.get(i);
             List<Duplicate> trainSet = new ArrayList<>();
             for (int j = 0; j < k; ++j) {
                 if (i != j) trainSet.addAll(chunks.get(j));
             }
 
-            double[][] matrix = getObjectsAsMatrix(trainSet);
-            int[] classes = getClasses(trainSet);
-            trainAndTestSVM.learn(matrix, classes);
-
-            int tp, tn, fp, fn;
-            tp = tn = fp = fn = 0;
+            double[][] matrix = getObjectsAsDoubleMatrix(trainSet);
+            int[] classes = getIntClasses(trainSet);
+            classifier.learn(matrix, classes);
 
             for (Duplicate d : testSet) {
-                DuplicateTag predictedTag = DuplicateTag.fromValue(trainAndTestSVM.predict(getDoubles(d)));
+                DuplicateTag predictedTag = DuplicateTag.fromValue(classifier.predict(getDoubles(d)));
                 if (predictedTag == DuplicateTag.DUPLICATE && d.getTag() == DuplicateTag.DUPLICATE)
                     ++tp;
                 else if (predictedTag == DuplicateTag.NOT_DUPLICATE && d.getTag() == DuplicateTag.NOT_DUPLICATE)
@@ -104,25 +126,62 @@ public class FESVMService {
                     ++fp;
             }
 
-            stats.add(new Stats(tp, tn, fp, fn));
         }
+        Stats stats = new Stats(tp, tn, fp, fn);
         return stats;
     }
 
-    private int[] getClasses(List<Duplicate> duplicateFeaturesList) {
+    public HashMap<String, Stats> trainAndTestWithOptimization(List<Duplicate> duplicates, int k, Kernel kernel, double[] C_values,
+                                                               double[] sigma_values) {
+        HashMap<String, Stats> statsMap = new HashMap<>();
+        for (double C : C_values) {
+            if (kernel.equals(Kernel.RBF)) {
+                for (double sigma : sigma_values) {
+                    Stats stats = trainAndTest(duplicates, k, kernel, C, sigma);
+                    statsMap.put("C = " + C + "," + " sigma = " + sigma, stats);
+                }
+            } else {
+                Stats stats = trainAndTest(duplicates, k, kernel, C, sigma);
+                statsMap.put("C = " + C, stats);
+            }
+        }
+
+        return statsMap;
+    }
+
+    private List<Duplicate> findDuplicates(List<Duplicate> duplicates) {
+        List<Duplicate> list = new ArrayList<>();
+        for (Duplicate d : duplicates) {
+            Duplicate found = getDuplicate(d.getReq1Id(), d.getReq2Id());
+            if (found != null) list.add(found);
+        }
+        return list;
+    }
+
+    public void featureExtractionMap(List<Duplicate> duplicates) {
+        duplicateRepository.deleteAll();
+        duplicates = featureExtraction(duplicates);
+        duplicateRepository.saveAll(duplicates);
+    }
+
+    private Duplicate getDuplicate(String req1Id, String req2Id) {
+        return duplicateRepository.findByReqsIds(req1Id, req2Id).stream().findFirst().orElse(null);
+    }
+
+    private int[] getIntClasses(List<Duplicate> duplicateFeaturesList) {
         return duplicateFeaturesList.stream()
                 .map(Duplicate::getTag)
                 .mapToInt(DuplicateTag::getValue)
                 .toArray();
     }
 
-    private double[][] getObjectsAsMatrix(List<Duplicate> duplicateFeaturesList) {
+    private double[][] getObjectsAsDoubleMatrix(List<Duplicate> duplicateFeaturesList) {
         Duplicate[] duplicateArray = duplicateFeaturesList.toArray(new Duplicate[0]);
-        return transformDuplicateFeaturesIntoMatrix(duplicateArray);
+        return transformDuplicateFeaturesIntoDoubleMatrix(duplicateArray);
     }
 
-    private double[][] transformDuplicateFeaturesIntoMatrix(Duplicate[] duplicateArray) {
-        double[][] matrix = new double[duplicateArray.length][];
+    private double[][] transformDuplicateFeaturesIntoDoubleMatrix(Duplicate[] duplicateArray) {
+        double[][] matrix = new double[duplicateArray.length][3];
         for (int i = 0; i < duplicateArray.length; ++i) {
             Duplicate df = duplicateArray[i];
             double[] attributes = getDoubles(df);
@@ -182,8 +241,9 @@ public class FESVMService {
     }
 
     private double jaccardSimilarity(List<String> req1, List<String> req2) {
-        return (double) req1.stream().distinct().filter(req2::contains).collect(Collectors.toSet()).size() /
-                (double) (req1.size() + req2.size());
+        if (req1.size() + req2.size() == 0) logger.info("THAT THING HAPPENED");
+        return (req1.size() + req2.size()) > 0 ? (double) req1.stream().distinct().filter(req2::contains).collect(Collectors.toSet()).size() /
+                (double) (req1.size() + req2.size()) : 0;
     }
 
     private double wordOverlapScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
@@ -201,7 +261,8 @@ public class FESVMService {
         int intersection = intersection(tokensReq1, tokensReq2);
         int bagSize = tokensReq1.size() + tokensReq2.size();
 
-        return (double) intersection / (double) bagSize;
+        if (bagSize == 0) logger.info("THAT THING HAPPENED");
+        return bagSize > 0 ? (double) intersection / (double) bagSize : 0;
 
     }
 

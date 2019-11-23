@@ -2,13 +2,20 @@ package com.quim.tfm.similarity.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Entity
 public class Duplicate implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
+    private Long id;
 
     private String req1Id;
     private String req2Id;
+    @Transient
     private Double score;
     private DuplicateTag tag;
     private double wordOverlapScore;
@@ -23,6 +30,14 @@ public class Duplicate implements Serializable {
         this.req1Id = req1Id;
         this.req2Id = req2Id;
         this.score = score;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getReq1Id() {

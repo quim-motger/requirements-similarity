@@ -5,7 +5,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
-with io.open('export.json', 'r', encoding='utf-8-sig') as json_file:
+with io.open('export-test.json', 'r', encoding='utf-8-sig') as json_file:
 	reqs = json.load(json_file)
 	length = []
 	for req in reqs:

@@ -19,6 +19,13 @@ public class Stats implements Serializable {
         this.FN = fn;
     }
 
+    public Stats() {
+        this.TP = 0;
+        this.TN = 0;
+        this.FP = 0;
+        this.FN = 0;
+    }
+
     public int getTP() {
         return TP;
     }
@@ -51,8 +58,23 @@ public class Stats implements Serializable {
         this.FN = FN;
     }
 
+    public void incrementTP() {
+        ++TP;
+    }
+
+    public void incrementTN() {
+        ++TN;
+    }
+
+    public void incrementFP() {
+        ++FP;
+    }
+
+    public void incrementFN() {
+        ++FN;
+    }
+
     public double getAccuracy() {
         return (double) (TN + TP) / (double) (TN + TP + FP + FN);
     }
-
 }
