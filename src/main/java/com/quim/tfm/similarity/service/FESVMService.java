@@ -7,6 +7,8 @@ import com.quim.tfm.similarity.exception.NotImplementedKernel;
 import com.quim.tfm.similarity.model.*;
 import com.quim.tfm.similarity.repository.DuplicateRepository;
 import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.simple.Sentence;
+import edu.stanford.nlp.trees.TypedDependency;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.data.POS;
@@ -39,7 +41,6 @@ public class FESVMService {
     private RequirementService requirementService;
     @Autowired
     private StanfordPreprocessService stanfordPreprocessService;
-
     @Autowired
     private DuplicateRepository duplicateRepository;
 
@@ -140,10 +141,10 @@ public class FESVMService {
                     Stats stats = trainAndTest(duplicates, k, kernel, C, sigma);
                     statsMap.put("C = " + C + "," + " sigma = " + sigma, stats);
                 }
-            } else {
+            } else if (kernel.equals(Kernel.LINEAR)){
                 Stats stats = trainAndTest(duplicates, k, kernel, C, sigma);
                 statsMap.put("C = " + C, stats);
-            }
+            } else throw new NotImplementedKernel();
         }
 
         return statsMap;
@@ -223,8 +224,55 @@ public class FESVMService {
         duplicate.setWordOverlapScore(wordOverlapScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
         duplicate.setUnigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
         duplicate.setBigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
+        duplicate.setSubjectMatchScore(subjectScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
+        duplicate.setSubjectVerbMatchScore(subjectVerbScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
+        duplicate.setObjectVerbMatchScore(objectVerbScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
+        duplicate.setNounMatchScore(nounScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
+        duplicate.setNameEntityScore(nameEntityScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
         //TODO other features
     }
+
+    private double nameEntityScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+        return 0;
+    }
+
+    private double nounScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+        return 0;
+    }
+
+    private double objectVerbScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+        return 0;
+    }
+
+    private double subjectVerbScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+        return 0;
+    }
+
+    private double subjectScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+        stanfordPreprocessService.getSubjects(summaryReq1);
+        return 0;
+    }
+
+    private String getSubject(List<TypedDependency> dependencies) {
+        String rootSubject = null, subject = null;
+        for (int i = dependencies.size() - 1; i >= 0; i--) {
+            final TypedDependency dependency = dependencies.get(i);
+            if (dependency.reln().toString().contains("subj")) {
+                rootSubject = subject = dependency.dep().word();
+            } else if (dependency.reln().toString().contains("compound") && dependency.gov().word().equals(rootSubject)) {
+                subject = dependency.dep().word() + " " + subject;
+            }
+        }
+        if (subject == null) {
+            return null;
+        }
+        String lemmaSubject = "";
+        for (final String lemma : new Sentence(subject).lemmas()) {
+            lemmaSubject += lemma + " ";
+        }
+        return lemmaSubject.trim();
+    }
+
 
     private double unigramMatchScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2, int n) {
         double unigramMatchScoreSummary = ngramMatchPartialScore(summaryReq1, summaryReq2, n);

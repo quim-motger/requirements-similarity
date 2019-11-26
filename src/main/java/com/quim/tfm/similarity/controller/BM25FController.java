@@ -22,6 +22,11 @@ public class BM25FController {
         return BM25FService.bm25f_req(requirement, k);
     }
 
+    @PostMapping("/reqReq")
+    public List<Duplicate> bm25fReqReq(@RequestBody @Valid List<Duplicate> duplicateList) {
+        return BM25FService.bm25f_reqReq(duplicateList);
+    }
+
     @PostMapping("/train")
     public void bm25fTrain(@RequestBody List<Duplicate> duplicates) {
         BM25FService.bm25f_train(duplicates);

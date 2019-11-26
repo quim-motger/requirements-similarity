@@ -25,7 +25,7 @@ public class StanfordPreprocessService {
 
     public StanfordPreprocessService() {
         Properties props = new Properties();
-        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner");
+        props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
         pipeline = new StanfordCoreNLP(props);
     }
 
@@ -69,5 +69,9 @@ public class StanfordPreprocessService {
 
         }
         return ngrams;
+    }
+
+    public void getSubjects(Annotation requirement) {
+
     }
 }

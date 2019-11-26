@@ -15,12 +15,19 @@ public class Duplicate implements Serializable {
 
     private String req1Id;
     private String req2Id;
+
     @Transient
     private Double score;
     private DuplicateTag tag;
+
     private double wordOverlapScore;
     private double unigramMatchScore;
     private double bigramMatchScore;
+    private double subjectMatchScore;
+    private double subjectVerbMatchScore;
+    private double objectVerbMatchScore;
+    private double nounMatchScore;
+    private double nameEntityScore;
 
     public Duplicate() {
 
@@ -94,5 +101,45 @@ public class Duplicate implements Serializable {
 
     public void setBigramMatchScore(double bigramMatchScore) {
         this.bigramMatchScore = bigramMatchScore;
+    }
+
+    public double getSubjectMatchScore() {
+        return subjectMatchScore;
+    }
+
+    public void setSubjectMatchScore(double subjectMatchScore) {
+        this.subjectMatchScore = subjectMatchScore;
+    }
+
+    public double getSubjectVerbMatchScore() {
+        return subjectVerbMatchScore;
+    }
+
+    public void setSubjectVerbMatchScore(double subjectVerbMatchScore) {
+        this.subjectVerbMatchScore = subjectVerbMatchScore;
+    }
+
+    public double getObjectVerbMatchScore() {
+        return objectVerbMatchScore;
+    }
+
+    public void setObjectVerbMatchScore(double objectVerbMatchScore) {
+        this.objectVerbMatchScore = objectVerbMatchScore;
+    }
+
+    public double getNounMatchScore() {
+        return nounMatchScore;
+    }
+
+    public void setNounMatchScore(double nounMatchScore) {
+        this.nounMatchScore = nounMatchScore;
+    }
+
+    public double getNameEntityScore() {
+        return nameEntityScore;
+    }
+
+    public void setNameEntityScore(double nameEntityScore) {
+        this.nameEntityScore = nameEntityScore;
     }
 }

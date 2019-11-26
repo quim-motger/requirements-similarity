@@ -28,6 +28,8 @@ public class Requirement implements Serializable {
     private String[] components;
     @Column(columnDefinition = "LONGTEXT")
     private String[] versions;
+
+    //DATA FOR BM25F
     @Column(columnDefinition = "LONGTEXT")
     private String[] summaryTokens;
     @Column(columnDefinition = "LONGTEXT")

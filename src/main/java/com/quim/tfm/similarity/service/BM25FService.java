@@ -29,6 +29,8 @@ public class BM25FService {
     private IDFService idfService;
     @Autowired
     private PreprocessService preprocessService;
+    @Autowired
+    private MathService mathService;
 
     private List<Requirement> requirements;
     private HashMap<String, Integer> documentFrequency;
@@ -36,7 +38,7 @@ public class BM25FService {
     public BM25FService() {
 
         freeParameters = new HashMap<>();
-        initFreeParameters();
+        //initFreeParameters();
         /*
         freeParameters.put("WF1", 1.163);
         freeParameters.put("WF2", 0.013);
@@ -44,7 +46,15 @@ public class BM25FService {
         freeParameters.put("WF4", 0.032);
         freeParameters.put("WF5", 0.772);
         freeParameters.put("WF6", 0.381);
-        freeParameters.put("WF7", 2.427);
+        freeParameters.put("WF7", 2.427);*/
+
+        freeParameters.put("WF1", 0.352);
+        freeParameters.put("WF2", 0.013);
+        freeParameters.put("WF3", 2.049);
+        freeParameters.put("WF4", 0.047);
+        freeParameters.put("WF5", 0.970);
+        freeParameters.put("WF6", 0.012);
+        freeParameters.put("WF7", 0.111);
 
         freeParameters.put("WSF1", 2.980);
         freeParameters.put("WDF1", 0.287);
@@ -59,7 +69,7 @@ public class BM25FService {
         freeParameters.put("BDF2", 1.000);
         freeParameters.put("K1F2", 2.000);
         freeParameters.put("K3F2", 0.001);
-        */
+
     }
 
     private void initFreeParameters() {
@@ -120,7 +130,7 @@ public class BM25FService {
 
     }
 
-    private double sim(Requirement requirement, Requirement compReq) {
+    protected double sim(Requirement requirement, Requirement compReq) {
         double bm25fScoreUnigram = freeParameters.get("WF1") * bm25f_textPairUnigram(requirement, compReq);
         double bm25fScoreBigram = freeParameters.get("WF2") * bm25f_textPairBigram(requirement, compReq);
         double projectScore = freeParameters.get("WF3") * projectScore(requirement.getProject(), compReq.getProject());
@@ -131,17 +141,17 @@ public class BM25FService {
         return bm25fScoreUnigram + bm25fScoreBigram + projectScore + typeScore + componentScore + priorityScore + versionScore;
     }
 
-    private double projectScore(String project1, String project2) {
+    protected double projectScore(String project1, String project2) {
         if (project1 == null || project2 == null) return 0.0;
         return project1.equals(project2) ? 1.0 : 0.0;
     }
 
-    private double typeScore(String type1, String type2) {
+    protected double typeScore(String type1, String type2) {
         if (type1 == null || type2 == null) return 0.0;
         return type1.equals(type2) ? 1.0 : 0.0;
     }
 
-    private double componentScore(String[] components1, String[] components2) {
+    protected double componentScore(String[] components1, String[] components2) {
         if (components1 == null || components2 == null) return 0.0;
         double sum = 0.0;
         for (String component : components1) {
@@ -152,12 +162,13 @@ public class BM25FService {
         return components1.length == 0 ? 0 : sum / (double) components1.length;
     }
 
-    private double priorityScore(Priority priority1, Priority priority2) {
+    protected double priorityScore(Priority priority1, Priority priority2) {
         if (priority1 == null || priority2 == null) return 0.0;
+        if (priority1.getValue() == -1 || priority2.getValue() == -1) return 0;
         return 1.0 / (1.0 + Math.abs((double) priority1.getValue() - (double) priority2.getValue()));
     }
 
-    private double versionsScore(String[] versions1, String[] versions2) {
+    protected double versionsScore(String[] versions1, String[] versions2) {
         if (versions1 == null || versions2 == null || versions1.length == 0 || versions2.length == 0) return 0.0;
         String version1 = Arrays.stream(versions1).max(String::compareTo).orElse(null);
         String version2 = Arrays.stream(versions2).max(String::compareTo).orElse(null);
@@ -211,14 +222,14 @@ public class BM25FService {
         return ngrams.stream().toArray(String[]::new);
     }
 
-    private double bm25f_textPairUnigram(Requirement req1, Requirement req2) {
+    protected double bm25f_textPairUnigram(Requirement req1, Requirement req2) {
         List<String> unigramIntersection = getCollect(req1, req2, 1);
         return computeScore(req1, req2, documentFrequency, requirements.size(), unigramIntersection,
                 freeParameters.get("WSF1"), freeParameters.get("BSF1"), freeParameters.get("WDF1"), freeParameters.get("BDF1"),
                 freeParameters.get("K1F1"), freeParameters.get("K3F1"));
     }
 
-    private double bm25f_textPairBigram(Requirement req1, Requirement req2) {
+    protected double bm25f_textPairBigram(Requirement req1, Requirement req2) {
         List<String> bigramIntersection = getCollect(req1, req2, 2);
         return computeScore(req1, req2, documentFrequency, requirements.size(), bigramIntersection,
                 freeParameters.get("WSF2"), freeParameters.get("BSF2"), freeParameters.get("WDF2"), freeParameters.get("BDF2"),
@@ -267,10 +278,8 @@ public class BM25FService {
                 if (j%100 == 0) logger.info("Iteration nº:\t" + (i+1) + ", triplet " + (j+1));
                 for (String key : freeParameters.keySet()) {
                     double pd = partialDerivativeRFC(trainTripletBM25FS.get(j), key);
-                    if (pd != -1.0) {
-                        double newValue = freeParameters.get(key) - tunningRate * pd;
-                        freeParameters.put(key, newValue);
-                    }
+                    double newValue = freeParameters.get(key) - tunningRate * pd;
+                    freeParameters.put(key, newValue);
                 }
             }
         }
@@ -282,60 +291,44 @@ public class BM25FService {
             Requirement irrel = requirementService.getRequirement(trainTripletBM25F.getIrrel());
             Requirement rel = requirementService.getRequirement(trainTripletBM25F.getRel());
 
-            if (key.equals("WF1") || key.equals("WF2") || key.equals("WF3") || key.equals("WF4") ||
-                    key.equals("WF5") || key.equals("WF6") || key.equals("WF7")) {
-                double b, d;
-                switch (key) {
-                    case "WF1":
-                        b = bm25f_textPairUnigram(q, irrel);
-                        d = bm25f_textPairUnigram(q, rel);
-                        break;
-                    case "WF2":
-                        b = bm25f_textPairBigram(q, irrel);
-                        d = bm25f_textPairBigram(q, rel);
-                        break;
-                    case "WF3":
-                        b = projectScore(q.getProject(), irrel.getProject());
-                        d = projectScore(q.getProject(), rel.getProject());
-                        break;
-                    case "WF4":
-                        b = typeScore(q.getType(), irrel.getType());
-                        d = typeScore(q.getType(), rel.getType());
-                        break;
-                    case "WF5":
-                        b = componentScore(q.getComponents(), irrel.getComponents());
-                        d = componentScore(q.getComponents(), rel.getComponents());
-                        break;
-                    case "WF6":
-                        b = priorityScore(q.getPriority(), irrel.getPriority());
-                        d = priorityScore(q.getPriority(), rel.getPriority());
-                        break;
-                    default:
-                        b = versionsScore(q.getVersions(), irrel.getVersions());
-                        d = versionsScore(q.getVersions(), rel.getVersions());
-                        break;
-                }
-
-                //e^(sim(q,irrel) - sim(q,rel))
-                double ef = Math.exp(sim(q, irrel) - sim(q, rel));
-                //(b-d)*log(e)*e^(sim(q,irrel) - sim(q,rel))
-                double num = (b - d) * Math.log(Math.exp(1)) * ef;
-                //e^(sim(q,irrel) - sim(q,rel)) + 1
-                double den = ef + 1;
-                return num / den;
+            switch (key) {
+                case "WF1":
+                case "WF2":
+                case "WF3":
+                case "WF4":
+                case "WF5":
+                case "WF6":
+                case "WF7":
+                    return mathService.partialDerivativeForWF(key, q, irrel, rel);
+                case "K1F1":
+                    return mathService.partialDerivativeForK1F1(q, irrel, rel);
+                case "K1F2":
+                    return mathService.partialDerivativeForK1F2(q, irrel, rel);
+                case "K3F1":
+                    return mathService.partialDerivativeForK3F1(q, irrel, rel);
+                case "K3F2":
+                    return mathService.partialDerivativeForK3F2(q, irrel, rel);
+                case "WSF1":
+                    return mathService.partialDerivativeForWSF1(q, irrel, rel);
+                case "WSF2":
+                    return mathService.partialDerivativeForWSF2(q, irrel, rel);
+                case "WDF1":
+                    return mathService.partialDerivativeForWDF1(q, irrel, rel);
+                case "WDF2":
+                    return mathService.partialDerivativeForWDF2(q, irrel, rel);
+                case "BSF1":
+                    return mathService.partialDerivativeForBSF1(q, irrel, rel);
+                case "BSF2":
+                    return mathService.partialDerivativeForBSF2(q, irrel, rel);
+                case "BDF1":
+                    return mathService.partialDerivativeForBDF1(q, irrel, rel);
+                case "BDF2":
+                    return mathService.partialDerivativeForBDF2(q, irrel, rel);
             }
         } catch (NotFoundCustomException e) {
             //logger.error("Bug not found. Skipping for optimization");
         }
-        return -1.0;
-    }
-
-    private double RCF(TrainTripletBM25F trainTripletBM25F) {
-        Requirement q = requirementService.getRequirement(trainTripletBM25F.getQ());
-        Requirement rel = requirementService.getRequirement(trainTripletBM25F.getRel());
-        Requirement irrel = requirementService.getRequirement(trainTripletBM25F.getIrrel());
-
-        return Math.log(1 + Math.exp(sim(q, irrel) - sim(q, rel)));
+        throw new NotFoundCustomException();
     }
 
     public HashMap<Integer, Double> bm25f_test(List<Duplicate> duplicates, Integer k) {
@@ -366,5 +359,20 @@ public class BM25FService {
         }
         //recall rate@k
         return recallMap;
+    }
+
+    public List<Duplicate> bm25f_reqReq(List<Duplicate> duplicateList) {
+        init();
+        for (Duplicate d : duplicateList) {
+            try {
+                Requirement r1 = requirementService.getRequirement(d.getReq1Id());
+                Requirement r2 = requirementService.getRequirement(d.getReq2Id());
+                double res = sim(r1, r2);
+                d.setScore(res);
+            } catch (Exception e) {
+                //logger.info("Requirement not found. Skipped");
+            }
+        }
+        return duplicateList;
     }
 }
