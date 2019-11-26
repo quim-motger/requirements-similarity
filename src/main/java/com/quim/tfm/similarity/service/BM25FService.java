@@ -98,7 +98,7 @@ public class BM25FService {
 
     private void init() {
         logger.info("Checking if data update is needed.");
-        if (requirementService.requiresUpdate()) {
+        if (requirementService.requiresUpdate() || requirements == null || requirements.isEmpty()) {
             logger.info("Updating data...");
             requirements = requirementService.getRequirements();
             documentFrequency = idfService.getDocumentFrequency(requirements);
@@ -114,7 +114,6 @@ public class BM25FService {
 
     private List<Duplicate> bm25f(Requirement requirement, int k, boolean withPreprocess) {
         logger.info("Init BM25f Preprocess for requirement " + requirement.getId());
-        init();
 
         if (withPreprocess) preprocessService.preprocessRequirement(requirement);
         requirements.add(requirement);
@@ -370,17 +369,24 @@ public class BM25FService {
     public List<Duplicate> bm25f_reqReq(List<Duplicate> duplicateList) {
         init();
         logger.info("Starting duplicate evaluation");
+        double time = 0.;
+        int notProcessed = 0;
         for (Duplicate d : duplicateList) {
             try {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
                 Requirement r2 = requirementService.getRequirement(d.getReq2Id());
+                Calendar t1 = Calendar.getInstance();
                 double res = sim(r1, r2);
+                Calendar t2 = Calendar.getInstance();
+                time += (t2.getTimeInMillis() - t1.getTimeInMillis());
                 d.setScore(res);
             } catch (Exception e) {
+                notProcessed += 1;
                 //logger.info("Requirement not found. Skipped");
             }
         }
-        logger.info("Finish duplicate evaluation process");
+        logger.info("Finish duplicate evaluation process.");
+        logger.info("Avg sim time:\t" + time/(duplicateList.size()-notProcessed));
         return duplicateList;
     }
 }
