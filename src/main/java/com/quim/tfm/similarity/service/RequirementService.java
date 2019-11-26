@@ -24,12 +24,19 @@ public class RequirementService {
     @Autowired
     private PreprocessService preprocessService;
 
+    private boolean requiresUpdate;
+
+    private RequirementService() {
+        requiresUpdate = true;
+    }
+
     public void addRequirements(List<Requirement> requirements) {
         logger.info("Starting preprocess of requirement list...");
         preprocessService.preprocessRequirementList(requirements);
         logger.info("Storing requirement list...");
         requirementRepository.saveAll(requirements);
         logger.info("Requirement list stored");
+        requiresUpdate = true;
     }
 
     public List<Requirement> getRequirements() {
@@ -45,14 +52,17 @@ public class RequirementService {
     }
 
     public void deleteRequirement(String reqId) {
-        if (requirementRepository.findById(reqId).isPresent())
+        if (requirementRepository.findById(reqId).isPresent()) {
             requirementRepository.deleteById(reqId);
+            requiresUpdate = true;
+        }
         else
             throw new NotFoundCustomException();
     }
 
     public void deleteAllRequirements() {
         requirementRepository.deleteAll();
+        requiresUpdate = true;
     }
 
     public Requirement findRandomRequirement(List<String> forbiddenRequirements, List<Requirement> requirements) {
@@ -63,5 +73,13 @@ public class RequirementService {
             if (!forbiddenRequirements.contains(r.getId())) found = true;
         }
         return r;
+    }
+
+    public boolean requiresUpdate() {
+        return requiresUpdate;
+    }
+
+    public void markAsUpdated() {
+        this.requiresUpdate = false;
     }
 }

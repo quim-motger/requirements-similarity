@@ -97,8 +97,14 @@ public class BM25FService {
     }
 
     private void init() {
-        requirements = requirementService.getRequirements();
-        documentFrequency = idfService.getDocumentFrequency(requirements);
+        logger.info("Checking if data update is needed.");
+        if (requirementService.requiresUpdate()) {
+            logger.info("Updating data...");
+            requirements = requirementService.getRequirements();
+            documentFrequency = idfService.getDocumentFrequency(requirements);
+            requirementService.markAsUpdated();
+            logger.info("Data updated");
+        } else logger.info("No updates required");
     }
 
     public List<Duplicate> bm25f_req(Requirement requirement, int k) {
@@ -363,6 +369,7 @@ public class BM25FService {
 
     public List<Duplicate> bm25f_reqReq(List<Duplicate> duplicateList) {
         init();
+        logger.info("Starting duplicate evaluation");
         for (Duplicate d : duplicateList) {
             try {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
@@ -373,6 +380,7 @@ public class BM25FService {
                 //logger.info("Requirement not found. Skipped");
             }
         }
+        logger.info("Finish duplicate evaluation process");
         return duplicateList;
     }
 }
