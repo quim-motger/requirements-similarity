@@ -2,6 +2,7 @@ package com.quim.tfm.similarity.controller;
 
 import com.quim.tfm.similarity.exception.BadRequestCustomException;
 import com.quim.tfm.similarity.entity.Requirement;
+import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
 import com.quim.tfm.similarity.service.RequirementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +18,14 @@ public class RequirementController {
     private RequirementService requirementService;
 
     @PostMapping("")
-    public void addRequirements(@RequestBody @Valid List<Requirement> requirements) {
-        if (requirements == null || requirements.isEmpty()) throw new BadRequestCustomException();
-        requirementService.addRequirements(requirements);
+    public void addRequirements(@RequestBody @Valid OpenReqSchema openReqSchema) {
+        if (openReqSchema == null || openReqSchema.getRequirements().isEmpty()) throw new BadRequestCustomException();
+        requirementService.addRequirements(openReqSchema);
     }
 
     @GetMapping("")
-    public List<Requirement> getRequirements() {
-        return requirementService.getRequirements();
+    public OpenReqSchema getRequirements(@RequestParam(required = false) List<String> requirements) {
+        return requirementService.getOpenReqSchema(requirements);
     }
 
     @GetMapping("/{reqId}")
