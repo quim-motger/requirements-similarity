@@ -11,10 +11,12 @@ public class OpenReqSchema implements Serializable {
 
     private List<OpenReqRequirement> requirements;
     private List<OpenReqProject> projects;
+    private List<OpenReqDependency> dependencies;
 
     public OpenReqSchema() {
         this.requirements = new ArrayList<>();
         this.projects = new ArrayList<>();
+        this.dependencies = new ArrayList<>();
     }
 
     public List<OpenReqRequirement> getRequirements() {
@@ -31,5 +33,13 @@ public class OpenReqSchema implements Serializable {
 
     public void setProjects(List<OpenReqProject> projects) {
         this.projects = projects;
+    }
+
+    public List<OpenReqDependency> getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(List<OpenReqDependency> dependencies) {
+        this.dependencies = dependencies;
     }
 }

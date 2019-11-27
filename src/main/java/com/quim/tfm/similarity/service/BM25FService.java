@@ -5,6 +5,7 @@ import com.quim.tfm.similarity.exception.NotFoundCustomException;
 import com.quim.tfm.similarity.model.Duplicate;
 import com.quim.tfm.similarity.model.Priority;
 import com.quim.tfm.similarity.model.TrainTripletBM25F;
+import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -96,27 +97,33 @@ public class BM25FService {
         freeParameters.put("K3F2", 0.0);
     }
 
-    private void init() {
-        logger.info("Checking if data update is needed.");
-        if (requirementService.requiresUpdate() || requirements == null || requirements.isEmpty()) {
-            logger.info("Updating data...");
+    private void init(List<String> projectList) {
+        logger.info("Updating data...");
+        if (projectList == null || projectList.isEmpty())
             requirements = requirementService.getRequirements();
-            documentFrequency = idfService.getDocumentFrequency(requirements);
-            requirementService.markAsUpdated();
-            logger.info("Data updated");
-        } else logger.info("No updates required");
+        else
+            requirements = requirementService.getRequirementsByProjects(projectList);
+        documentFrequency = idfService.getDocumentFrequency(requirements);
+        logger.info("Data updated");
     }
 
-    public List<Duplicate> bm25f_req(Requirement requirement, int k) {
-        init();
-        return bm25f(requirement, k, true);
+    public OpenReqSchema bm25f_req(OpenReqSchema schema, int k) {
+        init(null);
+        List<Requirement> requirements = requirementService.getRequirementsFromOpenReqSchema(schema);
+        List<Duplicate> duplicates = new ArrayList<>();
+        for (Requirement requirement : requirements) {
+            duplicates.addAll(bm25f(requirement, k, true));
+        }
+        return requirementService.convertToOpenReqSchema(null, duplicates);
     }
 
     private List<Duplicate> bm25f(Requirement requirement, int k, boolean withPreprocess) {
         logger.info("Init BM25f Preprocess for requirement " + requirement.getId());
 
-        if (withPreprocess) preprocessService.preprocessRequirement(requirement);
-        requirements.add(requirement);
+        if (withPreprocess) {
+            preprocessService.preprocessRequirement(requirement);
+            requirements.add(requirement);
+        }
 
         List<Duplicate> topDuplicates = new ArrayList<>();
 
@@ -258,10 +265,10 @@ public class BM25FService {
 
 
 
-    public void bm25f_train(List<Duplicate> duplicates) {
+    public void bm25f_train(OpenReqSchema schema) {
 
-        init();
-
+        init(null);
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         List<TrainTripletBM25F> trainTripletBM25FS = new ArrayList<>();
         for (Duplicate d : duplicates) {
             Requirement irrel = requirementService.findRandomRequirement(Arrays.asList(d.getReq1Id(), d.getReq2Id()), requirements);
@@ -336,8 +343,8 @@ public class BM25FService {
         throw new NotFoundCustomException();
     }
 
-    public HashMap<Integer, Double> bm25f_test(List<Duplicate> duplicates, Integer k) {
-        init();
+    public HashMap<Integer, Double> bm25f_test(OpenReqSchema schema, List<String> projectList, Integer k) {
+        init(projectList);
         HashMap<String, List<Duplicate>> duplicateMap = new HashMap<>();
         HashMap<Integer, Double> recallMap = new HashMap<>();
         int count = 0;
@@ -347,31 +354,38 @@ public class BM25FService {
             ++count;
             logger.info("Requirement nº " + count + " (from " + requirements.size() + ")");
         }
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         for (Duplicate d : duplicates) {
             for (int i = 1; i <= k; ++i) {
                 if (duplicateMap.containsKey(d.getReq1Id())) {
                     List<Duplicate> foundDuplicates = duplicateMap.get(d.getReq1Id());
-                    if (foundDuplicates.size() >= i) foundDuplicates = foundDuplicates.subList(0, i);
+                    if (foundDuplicates.size() >= i)
+                        foundDuplicates = foundDuplicates.subList(0, i);
                     if (foundDuplicates.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq2Id()))) {
-                        if (recallMap.containsKey(i)) recallMap.put(i, recallMap.get(i) + 1.0);
-                        else recallMap.put(i, 1.0);
+                        if (recallMap.containsKey(i))
+                            recallMap.put(i, recallMap.get(i) + 1.0);
+                        else
+                            recallMap.put(i, 1.0);
                     }
                 }
             }
         }
         for (int i = 1; i <= k; ++i) {
-            recallMap.put(i, recallMap.get(i) / duplicates.size());
+            recallMap.put(i, !recallMap.containsKey(i) ? 0 : recallMap.get(i) / duplicates.size());
         }
         //recall rate@k
         return recallMap;
     }
 
-    public List<Duplicate> bm25f_reqReq(List<Duplicate> duplicateList) {
-        init();
+    public OpenReqSchema bm25f_reqReq(OpenReqSchema schema) {
+        init(null);
         logger.info("Starting duplicate evaluation");
         double time = 0.;
         int notProcessed = 0;
-        for (Duplicate d : duplicateList) {
+
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
+
+        for (Duplicate d : duplicates) {
             try {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
                 Requirement r2 = requirementService.getRequirement(d.getReq2Id());
@@ -386,7 +400,7 @@ public class BM25FService {
             }
         }
         logger.info("Finish duplicate evaluation process.");
-        logger.info("Avg sim time:\t" + time/(duplicateList.size()-notProcessed));
-        return duplicateList;
+        logger.info("Avg sim time:\t" + time/(duplicates.size()-notProcessed));
+        return requirementService.convertToOpenReqSchema(null, duplicates);
     }
 }

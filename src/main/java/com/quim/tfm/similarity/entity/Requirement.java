@@ -3,14 +3,14 @@ package com.quim.tfm.similarity.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.quim.tfm.similarity.model.Priority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
+@Table(name = "requirement", indexes = {@Index(name = "id_index", columnList="id", unique = true),
+        @Index(name = "project_index", columnList="project")})
 public class Requirement implements Serializable {
 
     @Id

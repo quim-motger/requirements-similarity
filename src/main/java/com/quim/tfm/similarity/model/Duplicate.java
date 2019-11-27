@@ -33,7 +33,7 @@ public class Duplicate implements Serializable {
 
     }
 
-    public Duplicate(String req1Id, String req2Id, double score) {
+    public Duplicate(String req1Id, String req2Id, Double score) {
         this.req1Id = req1Id;
         this.req2Id = req2Id;
         this.score = score;

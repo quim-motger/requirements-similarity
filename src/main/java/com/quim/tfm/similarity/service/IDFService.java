@@ -3,6 +3,7 @@ package com.quim.tfm.similarity.service;
 import com.quim.tfm.similarity.entity.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -17,6 +18,7 @@ public class IDFService {
     private double avgTokenSummaryBagSize;
     private double avgTokenDescriptionBagSize;
 
+    @Cacheable
     public HashMap<String, Integer> getDocumentFrequency(List<Requirement> requirements) {
         HashMap<String, Integer> documentFrequencyMap = new HashMap<>();
 

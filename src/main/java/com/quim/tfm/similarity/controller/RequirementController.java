@@ -24,8 +24,9 @@ public class RequirementController {
     }
 
     @GetMapping("")
-    public OpenReqSchema getRequirements(@RequestParam(required = false) List<String> requirements) {
-        return requirementService.getOpenReqSchema(requirements);
+    public OpenReqSchema getRequirements(@RequestParam(required = false) List<String> requirements,
+                                         @RequestParam(required = false) List<String> projects) {
+        return requirementService.getOpenReqSchema(requirements, projects);
     }
 
     @GetMapping("/{reqId}")

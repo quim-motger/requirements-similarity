@@ -2,6 +2,7 @@ package com.quim.tfm.similarity.controller;
 
 import com.quim.tfm.similarity.entity.Requirement;
 import com.quim.tfm.similarity.model.Duplicate;
+import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
 import com.quim.tfm.similarity.service.BM25FService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,23 +19,24 @@ public class BM25FController {
     private BM25FService BM25FService;
 
     @PostMapping("/req")
-    public List<Duplicate> bm25fReq(@RequestBody @Valid Requirement requirement, @RequestParam Integer k) {
-        return BM25FService.bm25f_req(requirement, k);
+    public OpenReqSchema bm25fReq(@RequestBody @Valid OpenReqSchema schema, @RequestParam(required = false) List<String> projectList, @RequestParam Integer k) {
+        return BM25FService.bm25f_req(schema, k);
     }
 
     @PostMapping("/reqReq")
-    public List<Duplicate> bm25fReqReq(@RequestBody @Valid List<Duplicate> duplicateList) {
-        return BM25FService.bm25f_reqReq(duplicateList);
+    public OpenReqSchema bm25fReqReq(@RequestBody @Valid OpenReqSchema schema, @RequestParam(required = false) List<String> projectList) {
+        return BM25FService.bm25f_reqReq(schema);
     }
 
     @PostMapping("/train")
-    public void bm25fTrain(@RequestBody List<Duplicate> duplicates) {
-        BM25FService.bm25f_train(duplicates);
+    public void bm25fTrain(@RequestBody OpenReqSchema schema, @RequestParam(required = false) List<String> projectList) {
+        BM25FService.bm25f_train(schema);
     }
 
     @PostMapping("/test")
-    public HashMap<Integer, Double> bm25fTest(@RequestParam Integer k, @RequestBody List<Duplicate> duplicates) {
-        return BM25FService.bm25f_test(duplicates, k);
+    public HashMap<Integer, Double> bm25fTest(@RequestParam Integer k, @RequestParam(required = false) List<String> projectList,
+                                              @RequestBody OpenReqSchema schema) {
+        return BM25FService.bm25f_test(schema, projectList, k);
     }
 
 }
