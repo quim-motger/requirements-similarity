@@ -1,11 +1,15 @@
 package com.quim.tfm.similarity.model;
 
+import edu.stanford.nlp.trees.GrammaticalStructure;
+
+import java.util.List;
+
 public class FEPreprocessData {
 
     private String[] tokens;
     private String[] lemmas;
     private String[] posTags;
-    private DependencyTreeNode node;
+    private List<GrammaticalStructure> grammaticalStructureList;
 
     public String[] getTokens() {
         return tokens;
@@ -31,11 +35,11 @@ public class FEPreprocessData {
         this.posTags = posTags;
     }
 
-    public DependencyTreeNode getNode() {
-        return node;
+    public List<GrammaticalStructure> getGrammaticalStructureList() {
+        return grammaticalStructureList;
     }
 
-    public void setNode(DependencyTreeNode node) {
-        this.node = node;
+    public void setGrammaticalStructureList(List<GrammaticalStructure> grammaticalStructureList) {
+        this.grammaticalStructureList = grammaticalStructureList;
     }
 }

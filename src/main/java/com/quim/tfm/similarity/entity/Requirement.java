@@ -6,6 +6,8 @@ import com.quim.tfm.similarity.model.Priority;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -75,6 +77,10 @@ public class Requirement implements Serializable {
     }
 
     public String[] getSummaryTokens() {
+        return Arrays.stream(summaryTokens).filter(t -> !t.equals(".")).collect(Collectors.toList()).toArray(new String[0]);
+    }
+
+    public String[] getSummaryTokensWithSentenceBoundaries() {
         return summaryTokens;
     }
 
@@ -83,6 +89,10 @@ public class Requirement implements Serializable {
     }
 
     public String[] getDescriptionTokens() {
+        return Arrays.stream(descriptionTokens).filter(t -> !t.equals(".")).collect(Collectors.toList()).toArray(new String[0]);
+    }
+
+    public String[] getDescriptionTokensWithSentenceBoundaries() {
         return descriptionTokens;
     }
 

@@ -21,7 +21,7 @@ out_reqs = []
 #"2005/01/01"
 #"2005/12/31"
 
-y = 2014
+y = 2005
 m = 1
 d1 = 1
 
@@ -97,8 +97,8 @@ while y < 2019 or (y == 2019 and m <= 10):
 					versions.append(cr[row][version_index])
 			req['versions'] = versions
 
-			if (len(req['description']) <= 20000):
-				out_reqs.append(req)
+			#if (len(req['description']) <= 20000):
+			out_reqs.append(req)
 				
 		row += 1
 
@@ -113,6 +113,6 @@ while y < 2019 or (y == 2019 and m <= 10):
 		y += 1
 		m = 1
 
-with open('export-2014-2019.json', 'w') as f:
+with open('export-ALL.json', 'w') as f:
 	print(len(out_reqs))
 	json.dump(out_reqs, f)

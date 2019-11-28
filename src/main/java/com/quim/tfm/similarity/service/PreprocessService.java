@@ -1,12 +1,16 @@
 package com.quim.tfm.similarity.service;
 
 import com.quim.tfm.similarity.entity.Requirement;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.custom.CustomAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,10 @@ public class PreprocessService {
     private static final String STEM = "porterstem";
     private static final String LOWERCASE = "lowercase";
 
+    private static final String sentenceDetectorPath = "src/main/resources/model"+ File.separator+"en-sent.bin";
+
+    private SentenceDetectorME sentenceDetector;
+
     private static final CharSequence[] specialChars = {"\\n","\\t","\\r"};
 
     private Analyzer analyzer;
@@ -32,6 +40,7 @@ public class PreprocessService {
                     .addTokenFilter(STEM)
                     .addTokenFilter(LOWERCASE)
                     .build();
+            sentenceDetector = new SentenceDetectorME(new SentenceModel(new FileInputStream(sentenceDetectorPath)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,16 +54,22 @@ public class PreprocessService {
     private List<String> analyze(String text) {
         List<String> tokens = new ArrayList<>();
         try {
-            for (CharSequence cs : specialChars)
-                text = text.replace(cs, " ");
-            TokenStream tokenStream = analyzer.tokenStream(FIELD_NAME, text);
-            CharTermAttribute attr = tokenStream.addAttribute(CharTermAttribute.class);
-            tokenStream.reset();
+            String sentences[] = sentenceDetector.sentDetect(text);
 
-            while (tokenStream.incrementToken()) {
-                tokens.add(attr.toString());
+            for (String sentence : sentences) {
+                for (CharSequence cs : specialChars)
+                    sentence = sentence.replace(cs, " ");
+                TokenStream tokenStream = analyzer.tokenStream(FIELD_NAME, sentence);
+                CharTermAttribute attr = tokenStream.addAttribute(CharTermAttribute.class);
+                tokenStream.reset();
+
+                while (tokenStream.incrementToken()) {
+                    if (!attr.toString().isEmpty()) tokens.add(attr.toString());
+                }
+                tokenStream.close();
+                tokens.add(".");
             }
-            tokenStream.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

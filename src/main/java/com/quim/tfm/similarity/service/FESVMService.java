@@ -7,6 +7,8 @@ import com.quim.tfm.similarity.exception.NotImplementedKernel;
 import com.quim.tfm.similarity.model.*;
 import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
 import com.quim.tfm.similarity.repository.DuplicateRepository;
+import edu.stanford.nlp.trees.GrammaticalStructure;
+import edu.stanford.nlp.trees.TypedDependency;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.data.POS;
@@ -208,15 +210,15 @@ public class FESVMService {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
                 Requirement r2 = requirementService.getRequirement(d.getReq2Id());
 
-                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1.getSummaryTokens());
-                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1.getDescriptionTokens());
-                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2.getSummaryTokens());
-                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2.getDescriptionTokens());
+                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1.getSummaryTokensWithSentenceBoundaries());
+                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1.getDescriptionTokensWithSentenceBoundaries());
+                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2.getSummaryTokensWithSentenceBoundaries());
+                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2.getDescriptionTokensWithSentenceBoundaries());
 
                 extractFeatures(d, summaryReq1, summaryReq2, descriptionReq1, descriptionReq2);
                 filteredList.add(d);
             } catch (NotFoundCustomException e) {
-                logger.error("Entity not found. Skipping");
+                //logger.error("Entity not found. Skipping");
             } catch (IOException e) {
                 logger.error(e.getLocalizedMessage());
             }
@@ -228,8 +230,8 @@ public class FESVMService {
     private void extractFeatures(Duplicate duplicate, FEPreprocessData summaryReq1, FEPreprocessData summaryReq2,
                                  FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         duplicate.setWordOverlapScore(wordOverlapScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-        duplicate.setUnigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
-        duplicate.setBigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
+        duplicate.setUnigramMatchScore(ngramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
+        duplicate.setBigramMatchScore(ngramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
         duplicate.setSubjectMatchScore(subjectScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
         duplicate.setSubjectVerbMatchScore(subjectVerbScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
         duplicate.setObjectVerbMatchScore(objectVerbScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
@@ -239,7 +241,25 @@ public class FESVMService {
     }
 
     private double nameEntityScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
+        List<String> summaryReq1Subjects = getSubjects(summaryReq1);
+        List<String> summaryReq2Subjects = getSubjects(summaryReq2);
+        List<String> descriptionReq1Subjects = getSubjects(descriptionReq1);
+        List<String> descriptionReq2Subjects = getSubjects(descriptionReq2);
+        //TODO compute
         return 0;
+    }
+
+    private List<String> getSubjects(FEPreprocessData reqData) {
+        List<String> subjects = new ArrayList<>();
+        for (GrammaticalStructure sentence : reqData.getGrammaticalStructureList()) {
+            List<TypedDependency> dependencies = new ArrayList<>(sentence.allTypedDependencies());
+            for (TypedDependency dependency : dependencies) {
+                if (dependency.reln().toString().equals("nsubj") || dependency.reln().toString().equals("nsubjpass")) {
+                    subjects.add(dependency.dep().word());
+                }
+            }
+        }
+        return subjects;
     }
 
     private double nounScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
@@ -259,7 +279,7 @@ public class FESVMService {
     }
 
 
-    private double unigramMatchScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2, int n) {
+    private double ngramMatchScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2, int n) {
         double unigramMatchScoreSummary = ngramMatchPartialScore(summaryReq1, summaryReq2, n);
         double unigramMatchScoreDescription = ngramMatchPartialScore(descriptionReq1, descriptionReq2, n);
 
@@ -274,7 +294,6 @@ public class FESVMService {
     }
 
     private double jaccardSimilarity(List<String> req1, List<String> req2) {
-        if (req1.size() + req2.size() == 0) logger.info("THAT THING HAPPENED");
         return (req1.size() + req2.size()) > 0 ? (double) req1.stream().distinct().filter(req2::contains).collect(Collectors.toSet()).size() /
                 (double) (req1.size() + req2.size()) : 0;
     }
@@ -294,7 +313,6 @@ public class FESVMService {
         int intersection = intersection(tokensReq1, tokensReq2);
         int bagSize = tokensReq1.size() + tokensReq2.size();
 
-        if (bagSize == 0) logger.info("THAT THING HAPPENED");
         return bagSize > 0 ? (double) intersection / (double) bagSize : 0;
 
     }
