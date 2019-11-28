@@ -387,12 +387,15 @@ public class BM25FService {
 
         for (Duplicate d : duplicates) {
             try {
-                Requirement r1 = requirementService.getRequirement(d.getReq1Id());
-                Requirement r2 = requirementService.getRequirement(d.getReq2Id());
+                Requirement r1 = requirements.stream().filter(r -> r.getId().equals(d.getReq1Id())).findFirst().orElse(null);
+                Requirement r2 = requirements.stream().filter(r -> r.getId().equals(d.getReq2Id())).findFirst().orElse(null);
+                if (r1 == null || r2 == null) throw new NotFoundCustomException();
+
                 Calendar t1 = Calendar.getInstance();
                 double res = sim(r1, r2);
                 Calendar t2 = Calendar.getInstance();
                 time += (t2.getTimeInMillis() - t1.getTimeInMillis());
+
                 d.setScore(res);
             } catch (Exception e) {
                 notProcessed += 1;

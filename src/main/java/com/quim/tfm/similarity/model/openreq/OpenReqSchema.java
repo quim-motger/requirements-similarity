@@ -1,12 +1,14 @@
 package com.quim.tfm.similarity.model.openreq;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class OpenReqSchema implements Serializable {
 
     private List<OpenReqRequirement> requirements;

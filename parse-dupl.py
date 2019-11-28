@@ -9,12 +9,14 @@ with io.open('not_duplicates.json', 'r', encoding='utf-8-sig') as json_file:
 	max_length = 0
 	for req in reqs['dependencies']:
 		parsed_req = {}
-		parsed_req['req1Id'] = req['fromid']
-		parsed_req['req2Id'] = req['toid']
-		parsed_req['tag'] = 'NOT_DUPLICATE'
+		parsed_req['fromid'] = req['fromid']
+		parsed_req['toid'] = req['toid']
+		parsed_req['dependency_type'] = 'duplicates'
 		parsed_reqs.append(parsed_req)
+	obj = {}
+	obj['dependencies'] = parsed_reqs
 	with open('not-duplicates-tfm.json', 'w') as f:
-		json.dump(parsed_reqs, f)
+		json.dump(obj, f)
 
 with io.open('duplicates.json', 'r', encoding='utf-8-sig') as json_file:
 	parsed_reqs = []
@@ -24,9 +26,11 @@ with io.open('duplicates.json', 'r', encoding='utf-8-sig') as json_file:
 	max_length = 0
 	for req in reqs['dependencies']:
 		parsed_req = {}
-		parsed_req['req1Id'] = req['fromid']
-		parsed_req['req2Id'] = req['toid']
-		parsed_req['tag'] = 'DUPLICATE'
+		parsed_req['fromid'] = req['fromid']
+		parsed_req['toid'] = req['toid']
+		parsed_req['dependency_type'] = 'duplicates'
 		parsed_reqs.append(parsed_req)
+	obj = {}
+	obj['dependencies'] = parsed_reqs
 	with open('duplicates-tfm.json', 'w') as f:
-		json.dump(parsed_reqs, f)
+		json.dump(obj, f)

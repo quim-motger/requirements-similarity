@@ -100,25 +100,26 @@ public class RequirementService {
     public OpenReqSchema convertToOpenReqSchema(List<Requirement> requirementList, List<Duplicate> duplicateList) {
         OpenReqSchema openReqSchema = new OpenReqSchema();
         HashMap<String, List<String>> projects = new HashMap<>();
-        for (Requirement r : requirementList) {
-            OpenReqRequirement or = new OpenReqRequirement();
-            or.setId(r.getId());
-            or.setName(r.getSummary());
-            or.setText(r.getDescription());
-            OpenReqRequirementPart priority = new OpenReqRequirementPart("priority", r.getPriority().toString());
-            OpenReqRequirementPart type = new OpenReqRequirementPart("type", r.getType());
-            OpenReqRequirementPart components = new OpenReqRequirementPart("components", String.join("\n", r.getComponents()));
-            OpenReqRequirementPart versions = new OpenReqRequirementPart("versions", String.join("\n", r.getVersions()));
-            or.setRequirementParts(Arrays.asList(priority, type, components, versions));
-            openReqSchema.getRequirements().add(or);
+        if (requirementList != null) {
+            for (Requirement r : requirementList) {
+                OpenReqRequirement or = new OpenReqRequirement();
+                or.setId(r.getId());
+                or.setName(r.getSummary());
+                or.setText(r.getDescription());
+                OpenReqRequirementPart priority = new OpenReqRequirementPart("priority", r.getPriority().toString());
+                OpenReqRequirementPart type = new OpenReqRequirementPart("type", r.getType());
+                OpenReqRequirementPart components = new OpenReqRequirementPart("components", String.join("\n", r.getComponents()));
+                OpenReqRequirementPart versions = new OpenReqRequirementPart("versions", String.join("\n", r.getVersions()));
+                or.setRequirementParts(Arrays.asList(priority, type, components, versions));
+                openReqSchema.getRequirements().add(or);
 
-            if (projects.containsKey(r.getProject())) {
-                projects.get(r.getProject()).add(r.getId());
-            }
-            else {
-                List<String> rList = new ArrayList<>();
-                rList.add(r.getId());
-                projects.put(r.getProject(), rList);
+                if (projects.containsKey(r.getProject())) {
+                    projects.get(r.getProject()).add(r.getId());
+                } else {
+                    List<String> rList = new ArrayList<>();
+                    rList.add(r.getId());
+                    projects.put(r.getProject(), rList);
+                }
             }
         }
         //Project

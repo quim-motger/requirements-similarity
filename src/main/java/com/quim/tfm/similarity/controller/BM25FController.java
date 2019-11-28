@@ -1,7 +1,5 @@
 package com.quim.tfm.similarity.controller;
 
-import com.quim.tfm.similarity.entity.Requirement;
-import com.quim.tfm.similarity.model.Duplicate;
 import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
 import com.quim.tfm.similarity.service.BM25FService;
 import org.springframework.beans.factory.annotation.Autowired;
