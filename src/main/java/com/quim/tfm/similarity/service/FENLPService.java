@@ -84,7 +84,7 @@ public class FENLPService {
 
         List<GrammaticalStructure> grammaticalStructures = new ArrayList<>();
 
-        for (String s : sentences) {
+        for (String s : sentences) {         //TODO don't parse if not syntactic analysis
             if (!s.isEmpty()) {
                 List<TaggedWord> taggedWords = new ArrayList<>();
 

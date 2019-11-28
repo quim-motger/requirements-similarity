@@ -19,29 +19,34 @@ public class FESVMController {
     private FESVMService fesvmService;
 
     @PostMapping("/train")
-    public void FESVMTrain(@RequestBody OpenReqSchema schema) {
-        fesvmService.train(schema);
+    public void FESVMTrain(@RequestBody OpenReqSchema schema,
+                           @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
+                           @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures) {
+        fesvmService.train(schema, withLexicalFeatures, withSyntacticFeatures);
     }
 
     @PostMapping("/test")
-    public OpenReqSchema FESVMTest(@RequestBody OpenReqSchema schema) {
-        return fesvmService.test(schema);
+    public OpenReqSchema FESVMTest(@RequestBody OpenReqSchema schema,
+                                   @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
+                                   @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures) {
+        return fesvmService.test(schema, withLexicalFeatures, withSyntacticFeatures);
     }
 
     @PostMapping("/train_and_test")
-    public Stats FESVMTrainAndTest(@RequestBody OpenReqSchema schema, @RequestParam int k) {
-        return fesvmService.trainAndTest(schema, k, Kernel.RBF, fesvmService.C, fesvmService.sigma);
+    public Stats FESVMTrainAndTest(@RequestBody OpenReqSchema schema, @RequestParam int k,
+                                   @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
+                                   @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures) {
+        return fesvmService.trainAndTest(schema, k, Kernel.RBF, fesvmService.C, fesvmService.sigma, withLexicalFeatures,
+                withSyntacticFeatures);
     }
 
     @PostMapping("/train_and_test_with_optimization")
     public HashMap<String, Stats> FESVMTrainAndTestWithOptimization(@RequestBody OpenReqSchema schema, @RequestParam int k, @RequestParam Kernel kernel,
-                                                                    @RequestParam double[] C_values, @RequestParam(required = false) double[] sigma_values) {
-        return fesvmService.trainAndTestWithOptimization(schema, k, kernel, C_values, sigma_values);
-    }
-
-    @PostMapping("/feature_extraction")
-    public void featureExtraction(@RequestBody OpenReqSchema schema) {
-        fesvmService.featureExtractionMap(schema);
+                                                                    @RequestParam double[] C_values, @RequestParam(required = false) double[] sigma_values,
+                                                                    @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
+                                                                    @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures) {
+        return fesvmService.trainAndTestWithOptimization(schema, k, kernel, C_values, sigma_values, withLexicalFeatures,
+                withSyntacticFeatures);
     }
 
 }
