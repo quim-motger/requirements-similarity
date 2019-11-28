@@ -12,6 +12,7 @@ with io.open('not_duplicates.json', 'r', encoding='utf-8-sig') as json_file:
 		parsed_req['fromid'] = req['fromid']
 		parsed_req['toid'] = req['toid']
 		parsed_req['dependency_type'] = 'duplicates'
+		parsed_req['status'] = 'rejected'
 		parsed_reqs.append(parsed_req)
 	obj = {}
 	obj['dependencies'] = parsed_reqs
@@ -29,6 +30,7 @@ with io.open('duplicates.json', 'r', encoding='utf-8-sig') as json_file:
 		parsed_req['fromid'] = req['fromid']
 		parsed_req['toid'] = req['toid']
 		parsed_req['dependency_type'] = 'duplicates'
+		parsed_req['status'] = 'accepted'
 		parsed_reqs.append(parsed_req)
 	obj = {}
 	obj['dependencies'] = parsed_reqs

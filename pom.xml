@@ -76,17 +76,6 @@
             <version>7.4.0</version>
         </dependency>
         <dependency>
-            <groupId>edu.stanford.nlp</groupId>
-            <artifactId>stanford-corenlp</artifactId>
-            <version>3.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>edu.stanford.nlp</groupId>
-            <artifactId>stanford-corenlp</artifactId>
-            <version>3.9.2</version>
-            <classifier>models</classifier>
-        </dependency>
-        <dependency>
             <groupId>net.sf.extjwnl</groupId>
             <artifactId>extjwnl</artifactId>
             <version>2.0.2</version>
@@ -105,6 +94,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.opennlp</groupId>
+            <artifactId>opennlp-tools</artifactId>
+            <version>1.9.1</version>
         </dependency>
     </dependencies>
 

@@ -4,6 +4,7 @@ import com.quim.tfm.similarity.entity.Requirement;
 import com.quim.tfm.similarity.exception.NotFoundCustomException;
 import com.quim.tfm.similarity.model.DependencyType;
 import com.quim.tfm.similarity.model.Duplicate;
+import com.quim.tfm.similarity.model.DuplicateTag;
 import com.quim.tfm.similarity.model.Priority;
 import com.quim.tfm.similarity.model.openreq.*;
 import com.quim.tfm.similarity.repository.RequirementRepository;
@@ -132,6 +133,7 @@ public class RequirementService {
             List<OpenReqDependency> dependencyList = new ArrayList<>();
             for (Duplicate d : duplicateList) {
                 OpenReqDependency ord = new OpenReqDependency(d.getReq1Id(), d.getReq2Id(), DependencyType.duplicates, d.getScore());
+                ord.setStatus(d.getTag().equals(DuplicateTag.DUPLICATE) ? DependencyStatus.accepted : DependencyStatus.rejected);
                 dependencyList.add(ord);
             }
             openReqSchema.setDependencies(dependencyList);
@@ -143,6 +145,7 @@ public class RequirementService {
         List<Duplicate> duplicates = new ArrayList<>();
         for (OpenReqDependency ord : schema.getDependencies()) {
             Duplicate d = new Duplicate(ord.getFromid(), ord.getToid(), ord.getDependency_score());
+            d.setTag(ord.getStatus().equals(DependencyStatus.accepted) ? DuplicateTag.DUPLICATE : DuplicateTag.NOT_DUPLICATE);
             duplicates.add(d);
         }
         return duplicates;

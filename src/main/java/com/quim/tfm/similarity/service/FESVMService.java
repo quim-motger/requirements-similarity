@@ -5,10 +5,8 @@ import com.quim.tfm.similarity.entity.Requirement;
 import com.quim.tfm.similarity.exception.NotFoundCustomException;
 import com.quim.tfm.similarity.exception.NotImplementedKernel;
 import com.quim.tfm.similarity.model.*;
+import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
 import com.quim.tfm.similarity.repository.DuplicateRepository;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.simple.Sentence;
-import edu.stanford.nlp.trees.TypedDependency;
 import net.sf.extjwnl.JWNLException;
 import net.sf.extjwnl.data.IndexWord;
 import net.sf.extjwnl.data.POS;
@@ -23,6 +21,7 @@ import smile.classification.SVM;
 import smile.math.kernel.GaussianKernel;
 import smile.math.kernel.LinearKernel;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,7 +39,7 @@ public class FESVMService {
     @Autowired
     private RequirementService requirementService;
     @Autowired
-    private StanfordPreprocessService stanfordPreprocessService;
+    private FENLPService FENLPService;
     @Autowired
     private DuplicateRepository duplicateRepository;
 
@@ -61,28 +60,32 @@ public class FESVMService {
         WD = 1.0;
     }
 
-    public void train(List<Duplicate> duplicates) {
+    public void train(OpenReqSchema schema) {
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         duplicates = featureExtraction(duplicates);
         double[][] objects = getObjectsAsDoubleMatrix(duplicates);
         int[] classes = getIntClasses(duplicates);
         svmClassifier.learn(objects, classes);
     }
 
-    public List<Duplicate> test(List<Duplicate> duplicates) {
+    public OpenReqSchema test(OpenReqSchema schema) {
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         duplicates = featureExtraction(duplicates);
         int[] classes = svmClassifier.predict(transformDuplicateFeaturesIntoDoubleMatrix(duplicates.toArray(new Duplicate[0])));
         for (int i = 0; i < duplicates.size(); ++i) {
             duplicates.get(i).setTag(DuplicateTag.fromValue(classes[i]));
         }
-        return duplicates;
+        return requirementService.convertToOpenReqSchema(null, duplicates);
     }
 
-    public Stats trainAndTest(List<Duplicate> duplicates, int k, Kernel kernel, double C, double sigma) {
+    public Stats trainAndTest(OpenReqSchema schema, int k, Kernel kernel, double C, double sigma) {
+
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         Collections.shuffle(duplicates);
 
         logger.info("Starting feature extraction process...");
-        //duplicates = featureExtraction(duplicates);
-        duplicates = findDuplicates(duplicates);
+        duplicates = featureExtraction(duplicates);
+        //duplicates = findDuplicates(duplicates);
         logger.info("Finished feature extraction");
 
         List<List<Duplicate>> chunks = Lists.partition(duplicates, duplicates.size() / k);
@@ -132,17 +135,17 @@ public class FESVMService {
         return stats;
     }
 
-    public HashMap<String, Stats> trainAndTestWithOptimization(List<Duplicate> duplicates, int k, Kernel kernel, double[] C_values,
+    public HashMap<String, Stats> trainAndTestWithOptimization(OpenReqSchema schema, int k, Kernel kernel, double[] C_values,
                                                                double[] sigma_values) {
         HashMap<String, Stats> statsMap = new HashMap<>();
         for (double C : C_values) {
             if (kernel.equals(Kernel.RBF)) {
                 for (double sigma : sigma_values) {
-                    Stats stats = trainAndTest(duplicates, k, kernel, C, sigma);
+                    Stats stats = trainAndTest(schema, k, kernel, C, sigma);
                     statsMap.put("C = " + C + "," + " sigma = " + sigma, stats);
                 }
             } else if (kernel.equals(Kernel.LINEAR)){
-                Stats stats = trainAndTest(duplicates, k, kernel, C, sigma);
+                Stats stats = trainAndTest(schema, k, kernel, C, sigma);
                 statsMap.put("C = " + C, stats);
             } else throw new NotImplementedKernel();
         }
@@ -159,7 +162,8 @@ public class FESVMService {
         return list;
     }
 
-    public void featureExtractionMap(List<Duplicate> duplicates) {
+    public void featureExtractionMap(OpenReqSchema schema) {
+        List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         duplicateRepository.deleteAll();
         duplicates = featureExtraction(duplicates);
         duplicateRepository.saveAll(duplicates);
@@ -204,23 +208,25 @@ public class FESVMService {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
                 Requirement r2 = requirementService.getRequirement(d.getReq2Id());
 
-                Annotation summaryReq1 = stanfordPreprocessService.preprocess(r1.getSummary());
-                Annotation descriptionReq1 = stanfordPreprocessService.preprocess(r1.getDescription());
-                Annotation summaryReq2 = stanfordPreprocessService.preprocess(r2.getSummary());
-                Annotation descriptionReq2 = stanfordPreprocessService.preprocess(r2.getDescription());
+                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1.getSummaryTokens());
+                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1.getDescriptionTokens());
+                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2.getSummaryTokens());
+                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2.getDescriptionTokens());
 
                 extractFeatures(d, summaryReq1, summaryReq2, descriptionReq1, descriptionReq2);
                 filteredList.add(d);
             } catch (NotFoundCustomException e) {
                 logger.error("Entity not found. Skipping");
+            } catch (IOException e) {
+                logger.error(e.getLocalizedMessage());
             }
             ++i;
         }
         return filteredList;
     }
 
-    private void extractFeatures(Duplicate duplicate, Annotation summaryReq1, Annotation summaryReq2,
-                                              Annotation descriptionReq1, Annotation descriptionReq2) {
+    private void extractFeatures(Duplicate duplicate, FEPreprocessData summaryReq1, FEPreprocessData summaryReq2,
+                                 FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         duplicate.setWordOverlapScore(wordOverlapScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
         duplicate.setUnigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
         duplicate.setBigramMatchScore(unigramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
@@ -232,49 +238,28 @@ public class FESVMService {
         //TODO other features
     }
 
-    private double nameEntityScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+    private double nameEntityScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         return 0;
     }
 
-    private double nounScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+    private double nounScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         return 0;
     }
 
-    private double objectVerbScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+    private double objectVerbScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         return 0;
     }
 
-    private double subjectVerbScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+    private double subjectVerbScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         return 0;
     }
 
-    private double subjectScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
-        stanfordPreprocessService.getSubjects(summaryReq1);
+    private double subjectScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         return 0;
     }
 
-    private String getSubject(List<TypedDependency> dependencies) {
-        String rootSubject = null, subject = null;
-        for (int i = dependencies.size() - 1; i >= 0; i--) {
-            final TypedDependency dependency = dependencies.get(i);
-            if (dependency.reln().toString().contains("subj")) {
-                rootSubject = subject = dependency.dep().word();
-            } else if (dependency.reln().toString().contains("compound") && dependency.gov().word().equals(rootSubject)) {
-                subject = dependency.dep().word() + " " + subject;
-            }
-        }
-        if (subject == null) {
-            return null;
-        }
-        String lemmaSubject = "";
-        for (final String lemma : new Sentence(subject).lemmas()) {
-            lemmaSubject += lemma + " ";
-        }
-        return lemmaSubject.trim();
-    }
 
-
-    private double unigramMatchScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2, int n) {
+    private double unigramMatchScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2, int n) {
         double unigramMatchScoreSummary = ngramMatchPartialScore(summaryReq1, summaryReq2, n);
         double unigramMatchScoreDescription = ngramMatchPartialScore(descriptionReq1, descriptionReq2, n);
 
@@ -282,9 +267,9 @@ public class FESVMService {
                 unigramMatchScoreDescription * WD;
     }
 
-    private double ngramMatchPartialScore(Annotation req1, Annotation req2, int n) {
-        List<String> tokensReq1 = stanfordPreprocessService.getNGrams(req1, n);
-        List<String> tokensReq2 = stanfordPreprocessService.getNGrams(req2, n);
+    private double ngramMatchPartialScore(FEPreprocessData req1, FEPreprocessData req2, int n) {
+        List<String> tokensReq1 = FENLPService.getNGrams(req1, n);
+        List<String> tokensReq2 = FENLPService.getNGrams(req2, n);
         return jaccardSimilarity(tokensReq1, tokensReq2);
     }
 
@@ -294,7 +279,7 @@ public class FESVMService {
                 (double) (req1.size() + req2.size()) : 0;
     }
 
-    private double wordOverlapScore(Annotation summaryReq1, Annotation summaryReq2, Annotation descriptionReq1, Annotation descriptionReq2) {
+    private double wordOverlapScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
         double wordOverlapScoreSummary = wordOverlapPartialScore(summaryReq1, summaryReq2);
         double wordOverlapScoreDescription = wordOverlapPartialScore(descriptionReq1, descriptionReq2);
 
@@ -302,9 +287,9 @@ public class FESVMService {
                 wordOverlapScoreDescription * WD;
     }
 
-    private double wordOverlapPartialScore(Annotation req1, Annotation req2) {
-        List<Token> tokensReq1 = stanfordPreprocessService.getUniqueTokens(req1);
-        List<Token> tokensReq2 = stanfordPreprocessService.getUniqueTokens(req2);
+    private double wordOverlapPartialScore(FEPreprocessData req1, FEPreprocessData req2) {
+        List<Token> tokensReq1 = FENLPService.getUniqueTokens(req1);
+        List<Token> tokensReq2 = FENLPService.getUniqueTokens(req2);
 
         int intersection = intersection(tokensReq1, tokensReq2);
         int bagSize = tokensReq1.size() + tokensReq2.size();

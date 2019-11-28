@@ -12,6 +12,7 @@ public class OpenReqDependency implements Serializable {
     private String toid;
     private DependencyType dependency_type;
     private Double dependency_score;
+    private DependencyStatus status;
 
     public OpenReqDependency(String fromid, String toid, DependencyType dependency_type, Double dependency_score) {
         this.fromid = fromid;
@@ -50,5 +51,13 @@ public class OpenReqDependency implements Serializable {
 
     public void setDependency_score(Double dependency_score) {
         this.dependency_score = dependency_score;
+    }
+
+    public DependencyStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DependencyStatus status) {
+        this.status = status;
     }
 }
