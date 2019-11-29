@@ -348,30 +348,48 @@ public class BM25FService {
         HashMap<String, List<Duplicate>> duplicateMap = new HashMap<>();
         HashMap<Integer, Double> recallMap = new HashMap<>();
         int count = 0;
-        for (Requirement r1 : requirements) {
+        /*for (Requirement r1 : requirements) {
             List<Duplicate> foundDuplicates = bm25f(r1, k, false);
             duplicateMap.put(r1.getId(), foundDuplicates);
             ++count;
             logger.info("Requirement nº " + count + " (from " + requirements.size() + ")");
+        }*/
+        for (int i = 0; i < requirements.size(); ++i) {
+            List<Duplicate> duplicates = new ArrayList<>();
+            for (int j = i+1; j < requirements.size(); ++j) {
+                double score = sim(requirements.get(i), requirements.get(j));
+                Duplicate d = new Duplicate(requirements.get(i).getId(), requirements.get(j).getId(), score);
+                insertNewTopDuplicate(duplicates, d, requirements.size() - i+1);
+            }
+            duplicateMap.put(requirements.get(i).getId(), duplicates);
+            ++count;
+            logger.info("Requirement nº " + count + " (from " + requirements.size() + ")");
         }
         List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
+        int notProcessed = 0;
         for (Duplicate d : duplicates) {
-            for (int i = 1; i <= k; ++i) {
-                if (duplicateMap.containsKey(d.getReq1Id())) {
-                    List<Duplicate> foundDuplicates = duplicateMap.get(d.getReq1Id());
-                    if (foundDuplicates.size() >= i)
-                        foundDuplicates = foundDuplicates.subList(0, i);
-                    if (foundDuplicates.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq2Id()))) {
+            if (duplicateMap.containsKey(d.getReq1Id()) && duplicateMap.containsKey(d.getReq2Id())) {
+                for (int i = 1; i <= k; ++i) {
+                    List<Duplicate> foundDuplicatesReq1 = duplicateMap.get(d.getReq1Id());
+                    List<Duplicate> foundDuplicatesReq2 = duplicateMap.get(d.getReq2Id());
+
+                    if (foundDuplicatesReq1.size() >= i)
+                        foundDuplicatesReq1 = foundDuplicatesReq1.subList(0, i);
+                    if (foundDuplicatesReq2.size() >= i)
+                        foundDuplicatesReq2 = foundDuplicatesReq1.subList(0, i);
+
+                    if (foundDuplicatesReq1.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq2Id()))
+                            || foundDuplicatesReq2.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq1Id()))) {
                         if (recallMap.containsKey(i))
                             recallMap.put(i, recallMap.get(i) + 1.0);
                         else
                             recallMap.put(i, 1.0);
                     }
                 }
-            }
+            } else ++notProcessed;
         }
         for (int i = 1; i <= k; ++i) {
-            recallMap.put(i, !recallMap.containsKey(i) ? 0 : recallMap.get(i) / duplicates.size());
+            recallMap.put(i, !recallMap.containsKey(i) ? 0 : recallMap.get(i) / (double) (duplicates.size() - notProcessed));
         }
         //recall rate@k
         return recallMap;
