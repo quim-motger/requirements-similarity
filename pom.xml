@@ -105,11 +105,6 @@
             <artifactId>stanford-parser</artifactId>
             <version>3.6.0</version>
         </dependency>
-        <dependency>
-            <groupId>edu.stanford.nlp</groupId>
-            <artifactId>stanford-parse-models</artifactId>
-            <version>2012-04-09</version>
-        </dependency>
     </dependencies>
 
     <build>

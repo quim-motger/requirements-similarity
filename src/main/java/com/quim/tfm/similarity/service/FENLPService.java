@@ -70,44 +70,47 @@ public class FENLPService {
         return ngrams;
     }
 
-    public FEPreprocessData applyFEPreprocess(String[] tokens) throws IOException {
+    public FEPreprocessData applyFEPreprocess(String[] tokens, boolean withLexicalAnalysis, boolean withSyntacticAnalysis) throws IOException {
         FEPreprocessData feData = new FEPreprocessData();
+        feData.setTokens(tokens);
 
         String[] tokensWithoutSentenceBoundaries = Arrays.stream(tokens).filter(t -> !t.equals(".")).collect(Collectors.toList()).toArray(new String[0]);
         String[] posTags = posTagger.tag(tokensWithoutSentenceBoundaries);
-        String[] lemmas = Arrays.stream(lemmatizer.lemmatize(tokensWithoutSentenceBoundaries, posTags)).filter(s -> !s.equals("O")).collect(Collectors.toList()).toArray(new String[0]);
 
-        //TODO dependency parser
-
-        List<String> tokenList = Arrays.asList(tokensWithoutSentenceBoundaries);
-        String[] sentences = splitBySentenceBoundary(tokens);
-
-        List<GrammaticalStructure> grammaticalStructures = new ArrayList<>();
-
-        for (String s : sentences) {         //TODO don't parse if not syntactic analysis
-            if (!s.isEmpty()) {
-                List<TaggedWord> taggedWords = new ArrayList<>();
-
-                String[] words = s.split(" ");
-                for (int i = 0; i < words.length; ++i) {
-                    int posIndex = tokenList.indexOf(words[i]);
-                    if (posIndex == -1)
-                        logger.error("Word " + words[i] + " not present in " + String.join(" ", tokenList));
-                    else {
-                        TaggedWord taggedWord = new TaggedWord(words[i], posTags[posIndex]);
-                        taggedWords.add(taggedWord);
-                    }
-                }
-
-                GrammaticalStructure gs = parser.predict(taggedWords);
-                grammaticalStructures.add(gs);
-            }
+        if (withLexicalAnalysis) {
+            String[] lemmas = Arrays.stream(lemmatizer.lemmatize(tokensWithoutSentenceBoundaries, posTags)).filter(s -> !s.equals("O")).collect(Collectors.toList()).toArray(new String[0]);
+            feData.setLemmas(lemmas);
+            feData.setPosTags(posTags);
         }
 
-        feData.setTokens(tokens);
-        feData.setLemmas(lemmas);
-        feData.setPosTags(posTags);
-        feData.setGrammaticalStructureList(grammaticalStructures);
+        if (withSyntacticAnalysis) {
+
+            List<String> tokenList = Arrays.asList(tokensWithoutSentenceBoundaries);
+            String[] sentences = splitBySentenceBoundary(tokens);
+
+            List<GrammaticalStructure> grammaticalStructures = new ArrayList<>();
+
+            for (String s : sentences) {
+                if (!s.isEmpty()) {
+                    List<TaggedWord> taggedWords = new ArrayList<>();
+
+                    String[] words = s.split(" ");
+                    for (int i = 0; i < words.length; ++i) {
+                        int posIndex = tokenList.indexOf(words[i]);
+                        if (posIndex == -1)
+                            logger.error("Word " + words[i] + " not present in " + String.join(" ", tokenList));
+                        else {
+                            TaggedWord taggedWord = new TaggedWord(words[i], posTags[posIndex]);
+                            taggedWords.add(taggedWord);
+                        }
+                    }
+
+                    GrammaticalStructure gs = parser.predict(taggedWords);
+                    grammaticalStructures.add(gs);
+                }
+            }
+            feData.setGrammaticalStructureList(grammaticalStructures);
+        }
 
         return feData;
 

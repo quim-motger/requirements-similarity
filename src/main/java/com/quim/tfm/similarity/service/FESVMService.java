@@ -191,16 +191,20 @@ public class FESVMService {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
                 Requirement r2 = requirementService.getRequirement(d.getReq2Id());
 
-                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1.getSummaryTokensWithSentenceBoundaries());
-                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1.getDescriptionTokensWithSentenceBoundaries());
-                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2.getSummaryTokensWithSentenceBoundaries());
-                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2.getDescriptionTokensWithSentenceBoundaries());
+                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1.getSummaryTokensWithSentenceBoundaries(),
+                        withLexicalFeatures, withSyntacticFeatures);
+                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1.getDescriptionTokensWithSentenceBoundaries(),
+                        withLexicalFeatures, withSyntacticFeatures);
+                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2.getSummaryTokensWithSentenceBoundaries(),
+                        withLexicalFeatures, withSyntacticFeatures);
+                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2.getDescriptionTokensWithSentenceBoundaries(),
+                        withLexicalFeatures, withSyntacticFeatures);
 
                 extractFeatures(d, summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, withLexicalFeatures,
                         withSyntacticFeatures);
                 filteredList.add(d);
             } catch (NotFoundCustomException e) {
-                //logger.error("Entity not found. Skipping");
+                logger.error("Entity not found. Skipping");
             } catch (IOException e) {
                 logger.error(e.getLocalizedMessage());
             }
@@ -283,7 +287,10 @@ public class FESVMService {
                 }
             }
         }
-        return match / (double) Math.min(req1SVDep.size(), req2SVDep.size());
+        if (req1SVDep.isEmpty() || req2SVDep.isEmpty()) return 0.;
+        else {
+            return match / (double) Math.min(req1SVDep.size(), req2SVDep.size());
+        }
     }
 
     private List<TypedDependency> getSubjectVerbDependencies(FEPreprocessData summaryData, FEPreprocessData descriptionData) {
@@ -310,10 +317,11 @@ public class FESVMService {
         List<String> req1Subjects = getSubjects(summaryReq1, descriptionReq1);
         List<String> req2Subjects = getSubjects(summaryReq2, descriptionReq2);
 
-        if (!req1Subjects.isEmpty() || !req2Subjects.isEmpty())
+        if (req1Subjects.isEmpty() || req2Subjects.isEmpty()) return 0.;
+        else {
             return req1Subjects.stream().filter(req2Subjects::contains).count() /
                     (double) Math.min(req1Subjects.size(), req2Subjects.size());
-        else return 0.;
+        }
 
     }
 
