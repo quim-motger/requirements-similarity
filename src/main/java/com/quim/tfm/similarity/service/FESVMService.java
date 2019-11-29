@@ -25,6 +25,7 @@ import smile.math.kernel.LinearKernel;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class FESVMService {
@@ -222,64 +223,106 @@ public class FESVMService {
             duplicate.setBigramMatchScore(ngramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
         }
         if (withSyntacticFeatures) {
-            duplicate.setSubjectMatchScore(subjectScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-            duplicate.setSubjectVerbMatchScore(subjectVerbScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-            duplicate.setObjectVerbMatchScore(objectVerbScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-            duplicate.setNounMatchScore(nounScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-            duplicate.setNameEntityScore(nameEntityScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
+            DependencyStruct summaryReq1Dependencies = getDependenciesFromData(summaryReq1);
+            DependencyStruct descriptionReq1Dependencies = getDependenciesFromData(descriptionReq1);
+            DependencyStruct summaryReq2Dependencies = getDependenciesFromData(summaryReq2);
+            DependencyStruct descriptionReq2Dependencies = getDependenciesFromData(descriptionReq2);
+
+            duplicate.setSubjectMatchScore(subjectScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
+            duplicate.setSubjectVerbMatchScore(subjectVerbScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
+            duplicate.setObjectVerbMatchScore(objectVerbScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
+            duplicate.setNounMatchScore(nounScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
+            duplicate.setNameEntityScore(nameEntityScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
         }
         //TODO other features
     }
 
-    private double nameEntityScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
-        return 0.;
-    }
-
-    private List<String> getSubjects(FEPreprocessData req1Data, FEPreprocessData req2Data) {
+    private DependencyStruct getDependenciesFromData(FEPreprocessData data) {
+        List<TypedDependency> ov = new ArrayList<>();
+        List<TypedDependency> sv = new ArrayList<>();
+        List<TypedDependency> nn = new ArrayList<>();
         List<String> subjects = new ArrayList<>();
-        subjects.addAll(getSubjectFromReqData(req1Data));
-        subjects.addAll(getSubjectFromReqData(req2Data));
-        return subjects;
-    }
-
-    private List<String> getSubjectFromReqData(FEPreprocessData reqData) {
-        List<String> subjects = new ArrayList<>();
-        for (GrammaticalStructure sentence : reqData.getGrammaticalStructureList()) {
+        for (GrammaticalStructure sentence : data.getGrammaticalStructureList()) {
             List<TypedDependency> dependencies = new ArrayList<>(sentence.allTypedDependencies());
             for (TypedDependency dependency : dependencies) {
+                String[] gov = dependency.gov().toString().split("/");
+                String[] dep = dependency.dep().toString().split("/");
+
                 if (dependency.reln().toString().equals("nsubj") || dependency.reln().toString().equals("nsubjpass")) {
                     subjects.add(dependency.dep().word());
                 }
+
+                if (dependency.reln().toString().contains("nsubj") && gov[1].contains("VB")) {
+                    sv.add(dependency);
+                }
+
+                if (gov.length == 2 && dep.length == 2) {
+                    if (gov[1].contains("VB") && dep[1].contains("NN")) {
+                        ov.add(dependency);
+                    }
+                    if (dependency.reln().toString().contains("compound") && gov[1].contains("NN") && dep[1].contains("NN")) {
+                        nn.add(dependency);
+                    }
+                }
             }
         }
-        return subjects;
+
+        DependencyStruct struct = new DependencyStruct();
+        struct.setSubjects(subjects);
+        struct.setSubjectVerbDependencies(sv);
+        struct.setObjectVerbDependencies(ov);
+        struct.setNounDependencies(nn);
+
+        return struct;
     }
 
-    private double nounScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
-        return 0;
-    }
-
-    private double objectVerbScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
-        return 0;
-    }
-
-    private double subjectVerbScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
-        List<TypedDependency> req1SVDep = getSubjectVerbDependencies(summaryReq1, descriptionReq1);
-        List<TypedDependency> req2SVDep = getSubjectVerbDependencies(summaryReq2, descriptionReq2);
+    private double subjectVerbScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
+        List<TypedDependency> req1SVDep = Stream.concat(summaryReq1.getSubjectVerbDependencies().stream(),
+                descriptionReq1.getSubjectVerbDependencies().stream()).collect(Collectors.toList());
+        List<TypedDependency> req2SVDep = Stream.concat(summaryReq2.getSubjectVerbDependencies().stream(),
+                descriptionReq2.getSubjectVerbDependencies().stream()).collect(Collectors.toList());
 
         return matchSV(req1SVDep, req2SVDep);
 
     }
 
-    private double matchSV(List<TypedDependency> req1SVDep, List<TypedDependency> req2SVDep) {
+    private double objectVerbScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1,
+                                   DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
+        List<TypedDependency> req1SVDep = Stream.concat(summaryReq1.getObjectVerbDependencies().stream(),
+                descriptionReq1.getObjectVerbDependencies().stream()).collect(Collectors.toList());
+        List<TypedDependency> req2SVDep = Stream.concat(summaryReq2.getObjectVerbDependencies().stream(),
+                descriptionReq2.getObjectVerbDependencies().stream()).collect(Collectors.toList());
+
+        return matchOV(req1SVDep, req2SVDep);
+    }
+
+    private double nameEntityScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
+        //TODO
+        return 0.;
+    }
+
+    private double nounScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
+        List<TypedDependency> req1NNDep = Stream.concat(summaryReq1.getNounDependencies().stream(),
+                descriptionReq1.getObjectVerbDependencies().stream()).collect(Collectors.toList());
+        List<TypedDependency> req2NNDep = Stream.concat(summaryReq2.getNounDependencies().stream(),
+                descriptionReq2.getObjectVerbDependencies().stream()).collect(Collectors.toList());
+
+        return matchNN(req1NNDep, req2NNDep);
+    }
+
+    private double matchNN(List<TypedDependency> req1NNDep, List<TypedDependency> req2NNDep) {
+        return matchWords(req1NNDep, req2NNDep);
+    }
+
+    private double matchWords(List<TypedDependency> req1NNDep, List<TypedDependency> req2NNDep) {
         double match = 0.;
-        for (TypedDependency td1 : req1SVDep) {
+        for (TypedDependency td1 : req1NNDep) {
             boolean found = false;
             int i = 0;
-            while (!found && i < req2SVDep.size()) {
-                TypedDependency td2 = req2SVDep.get(i);
+            while (!found && i < req2NNDep.size()) {
+                TypedDependency td2 = req2NNDep.get(i);
                 if (td1.gov().toString().split("/")[0].equals(td2.gov().toString().split("/")[0])
-                    && td1.dep().toString().split("/")[0].equals(td2.dep().toString().split("/")[0])) {
+                        && td1.dep().toString().split("/")[0].equals(td2.dep().toString().split("/")[0])) {
                     found = true;
                     ++match;
                 } else {
@@ -287,35 +330,43 @@ public class FESVMService {
                 }
             }
         }
-        if (req1SVDep.isEmpty() || req2SVDep.isEmpty()) return 0.;
+        if (req1NNDep.isEmpty() || req2NNDep.isEmpty()) return 0.;
         else {
-            return match / (double) Math.min(req1SVDep.size(), req2SVDep.size());
+            return match / (double) Math.min(req1NNDep.size(), req2NNDep.size());
         }
     }
 
-    private List<TypedDependency> getSubjectVerbDependencies(FEPreprocessData summaryData, FEPreprocessData descriptionData) {
-        List<TypedDependency> sv = new ArrayList<>();
-        sv.addAll(getSVDependenciesFromData(summaryData));
-        sv.addAll(getSVDependenciesFromData(descriptionData));
-        return sv;
-    }
-
-    private List<TypedDependency> getSVDependenciesFromData(FEPreprocessData descriptionData) {
-        List<TypedDependency> sv = new ArrayList<>();
-        for (GrammaticalStructure sentence : descriptionData.getGrammaticalStructureList()) {
-            List<TypedDependency> dependencies = new ArrayList<>(sentence.allTypedDependencies());
-            for (TypedDependency dependency : dependencies) {
-                if (dependency.reln().toString().contains("nsubj") && dependency.gov().toString().split("/")[1].contains("VB")) {
-                    sv.add(dependency);
+    private double matchOV(List<TypedDependency> req1OVDep, List<TypedDependency> req2OVDep) {
+        double match = 0.;
+        for (TypedDependency td1 : req1OVDep) {
+            boolean found = false;
+            int i = 0;
+            while (!found && i < req2OVDep.size()) {
+                TypedDependency td2 = req2OVDep.get(i);
+                if (td1.reln().toString().equals(td2.reln().toString()) &&
+                        td1.gov().toString().split("/")[0].equals(td2.gov().toString().split("/")[0])
+                        && td1.dep().toString().split("/")[0].equals(td2.dep().toString().split("/")[0])) {
+                    found = true;
+                    ++match;
+                } else {
+                    ++i;
                 }
             }
         }
-        return sv;
+        if (req1OVDep.isEmpty() || req2OVDep.isEmpty()) return 0.;
+        else {
+            return match / (double) Math.min(req1OVDep.size(), req2OVDep.size());
+        }
     }
 
-    private double subjectScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
-        List<String> req1Subjects = getSubjects(summaryReq1, descriptionReq1);
-        List<String> req2Subjects = getSubjects(summaryReq2, descriptionReq2);
+
+    private double matchSV(List<TypedDependency> req1SVDep, List<TypedDependency> req2SVDep) {
+        return matchWords(req1SVDep, req2SVDep);
+    }
+
+    private double subjectScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
+        List<String> req1Subjects = Stream.concat(summaryReq1.getSubjects().stream(), descriptionReq1.getSubjects().stream()).collect(Collectors.toList());
+        List<String> req2Subjects = Stream.concat(summaryReq2.getSubjects().stream(), descriptionReq2.getSubjects().stream()).collect(Collectors.toList());
 
         if (req1Subjects.isEmpty() || req2Subjects.isEmpty()) return 0.;
         else {
