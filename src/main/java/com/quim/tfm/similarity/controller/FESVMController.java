@@ -21,8 +21,11 @@ public class FESVMController {
     @PostMapping("/train")
     public void FESVMTrain(@RequestBody OpenReqSchema schema,
                            @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
-                           @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures) {
-        fesvmService.train(schema, withLexicalFeatures, withSyntacticFeatures);
+                           @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures,
+                           @RequestParam(required = false, defaultValue = "RBF") Kernel kernel,
+                           @RequestParam(required = false, defaultValue = "1.0") double C,
+                           @RequestParam(required = false, defaultValue = "0.01") double sigma) {
+        fesvmService.train(schema, withLexicalFeatures, withSyntacticFeatures, kernel, C, sigma);
     }
 
     @PostMapping("/test")
@@ -35,8 +38,11 @@ public class FESVMController {
     @PostMapping("/train_and_test")
     public Stats FESVMTrainAndTest(@RequestBody OpenReqSchema schema, @RequestParam int k,
                                    @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
-                                   @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures) {
-        return fesvmService.trainAndTest(schema, k, Kernel.RBF, fesvmService.C, fesvmService.sigma, withLexicalFeatures,
+                                   @RequestParam(required = false, defaultValue = "true") boolean withSyntacticFeatures,
+                                   @RequestParam(required = false, defaultValue = "RBF") Kernel kernel,
+                                   @RequestParam(required = false, defaultValue = "1.0") double C,
+                                   @RequestParam(required = false, defaultValue = "0.01") double sigma) {
+        return fesvmService.trainAndTest(schema, k, kernel, C, sigma, withLexicalFeatures,
                 withSyntacticFeatures);
     }
 

@@ -32,12 +32,6 @@ public class FESVMService {
 
     private static final Logger logger = LoggerFactory.getLogger(FESVMService.class);
 
-    private double WS;
-    private double WD;
-
-    public static double C;
-    public static double sigma;
-
     @Autowired
     private RequirementService requirementService;
     @Autowired
@@ -48,24 +42,27 @@ public class FESVMService {
 
     public FESVMService() {
         try {
-            C = 10;
-            sigma = 0.01;
-            svmClassifier = new SVM(new GaussianKernel(sigma), C);
             dictionary = Dictionary.getDefaultResourceInstance();
         } catch (JWNLException e) {
             e.printStackTrace();
         }
-
-        WS = 3.0;
-        WD = 1.0;
     }
 
-    public void train(OpenReqSchema schema, boolean withLexicalFeatures, boolean withSyntacticFeatures) {
+    public void train(OpenReqSchema schema, boolean withLexicalFeatures, boolean withSyntacticFeatures, Kernel kernel, 
+                      double C, double sigma) {
         List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         duplicates = featureExtraction(duplicates, withLexicalFeatures, withSyntacticFeatures);
         double[][] objects = getObjectsAsDoubleMatrix(duplicates);
         int[] classes = getIntClasses(duplicates);
+        buildClassifier(kernel, C, sigma);
         svmClassifier.learn(objects, classes);
+    }
+
+    private void buildClassifier(Kernel kernel, double C, double sigma) {
+        if (kernel.equals(Kernel.LINEAR))
+            svmClassifier = new SVM(new LinearKernel(), C);
+        else
+            svmClassifier = new SVM(new GaussianKernel(sigma), C);
     }
 
     public OpenReqSchema test(OpenReqSchema schema, boolean withLexicalFeatures, boolean withSyntacticFeatures) {
@@ -147,7 +144,7 @@ public class FESVMService {
                     statsMap.put("C = " + C + "," + " sigma = " + sigma, stats);
                 }
             } else if (kernel.equals(Kernel.LINEAR)){
-                Stats stats = trainAndTest(schema, k, kernel, C, sigma, withLexicalFeatures, withSyntacticFeatures);
+                Stats stats = trainAndTest(schema, k, kernel, C, 0.0, withLexicalFeatures, withSyntacticFeatures);
                 statsMap.put("C = " + C, stats);
             } else throw new NotImplementedKernel();
         }
@@ -178,9 +175,11 @@ public class FESVMService {
     }
 
     private double[] getDoubles(Duplicate df) {
-        return new double[]{df.getWordOverlapScore(), df.getUnigramMatchScore(), df.getBigramMatchScore(),
-        df.getSubjectMatchScore(), df.getSubjectMatchScore(), df.getObjectVerbMatchScore(), df.getNounMatchScore(),
-        df.getNameEntityScore()};
+        return new double[]{df.getWordOverlapNameScore(), df.getUnigramMatchNameScore(), df.getBigramMatchNameScore(),
+        df.getSubjectMatchNameScore(), df.getSubjectMatchNameScore(), df.getObjectVerbMatchNameScore(), df.getNounMatchNameScore(),
+        df.getNameEntityNameScore(), df.getWordOverlapTextScore(), df.getUnigramMatchTextScore(), df.getBigramMatchTextScore(),
+                df.getSubjectMatchTextScore(), df.getSubjectMatchTextScore(), df.getObjectVerbMatchTextScore(), df.getNounMatchTextScore(),
+                df.getNameEntityTextScore()};
     }
 
     private List<Duplicate> featureExtraction(List<Duplicate> duplicates, boolean withLexicalFeatures, boolean withSyntacticFeatures) {
@@ -218,9 +217,13 @@ public class FESVMService {
                                  FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2,
                                  boolean withLexicalFeatures, boolean withSyntacticFeatures) {
         if (withLexicalFeatures) {
-            duplicate.setWordOverlapScore(wordOverlapScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2));
-            duplicate.setUnigramMatchScore(ngramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 1));
-            duplicate.setBigramMatchScore(ngramMatchScore(summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, 2));
+            duplicate.setWordOverlapNameScore(wordOverlapScore(summaryReq1, summaryReq2));
+            duplicate.setUnigramMatchNameScore(ngramMatchScore(summaryReq1, summaryReq2, 1));
+            duplicate.setBigramMatchNameScore(ngramMatchScore(summaryReq1, summaryReq2, 2));
+            
+            duplicate.setWordOverlapTextScore(wordOverlapScore(descriptionReq1, descriptionReq2));
+            duplicate.setUnigramMatchTextScore(ngramMatchScore(descriptionReq1, descriptionReq2, 1));
+            duplicate.setBigramMatchTextScore(ngramMatchScore(descriptionReq1, descriptionReq2, 2));
         }
         if (withSyntacticFeatures) {
             DependencyStruct summaryReq1Dependencies = getDependenciesFromData(summaryReq1);
@@ -228,13 +231,16 @@ public class FESVMService {
             DependencyStruct summaryReq2Dependencies = getDependenciesFromData(summaryReq2);
             DependencyStruct descriptionReq2Dependencies = getDependenciesFromData(descriptionReq2);
 
-            duplicate.setSubjectMatchScore(subjectScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
-            duplicate.setSubjectVerbMatchScore(subjectVerbScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
-            duplicate.setObjectVerbMatchScore(objectVerbScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
-            duplicate.setNounMatchScore(nounScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
-            duplicate.setNameEntityScore(nameEntityScore(summaryReq1Dependencies, descriptionReq1Dependencies, summaryReq2Dependencies, descriptionReq2Dependencies));
+            duplicate.setSubjectMatchNameScore(subjectScore(summaryReq1Dependencies, summaryReq2Dependencies));
+            duplicate.setSubjectVerbMatchNameScore(subjectVerbScore(summaryReq1Dependencies, summaryReq2Dependencies));
+            duplicate.setObjectVerbMatchNameScore(objectVerbScore(summaryReq1Dependencies, summaryReq2Dependencies));
+            duplicate.setNounMatchNameScore(nounScore(summaryReq1Dependencies, summaryReq2Dependencies));
+
+            duplicate.setSubjectMatchTextScore(subjectScore(descriptionReq1Dependencies, descriptionReq2Dependencies));
+            duplicate.setSubjectVerbMatchTextScore(subjectVerbScore(descriptionReq1Dependencies, descriptionReq2Dependencies));
+            duplicate.setObjectVerbMatchTextScore(objectVerbScore(descriptionReq1Dependencies, descriptionReq2Dependencies));
+            duplicate.setNounMatchTextScore(nounScore(descriptionReq1Dependencies, descriptionReq2Dependencies));
         }
-        //TODO other features
     }
 
     private DependencyStruct getDependenciesFromData(FEPreprocessData data) {
@@ -276,36 +282,24 @@ public class FESVMService {
         return struct;
     }
 
-    private double subjectVerbScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
-        List<TypedDependency> req1SVDep = Stream.concat(summaryReq1.getSubjectVerbDependencies().stream(),
-                descriptionReq1.getSubjectVerbDependencies().stream()).collect(Collectors.toList());
-        List<TypedDependency> req2SVDep = Stream.concat(summaryReq2.getSubjectVerbDependencies().stream(),
-                descriptionReq2.getSubjectVerbDependencies().stream()).collect(Collectors.toList());
+    private double subjectVerbScore(DependencyStruct req1, DependencyStruct req2) {
+        List<TypedDependency> req1SVDep = req1.getSubjectVerbDependencies();
+        List<TypedDependency> req2SVDep = req2.getSubjectVerbDependencies();
 
         return matchSV(req1SVDep, req2SVDep);
 
     }
 
-    private double objectVerbScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1,
-                                   DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
-        List<TypedDependency> req1SVDep = Stream.concat(summaryReq1.getObjectVerbDependencies().stream(),
-                descriptionReq1.getObjectVerbDependencies().stream()).collect(Collectors.toList());
-        List<TypedDependency> req2SVDep = Stream.concat(summaryReq2.getObjectVerbDependencies().stream(),
-                descriptionReq2.getObjectVerbDependencies().stream()).collect(Collectors.toList());
+    private double objectVerbScore(DependencyStruct req1, DependencyStruct req2) {
+        List<TypedDependency> req1SVDep = req1.getObjectVerbDependencies();
+        List<TypedDependency> req2SVDep = req2.getObjectVerbDependencies();
 
         return matchOV(req1SVDep, req2SVDep);
     }
 
-    private double nameEntityScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
-        //TODO
-        return 0.;
-    }
-
-    private double nounScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
-        List<TypedDependency> req1NNDep = Stream.concat(summaryReq1.getNounDependencies().stream(),
-                descriptionReq1.getObjectVerbDependencies().stream()).collect(Collectors.toList());
-        List<TypedDependency> req2NNDep = Stream.concat(summaryReq2.getNounDependencies().stream(),
-                descriptionReq2.getObjectVerbDependencies().stream()).collect(Collectors.toList());
+    private double nounScore(DependencyStruct req1, DependencyStruct req2) {
+        List<TypedDependency> req1NNDep = req1.getNounDependencies();
+        List<TypedDependency> req2NNDep = req2.getNounDependencies();
 
         return matchNN(req1NNDep, req2NNDep);
     }
@@ -364,9 +358,9 @@ public class FESVMService {
         return matchWords(req1SVDep, req2SVDep);
     }
 
-    private double subjectScore(DependencyStruct summaryReq1, DependencyStruct descriptionReq1, DependencyStruct summaryReq2, DependencyStruct descriptionReq2) {
-        List<String> req1Subjects = Stream.concat(summaryReq1.getSubjects().stream(), descriptionReq1.getSubjects().stream()).collect(Collectors.toList());
-        List<String> req2Subjects = Stream.concat(summaryReq2.getSubjects().stream(), descriptionReq2.getSubjects().stream()).collect(Collectors.toList());
+    private double subjectScore(DependencyStruct req1, DependencyStruct req2) {
+        List<String> req1Subjects = req1.getSubjects();
+        List<String> req2Subjects = req2.getSubjects();
 
         if (req1Subjects.isEmpty() || req2Subjects.isEmpty()) return 0.;
         else {
@@ -377,12 +371,8 @@ public class FESVMService {
     }
 
 
-    private double ngramMatchScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2, int n) {
-        double unigramMatchScoreSummary = ngramMatchPartialScore(summaryReq1, summaryReq2, n);
-        double unigramMatchScoreDescription = ngramMatchPartialScore(descriptionReq1, descriptionReq2, n);
-
-        return unigramMatchScoreSummary * WS +
-                unigramMatchScoreDescription * WD;
+    private double ngramMatchScore(FEPreprocessData req1, FEPreprocessData req2, int n) {
+        return ngramMatchPartialScore(req1, req2, n);
     }
 
     private double ngramMatchPartialScore(FEPreprocessData req1, FEPreprocessData req2, int n) {
@@ -396,12 +386,8 @@ public class FESVMService {
                 (double) (req1.size() + req2.size()) : 0;
     }
 
-    private double wordOverlapScore(FEPreprocessData summaryReq1, FEPreprocessData summaryReq2, FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2) {
-        double wordOverlapScoreSummary = wordOverlapPartialScore(summaryReq1, summaryReq2);
-        double wordOverlapScoreDescription = wordOverlapPartialScore(descriptionReq1, descriptionReq2);
-
-        return wordOverlapScoreSummary * WS +
-                wordOverlapScoreDescription * WD;
+    private double wordOverlapScore(FEPreprocessData req1, FEPreprocessData req2) {
+        return wordOverlapPartialScore(req1, req2);
     }
 
     private double wordOverlapPartialScore(FEPreprocessData req1, FEPreprocessData req2) {
