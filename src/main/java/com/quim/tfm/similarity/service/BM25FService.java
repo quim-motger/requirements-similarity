@@ -50,7 +50,7 @@ public class BM25FService {
         freeParameters.put("WF7", 2.427);*/
 
         freeParameters.put("WF1", 0.352);
-        freeParameters.put("WF2", 0.013);
+        freeParameters.put("WF2", 0.004);
         freeParameters.put("WF3", 2.049);
         freeParameters.put("WF4", 0.047);
         freeParameters.put("WF5", 0.970);
@@ -356,10 +356,12 @@ public class BM25FService {
         }*/
         for (int i = 0; i < requirements.size(); ++i) {
             List<Duplicate> duplicates = new ArrayList<>();
-            for (int j = i+1; j < requirements.size(); ++j) {
-                double score = sim(requirements.get(i), requirements.get(j));
-                Duplicate d = new Duplicate(requirements.get(i).getId(), requirements.get(j).getId(), score);
-                insertNewTopDuplicate(duplicates, d, requirements.size() - i+1);
+            for (int j = 1; j < requirements.size(); ++j) {
+                if (!requirements.get(i).getId().equals(requirements.get(j).getId())) {
+                    double score = sim(requirements.get(i), requirements.get(j));
+                    Duplicate d = new Duplicate(requirements.get(i).getId(), requirements.get(j).getId(), score);
+                    insertNewTopDuplicate(duplicates, d, requirements.size() - i + 1);
+                }
             }
             duplicateMap.put(requirements.get(i).getId(), duplicates);
             ++count;
@@ -376,10 +378,10 @@ public class BM25FService {
                     if (foundDuplicatesReq1.size() >= i)
                         foundDuplicatesReq1 = foundDuplicatesReq1.subList(0, i);
                     if (foundDuplicatesReq2.size() >= i)
-                        foundDuplicatesReq2 = foundDuplicatesReq1.subList(0, i);
+                        foundDuplicatesReq2 = foundDuplicatesReq2.subList(0, i);
 
                     if (foundDuplicatesReq1.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq2Id()))
-                            || foundDuplicatesReq2.stream().anyMatch(fd -> fd.getReq2Id().equals(d.getReq1Id()))) {
+                            || foundDuplicatesReq2.stream().anyMatch(fd -> fd.getReq1Id().equals(d.getReq1Id()))) {
                         if (recallMap.containsKey(i))
                             recallMap.put(i, recallMap.get(i) + 1.0);
                         else
