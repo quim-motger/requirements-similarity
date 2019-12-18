@@ -6,6 +6,7 @@ import com.quim.tfm.similarity.exception.NotFoundCustomException;
 import com.quim.tfm.similarity.exception.NotImplementedKernel;
 import com.quim.tfm.similarity.model.*;
 import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
+import com.quim.tfm.similarity.utils.TimingTools;
 import edu.stanford.nlp.trees.GrammaticalStructure;
 import edu.stanford.nlp.trees.TypedDependency;
 import net.sf.extjwnl.JWNLException;
@@ -52,10 +53,12 @@ public class FESVMService {
                       double C, double sigma) {
         List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         duplicates = featureExtraction(duplicates, withLexicalFeatures, withSyntacticFeatures);
+        TimingTools.startTimer("TRAIN");
         double[][] objects = getObjectsAsDoubleMatrix(duplicates);
         int[] classes = getIntClasses(duplicates);
         buildClassifier(kernel, C, sigma);
         svmClassifier.learn(objects, classes);
+        TimingTools.endTimer("TRAIN");
     }
 
     private void buildClassifier(Kernel kernel, double C, double sigma) {
@@ -68,10 +71,12 @@ public class FESVMService {
     public OpenReqSchema test(OpenReqSchema schema, boolean withLexicalFeatures, boolean withSyntacticFeatures) {
         List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         duplicates = featureExtraction(duplicates, withLexicalFeatures, withSyntacticFeatures);
+        TimingTools.startTimer("TEST");
         int[] classes = svmClassifier.predict(transformDuplicateFeaturesIntoDoubleMatrix(duplicates.toArray(new Duplicate[0])));
         for (int i = 0; i < duplicates.size(); ++i) {
             duplicates.get(i).setTag(DuplicateTag.fromValue(classes[i]));
         }
+        TimingTools.endTimer("TEST");
         return requirementService.convertToOpenReqSchema(null, duplicates);
     }
 
@@ -85,6 +90,8 @@ public class FESVMService {
         duplicates = featureExtraction(duplicates, withLexicalFeatures, withSyntacticFeatures);
         //duplicates = findDuplicates(duplicates);
         logger.info("Finished feature extraction");
+
+        TimingTools.startTimer("CROSS-VALIDATION");
 
         List<List<Duplicate>> chunks = Lists.partition(duplicates, duplicates.size() / k);
 
@@ -130,6 +137,7 @@ public class FESVMService {
 
         }
         Stats stats = new Stats(tp, tn, fp, fn);
+        TimingTools.endTimer("CROSS-VALIDATION");
         return stats;
     }
 
@@ -185,6 +193,12 @@ public class FESVMService {
     private List<Duplicate> featureExtraction(List<Duplicate> duplicates, boolean withLexicalFeatures, boolean withSyntacticFeatures) {
         List<Duplicate> filteredList = new ArrayList<>();
         int i = 0;
+        if (withSyntacticFeatures) {
+            TimingTools.startTimer("SYNTACTIC-NLP-PIPELINE");
+            TimingTools.pauseTimer("SYNTACTIC-NLP-PIPELINE");
+        }
+        TimingTools.startTimer("FEATURE-ALIGNMENT");
+        TimingTools.pauseTimer("FEATURE-ALIGNMENT");
         for (Duplicate d : duplicates) {
             if ((i+1) %10 == 0) logger.info("Duplicate " + (i+1) + " out of " + duplicates.size());
             try {
@@ -210,12 +224,19 @@ public class FESVMService {
             }
             ++i;
         }
+        if (withSyntacticFeatures) {
+            TimingTools.restartTimer("SYNTACTIC-NLP-PIPELINE");
+            TimingTools.endTimer("SYNTACTIC-NLP-PIPELINE");
+        }
+        TimingTools.restartTimer("FEATURE-ALIGNMENT");
+        TimingTools.endTimer("FEATURE-ALIGNMENT");
         return filteredList;
     }
 
     private void extractFeatures(Duplicate duplicate, FEPreprocessData summaryReq1, FEPreprocessData summaryReq2,
                                  FEPreprocessData descriptionReq1, FEPreprocessData descriptionReq2,
                                  boolean withLexicalFeatures, boolean withSyntacticFeatures) {
+        TimingTools.restartTimer("FEATURE-ALIGNMENT");
         if (withLexicalFeatures) {
             duplicate.setWordOverlapNameScore(wordOverlapScore(summaryReq1, summaryReq2));
             duplicate.setUnigramMatchNameScore(ngramMatchScore(summaryReq1, summaryReq2, 1));
@@ -241,6 +262,7 @@ public class FESVMService {
             duplicate.setObjectVerbMatchTextScore(objectVerbScore(descriptionReq1Dependencies, descriptionReq2Dependencies));
             duplicate.setNounMatchTextScore(nounScore(descriptionReq1Dependencies, descriptionReq2Dependencies));
         }
+        TimingTools.pauseTimer("FEATURE-ALIGNMENT");
     }
 
     private DependencyStruct getDependenciesFromData(FEPreprocessData data) {

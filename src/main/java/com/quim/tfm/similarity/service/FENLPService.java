@@ -3,6 +3,7 @@ package com.quim.tfm.similarity.service;
 import com.quim.tfm.similarity.model.DependencyTreeNode;
 import com.quim.tfm.similarity.model.FEPreprocessData;
 import com.quim.tfm.similarity.model.Token;
+import com.quim.tfm.similarity.utils.TimingTools;
 import edu.stanford.nlp.ling.TaggedWord;
 import edu.stanford.nlp.parser.nndep.DependencyParser;
 import edu.stanford.nlp.trees.GrammaticalStructure;
@@ -85,6 +86,8 @@ public class FENLPService {
 
         if (withSyntacticAnalysis) {
 
+            TimingTools.restartTimer("SYNTACTIC-NLP-PIPELINE");
+
             List<String> tokenList = Arrays.asList(tokensWithoutSentenceBoundaries);
             String[] sentences = splitBySentenceBoundary(tokens);
 
@@ -110,6 +113,8 @@ public class FENLPService {
                 }
             }
             feData.setGrammaticalStructureList(grammaticalStructures);
+            TimingTools.pauseTimer("SYNTACTIC-NLP-PIPELINE");
+
         }
 
         return feData;

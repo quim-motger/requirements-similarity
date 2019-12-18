@@ -18,17 +18,17 @@ public class BM25FController {
 
     @PostMapping("/req")
     public OpenReqSchema bm25fReq(@RequestBody @Valid OpenReqSchema schema, @RequestParam(required = false) List<String> projectList, @RequestParam Integer k) {
-        return BM25FService.bm25f_req(schema, k);
+        return BM25FService.bm25f_req(schema, projectList, k);
     }
 
     @PostMapping("/reqReq")
     public OpenReqSchema bm25fReqReq(@RequestBody @Valid OpenReqSchema schema, @RequestParam(required = false) List<String> projectList) {
-        return BM25FService.bm25f_reqReq(schema);
+        return BM25FService.bm25f_reqReq(schema, projectList);
     }
 
     @PostMapping("/train")
     public void bm25fTrain(@RequestBody OpenReqSchema schema, @RequestParam(required = false) List<String> projectList) {
-        BM25FService.bm25f_train(schema);
+        BM25FService.bm25f_train(schema, projectList);
     }
 
     @PostMapping("/test")

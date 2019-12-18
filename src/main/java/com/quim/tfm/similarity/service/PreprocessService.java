@@ -1,6 +1,7 @@
 package com.quim.tfm.similarity.service;
 
 import com.quim.tfm.similarity.entity.Requirement;
+import com.quim.tfm.similarity.utils.TimingTools;
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 import org.apache.lucene.analysis.Analyzer;
@@ -77,8 +78,10 @@ public class PreprocessService {
     }
 
     public void preprocessRequirementList(List<Requirement> requirements) {
+        TimingTools.startTimer("BASIC-NLP-PIPELINE");
         for (Requirement r : requirements) {
             preprocessRequirement(r);
         }
+        TimingTools.endTimer("BASIC-NLP-PIPELINE");
     }
 }

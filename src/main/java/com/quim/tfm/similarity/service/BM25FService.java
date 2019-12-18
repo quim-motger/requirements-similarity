@@ -6,6 +6,7 @@ import com.quim.tfm.similarity.model.Duplicate;
 import com.quim.tfm.similarity.model.Priority;
 import com.quim.tfm.similarity.model.TrainTripletBM25F;
 import com.quim.tfm.similarity.model.openreq.OpenReqSchema;
+import com.quim.tfm.similarity.utils.TimingTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -103,12 +104,14 @@ public class BM25FService {
             requirements = requirementService.getRequirements();
         else
             requirements = requirementService.getRequirementsByProjects(projectList);
+        TimingTools.startTimer("COMPUTE-DOCUMENT-FREQUENCY");
         documentFrequency = idfService.getDocumentFrequency(requirements);
+        TimingTools.endTimer("COMPUTE-DOCUMENT-FREQUENCY");
         logger.info("Data updated");
     }
 
-    public OpenReqSchema bm25f_req(OpenReqSchema schema, int k) {
-        init(null);
+    public OpenReqSchema bm25f_req(OpenReqSchema schema,  List<String> projectList, int k) {
+        init(projectList);
         List<Requirement> requirements = requirementService.getRequirementsFromOpenReqSchema(schema);
         List<Duplicate> duplicates = new ArrayList<>();
         for (Requirement requirement : requirements) {
@@ -265,9 +268,8 @@ public class BM25FService {
 
 
 
-    public void bm25f_train(OpenReqSchema schema) {
-
-        init(null);
+    public void bm25f_train(OpenReqSchema schema, List<String> projectList) {
+        init(projectList);
         List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
         List<TrainTripletBM25F> trainTripletBM25FS = new ArrayList<>();
         for (Duplicate d : duplicates) {
@@ -397,24 +399,25 @@ public class BM25FService {
         return recallMap;
     }
 
-    public OpenReqSchema bm25f_reqReq(OpenReqSchema schema) {
-        init(null);
+    public OpenReqSchema bm25f_reqReq(OpenReqSchema schema, List<String> projectList) {
+        init(projectList);
         logger.info("Starting duplicate evaluation");
         double time = 0.;
         int notProcessed = 0;
 
         List<Duplicate> duplicates = requirementService.getDuplicatesFromOpenReqSchema(schema);
 
+        TimingTools.startTimer("COMPUTE-SCORE");
         for (Duplicate d : duplicates) {
             try {
                 Requirement r1 = requirements.stream().filter(r -> r.getId().equals(d.getReq1Id())).findFirst().orElse(null);
                 Requirement r2 = requirements.stream().filter(r -> r.getId().equals(d.getReq2Id())).findFirst().orElse(null);
                 if (r1 == null || r2 == null) throw new NotFoundCustomException();
 
-                Calendar t1 = Calendar.getInstance();
+                //Calendar t1 = Calendar.getInstance();
                 double res = sim(r1, r2);
-                Calendar t2 = Calendar.getInstance();
-                time += (t2.getTimeInMillis() - t1.getTimeInMillis());
+                //Calendar t2 = Calendar.getInstance();
+                //time += (t2.getTimeInMillis() - t1.getTimeInMillis());
 
                 d.setScore(res);
             } catch (Exception e) {
@@ -422,8 +425,9 @@ public class BM25FService {
                 //logger.info("Requirement not found. Skipped");
             }
         }
+        TimingTools.endTimer("COMPUTE-SCORE");
         logger.info("Finish duplicate evaluation process.");
-        logger.info("Avg sim time:\t" + time/(duplicates.size()-notProcessed));
+        //logger.info("Avg sim time:\t" + time/(duplicates.size()-notProcessed));
         return requirementService.convertToOpenReqSchema(null, duplicates);
     }
 }
