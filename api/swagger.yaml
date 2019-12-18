@@ -1,0 +1,715 @@
+swagger: '2.0'
+info:
+  description: 'This API is an integrative tool for initializing, using and testing the requirement similarity detection approaches developed in Quim Motger master thesis'
+  version: 0.0.1
+  title: Requirements similarity detection
+  contact:
+    name: jmotger@essi.upc.edu
+  license:
+    name: 'APACHE LICENSE, VERSION 2.0'
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+host: 'localhost:9000'
+basePath: /
+tags:
+  - name: bm-25-f-controller
+    description: BM 25 F Controller
+  - name: fesvm-controller
+    description: FESVM Controller
+  - name: requirement-controller
+    description: Requirement Controller
+paths:
+  /requirements-similarity/bm25f/req:
+    post:
+      tags:
+        - bm-25-f-controller
+      summary: bm25fReq
+      operationId: bm25fReqUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: k
+          in: query
+          description: k
+          required: true
+          type: integer
+          format: int32
+        - name: projectList
+          in: query
+          description: projectList
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/bm25f/reqReq:
+    post:
+      tags:
+        - bm-25-f-controller
+      summary: bm25fReqReq
+      operationId: bm25fReqReqUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: projectList
+          in: query
+          description: projectList
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/bm25f/test:
+    post:
+      tags:
+        - bm-25-f-controller
+      summary: bm25fTest
+      operationId: bm25fTestUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: k
+          in: query
+          description: k
+          required: true
+          type: integer
+          format: int32
+        - name: projectList
+          in: query
+          description: projectList
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            additionalProperties:
+              type: number
+              format: double
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/bm25f/train:
+    post:
+      tags:
+        - bm-25-f-controller
+      summary: bm25fTrain
+      operationId: bm25fTrainUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: projectList
+          in: query
+          description: projectList
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/fe-svm/test:
+    post:
+      tags:
+        - fesvm-controller
+      summary: FESVMTest
+      operationId: FESVMTestUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        - name: withLexicalFeatures
+          in: query
+          description: withLexicalFeatures
+          required: false
+          type: boolean
+          default: true
+        - name: withSyntacticFeatures
+          in: query
+          description: withSyntacticFeatures
+          required: false
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/fe-svm/train:
+    post:
+      tags:
+        - fesvm-controller
+      summary: FESVMTrain
+      operationId: FESVMTrainUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: C
+          in: query
+          description: C
+          required: false
+          type: number
+          default: 1
+          format: double
+        - name: kernel
+          in: query
+          description: kernel
+          required: false
+          type: string
+          default: RBF
+          enum:
+            - LINEAR
+            - RBF
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        - name: sigma
+          in: query
+          description: sigma
+          required: false
+          type: number
+          default: 0.01
+          format: double
+        - name: withLexicalFeatures
+          in: query
+          description: withLexicalFeatures
+          required: false
+          type: boolean
+          default: true
+        - name: withSyntacticFeatures
+          in: query
+          description: withSyntacticFeatures
+          required: false
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/fe-svm/train_and_test:
+    post:
+      tags:
+        - fesvm-controller
+      summary: FESVMTrainAndTest
+      operationId: FESVMTrainAndTestUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: C
+          in: query
+          description: C
+          required: false
+          type: number
+          default: 1
+          format: double
+        - name: k
+          in: query
+          description: k
+          required: true
+          type: integer
+          format: int32
+        - name: kernel
+          in: query
+          description: kernel
+          required: false
+          type: string
+          default: RBF
+          enum:
+            - LINEAR
+            - RBF
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        - name: sigma
+          in: query
+          description: sigma
+          required: false
+          type: number
+          default: 0.01
+          format: double
+        - name: withLexicalFeatures
+          in: query
+          description: withLexicalFeatures
+          required: false
+          type: boolean
+          default: true
+        - name: withSyntacticFeatures
+          in: query
+          description: withSyntacticFeatures
+          required: false
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Stats'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/fe-svm/train_and_test_with_optimization:
+    post:
+      tags:
+        - fesvm-controller
+      summary: FESVMTrainAndTestWithOptimization
+      operationId: FESVMTrainAndTestWithOptimizationUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - name: C_values
+          in: query
+          description: C_values
+          required: true
+          type: array
+          items:
+            type: number
+            format: double
+          collectionFormat: multi
+        - name: k
+          in: query
+          description: k
+          required: true
+          type: integer
+          format: int32
+        - name: kernel
+          in: query
+          description: kernel
+          required: true
+          type: string
+          enum:
+            - LINEAR
+            - RBF
+        - in: body
+          name: schema
+          description: schema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        - name: sigma_values
+          in: query
+          description: sigma_values
+          required: false
+          type: array
+          items:
+            type: number
+            format: double
+          collectionFormat: multi
+        - name: withLexicalFeatures
+          in: query
+          description: withLexicalFeatures
+          required: false
+          type: boolean
+          default: true
+        - name: withSyntacticFeatures
+          in: query
+          description: withSyntacticFeatures
+          required: false
+          type: boolean
+          default: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/Stats'
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+  /requirements-similarity/requirement:
+    get:
+      tags:
+        - requirement-controller
+      summary: getRequirements
+      operationId: getRequirementsUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: projects
+          in: query
+          description: projects
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+        - name: requirements
+          in: query
+          description: requirements
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+    post:
+      tags:
+        - requirement-controller
+      summary: addRequirements
+      operationId: addRequirementsUsingPOST
+      consumes:
+        - application/json
+      produces:
+        - '*/*'
+      parameters:
+        - in: body
+          name: openReqSchema
+          description: openReqSchema
+          required: true
+          schema:
+            $ref: '#/definitions/OpenReqSchema'
+      responses:
+        '200':
+          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+    delete:
+      tags:
+        - requirement-controller
+      summary: dropDatabase
+      operationId: dropDatabaseUsingDELETE
+      produces:
+        - '*/*'
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      deprecated: false
+  '/requirements-similarity/requirement/{reqId}':
+    get:
+      tags:
+        - requirement-controller
+      summary: getRequirement
+      operationId: getRequirementUsingGET
+      produces:
+        - '*/*'
+      parameters:
+        - name: reqId
+          in: path
+          description: reqId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Requirement'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      deprecated: false
+    delete:
+      tags:
+        - requirement-controller
+      summary: deleteRequirement
+      operationId: deleteRequirementUsingDELETE
+      produces:
+        - '*/*'
+      parameters:
+        - name: reqId
+          in: path
+          description: reqId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      deprecated: false
+definitions:
+  OpenReqDependency:
+    type: object
+    properties:
+      dependency_score:
+        type: number
+        format: double
+      dependency_type:
+        type: string
+        enum:
+          - duplicates
+      fromid:
+        type: string
+      status:
+        type: string
+        enum:
+          - proposed
+          - accepted
+          - rejected
+      toid:
+        type: string
+    title: OpenReqDependency
+  OpenReqProject:
+    type: object
+    properties:
+      id:
+        type: string
+      specifiedRequirements:
+        type: array
+        items:
+          type: string
+    title: OpenReqProject
+  OpenReqRequirement:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      requirementParts:
+        type: array
+        items:
+          $ref: '#/definitions/OpenReqRequirementPart'
+      text:
+        type: string
+    title: OpenReqRequirement
+  OpenReqRequirementPart:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    title: OpenReqRequirementPart
+  OpenReqSchema:
+    type: object
+    properties:
+      dependencies:
+        type: array
+        items:
+          $ref: '#/definitions/OpenReqDependency'
+      projects:
+        type: array
+        items:
+          $ref: '#/definitions/OpenReqProject'
+      requirements:
+        type: array
+        items:
+          $ref: '#/definitions/OpenReqRequirement'
+    title: OpenReqSchema
+  Requirement:
+    type: object
+    properties:
+      components:
+        type: array
+        items:
+          type: string
+      description:
+        type: string
+      descriptionTokens:
+        type: array
+        items:
+          type: string
+      descriptionTokensWithSentenceBoundaries:
+        type: array
+        items:
+          type: string
+      id:
+        type: string
+      priority:
+        type: string
+        enum:
+          - NE
+          - P0
+          - P1
+          - P2
+          - P3
+          - P4
+          - P5
+          - NOT_DEFINED
+      project:
+        type: string
+      summary:
+        type: string
+      summaryTokens:
+        type: array
+        items:
+          type: string
+      summaryTokensWithSentenceBoundaries:
+        type: array
+        items:
+          type: string
+      type:
+        type: string
+      versions:
+        type: array
+        items:
+          type: string
+    title: Requirement
+  Stats:
+    type: object
+    properties:
+      accuracy:
+        type: number
+        format: double
+      fn:
+        type: integer
+        format: int32
+      fp:
+        type: integer
+        format: int32
+      tn:
+        type: integer
+        format: int32
+      tp:
+        type: integer
+        format: int32
+    title: Stats
+
