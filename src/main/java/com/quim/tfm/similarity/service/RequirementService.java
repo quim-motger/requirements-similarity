@@ -74,6 +74,14 @@ public class RequirementService {
             throw new NotFoundCustomException();
     }
 
+    @Cacheable
+    public OpenReqSchema getRequirementInOpenReqSchema(String reqId) {
+        if (requirementRepository.findById(reqId).isPresent())
+            return convertToOpenReqSchema(Collections.singletonList(requirementRepository.findById(reqId).get()), null);
+        else
+            throw new NotFoundCustomException();
+    }
+
     public void deleteRequirement(String reqId) {
         if (requirementRepository.findById(reqId).isPresent()) {
             requirementRepository.deleteById(reqId);

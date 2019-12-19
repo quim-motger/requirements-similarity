@@ -30,8 +30,8 @@ public class RequirementController {
     }
 
     @GetMapping("/{reqId}")
-    public Requirement getRequirement(@PathVariable String reqId) {
-        return requirementService.getRequirement(reqId);
+    public OpenReqSchema getRequirement(@PathVariable String reqId) {
+        return requirementService.getRequirementInOpenReqSchema(reqId);
     }
 
     @DeleteMapping("/{reqId}")
