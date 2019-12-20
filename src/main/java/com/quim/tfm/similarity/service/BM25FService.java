@@ -41,22 +41,22 @@ public class BM25FService {
 
         freeParameters = new HashMap<>();
         //initFreeParameters();
-        /*
+
         freeParameters.put("WF1", 1.163);
         freeParameters.put("WF2", 0.013);
         freeParameters.put("WF3", 2.285);
         freeParameters.put("WF4", 0.032);
         freeParameters.put("WF5", 0.772);
         freeParameters.put("WF6", 0.381);
-        freeParameters.put("WF7", 2.427);*/
+        freeParameters.put("WF7", 2.427);
 
-        freeParameters.put("WF1", 0.352);
+        /*freeParameters.put("WF1", 0.352);
         freeParameters.put("WF2", 0.004);
         freeParameters.put("WF3", 2.049);
         freeParameters.put("WF4", 0.047);
         freeParameters.put("WF5", 0.970);
         freeParameters.put("WF6", 0.012);
-        freeParameters.put("WF7", 0.111);
+        freeParameters.put("WF7", 0.111);*/
 
         freeParameters.put("WSF1", 2.980);
         freeParameters.put("WDF1", 0.287);

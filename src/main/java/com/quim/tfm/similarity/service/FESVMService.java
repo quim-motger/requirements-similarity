@@ -37,6 +37,8 @@ public class FESVMService {
     private RequirementService requirementService;
     @Autowired
     private FENLPService FENLPService;
+    @Autowired
+    private PreprocessService preprocessService;
 
     private Dictionary dictionary;
     private SVM svmClassifier;
@@ -205,13 +207,19 @@ public class FESVMService {
                 Requirement r1 = requirementService.getRequirement(d.getReq1Id());
                 Requirement r2 = requirementService.getRequirement(d.getReq2Id());
 
-                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1.getSummaryTokensWithSentenceBoundaries(),
+                List<String> r1Summary = preprocessService.analyzerWithoutStemming(r1.getSummary());
+                List<String> r1Description = preprocessService.analyzerWithoutStemming(r1.getDescription());
+                List<String> r2Summary = preprocessService.analyzerWithoutStemming(r2.getSummary());
+                List<String> r2Description = preprocessService.analyzerWithoutStemming(r2.getDescription());
+
+
+                FEPreprocessData summaryReq1 = FENLPService.applyFEPreprocess(r1Summary.toArray(new String[0]),
                         withLexicalFeatures, withSyntacticFeatures);
-                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1.getDescriptionTokensWithSentenceBoundaries(),
+                FEPreprocessData descriptionReq1 = FENLPService.applyFEPreprocess(r1Description.toArray(new String[0]),
                         withLexicalFeatures, withSyntacticFeatures);
-                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2.getSummaryTokensWithSentenceBoundaries(),
+                FEPreprocessData summaryReq2 = FENLPService.applyFEPreprocess(r2Summary.toArray(new String[0]),
                         withLexicalFeatures, withSyntacticFeatures);
-                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2.getDescriptionTokensWithSentenceBoundaries(),
+                FEPreprocessData descriptionReq2 = FENLPService.applyFEPreprocess(r2Description.toArray(new String[0]),
                         withLexicalFeatures, withSyntacticFeatures);
 
                 extractFeatures(d, summaryReq1, summaryReq2, descriptionReq1, descriptionReq2, withLexicalFeatures,

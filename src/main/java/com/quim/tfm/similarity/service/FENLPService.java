@@ -79,7 +79,10 @@ public class FENLPService {
         String[] posTags = posTagger.tag(tokensWithoutSentenceBoundaries);
 
         if (withLexicalAnalysis) {
-            String[] lemmas = Arrays.stream(lemmatizer.lemmatize(tokensWithoutSentenceBoundaries, posTags)).filter(s -> !s.equals("O")).collect(Collectors.toList()).toArray(new String[0]);
+            String[] lemmas = Arrays.stream(lemmatizer.lemmatize(tokensWithoutSentenceBoundaries, posTags)).collect(Collectors.toList()).toArray(new String[0]);
+            for (int i = 0; i < lemmas.length; ++i) {
+                if (lemmas[i].equals("O")) lemmas[i] = tokensWithoutSentenceBoundaries[i];
+            }
             feData.setLemmas(lemmas);
             feData.setPosTags(posTags);
         }

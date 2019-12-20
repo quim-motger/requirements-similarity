@@ -32,6 +32,7 @@ public class PreprocessService {
     private static final CharSequence[] specialChars = {"\\n","\\t","\\r"};
 
     private Analyzer analyzer;
+    private Analyzer analyzerWithoutStemming;
 
     public PreprocessService() {
         try {
@@ -39,6 +40,11 @@ public class PreprocessService {
                     .withTokenizer(STANDARD)
                     .addTokenFilter(STOPWORD)
                     .addTokenFilter(STEM)
+                    .addTokenFilter(LOWERCASE)
+                    .build();
+            analyzerWithoutStemming = CustomAnalyzer.builder()
+                    .withTokenizer(STANDARD)
+                    .addTokenFilter(STOPWORD)
                     .addTokenFilter(LOWERCASE)
                     .build();
             sentenceDetector = new SentenceDetectorME(new SentenceModel(new FileInputStream(sentenceDetectorPath)));
@@ -52,7 +58,11 @@ public class PreprocessService {
         r.setDescriptionTokens(analyze(r.getDescription()).stream().toArray(String[]::new));
     }
 
-    private List<String> analyze(String text) {
+    public List<String> analyzerWithoutStemming(String text) {
+        return analyzer(text, analyzerWithoutStemming);
+    }
+
+    private List<String> analyzer(String text, Analyzer analyzerWithoutStemming) {
         List<String> tokens = new ArrayList<>();
         try {
             String sentences[] = sentenceDetector.sentDetect(text);
@@ -60,7 +70,7 @@ public class PreprocessService {
             for (String sentence : sentences) {
                 for (CharSequence cs : specialChars)
                     sentence = sentence.replace(cs, " ");
-                TokenStream tokenStream = analyzer.tokenStream(FIELD_NAME, sentence);
+                TokenStream tokenStream = analyzerWithoutStemming.tokenStream(FIELD_NAME, sentence);
                 CharTermAttribute attr = tokenStream.addAttribute(CharTermAttribute.class);
                 tokenStream.reset();
 
@@ -75,6 +85,10 @@ public class PreprocessService {
             e.printStackTrace();
         }
         return tokens;
+    }
+
+    private List<String> analyze(String text) {
+        return analyzer(text, analyzer);
     }
 
     public void preprocessRequirementList(List<Requirement> requirements) {
