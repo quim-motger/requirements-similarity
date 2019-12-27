@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.quim.tfm</groupId>
-    <artifactId>demo</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>similarity-detection</name>
-    <description>Similarity Detection service tool integration</description>
+    <artifactId>requirements-similarity</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>requirements-similarity</name>
+    <description>Requirements Similarity Detection service tool integration</description>
 
     <properties>
         <java.version>1.8</java.version>
