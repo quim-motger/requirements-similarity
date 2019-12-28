@@ -338,6 +338,8 @@ public class BM25FService {
                     return mathService.partialDerivativeForBDF1(q, irrel, rel);
                 case "BDF2":
                     return mathService.partialDerivativeForBDF2(q, irrel, rel);
+                default:
+                    break;
             }
         } catch (NotFoundCustomException e) {
             //logger.error("Bug not found. Skipping for optimization");
@@ -350,12 +352,6 @@ public class BM25FService {
         HashMap<String, List<Duplicate>> duplicateMap = new HashMap<>();
         HashMap<Integer, Double> recallMap = new HashMap<>();
         int count = 0;
-        /*for (Requirement r1 : requirements) {
-            List<Duplicate> foundDuplicates = bm25f(r1, k, false);
-            duplicateMap.put(r1.getId(), foundDuplicates);
-            ++count;
-            logger.info("Requirement nº " + count + " (from " + requirements.size() + ")");
-        }*/
         for (int i = 0; i < requirements.size(); ++i) {
             List<Duplicate> duplicates = new ArrayList<>();
             for (int j = 1; j < requirements.size(); ++j) {

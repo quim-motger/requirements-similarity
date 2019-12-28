@@ -1,10 +1,12 @@
 swagger: '2.0'
 info:
-  description: 'This API is an integrative tool for initializing, using and testing the requirement similarity detection approaches developed in Quim Motger master thesis'
-  version: 0.0.1
-  title: Requirements similarity detection
+  description: |-
+
+    The Requirements Similarity system is a Java-based web service deployed as a REST API that allows software engineers to test and evaluate similarity algorithms between requirement items in a software engineering (SE) project.
+  version: 1.0.0
+  title: Requirements Similarity detection tool
   contact:
-    name: jmotger@essi.upc.edu
+    name: jmotger@uoc.edu
   license:
     name: 'APACHE LICENSE, VERSION 2.0'
     url: 'https://www.apache.org/licenses/LICENSE-2.0.txt'
@@ -22,7 +24,8 @@ paths:
     post:
       tags:
         - bm-25-f-controller
-      summary: bm25fReq
+      summary: Find duplicates of a requirement
+      description: 'Given a requirement, the BM25F algorithm is run against a set of requirements, and the list of the top *k* most similar requirements is returned.'
       operationId: bm25fReqUsingPOST
       consumes:
         - application/json
@@ -31,21 +34,23 @@ paths:
       parameters:
         - name: k
           in: query
-          description: k
+          description: The number of most similar duplicates to return
           required: true
           type: integer
           format: int32
+          allowEmptyValue: false
         - name: projectList
           in: query
-          description: projectList
+          description: 'The list of projects to use as corpus. If empty, all projects are used'
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+          allowEmptyValue: false
         - in: body
           name: schema
-          description: schema
+          description: The requirement to be analyzed
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
@@ -67,7 +72,8 @@ paths:
     post:
       tags:
         - bm-25-f-controller
-      summary: bm25fReqReq
+      summary: Compare two requirements
+      description: 'Given a pair of requirements, the similarity score is returned.'
       operationId: bm25fReqReqUsingPOST
       consumes:
         - application/json
@@ -76,15 +82,16 @@ paths:
       parameters:
         - name: projectList
           in: query
-          description: projectList
+          description: 'The list of projects to use as corpus. If empty, all projects are used'
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+          allowEmptyValue: false
         - in: body
           name: schema
-          description: schema
+          description: The requirement to be analyzed
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
@@ -106,7 +113,8 @@ paths:
     post:
       tags:
         - bm-25-f-controller
-      summary: bm25fTest
+      summary: recall-rate@k
+      description: 'Given a set of requirements and a set of known duplicates, a recall-rate@k analysis is performed'
       operationId: bm25fTestUsingPOST
       consumes:
         - application/json
@@ -115,21 +123,23 @@ paths:
       parameters:
         - name: k
           in: query
-          description: k
+          description: The number of most similar duplicates to return
           required: true
           type: integer
           format: int32
+          allowEmptyValue: false
         - name: projectList
           in: query
-          description: projectList
+          description: 'The list of projects to use as corpus. If empty, all projects are used'
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+          allowEmptyValue: false
         - in: body
           name: schema
-          description: schema
+          description: The set of duplicated pairs
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
@@ -154,7 +164,8 @@ paths:
     post:
       tags:
         - bm-25-f-controller
-      summary: bm25fTrain
+      summary: Optimize free parameters
+      description: 'Given a set of duplicated requirement pairs, a tuning process is run to optimize the weights of the features of the algorithms.'
       operationId: bm25fTrainUsingPOST
       consumes:
         - application/json
@@ -163,15 +174,16 @@ paths:
       parameters:
         - name: projectList
           in: query
-          description: projectList
+          description: 'The list of projects to use as corpus. If empty, all projects are used'
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+          allowEmptyValue: false
         - in: body
           name: schema
-          description: schema
+          description: The set of duplicated pairs
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
@@ -191,7 +203,8 @@ paths:
     post:
       tags:
         - fesvm-controller
-      summary: FESVMTest
+      summary: Predict
+      description: 'Given a set of not-labelled pairs of requirements, the system predicts their classification using the trained SVM classifier'
       operationId: FESVMTestUsingPOST
       consumes:
         - application/json
@@ -200,22 +213,24 @@ paths:
       parameters:
         - in: body
           name: schema
-          description: schema
+          description: The pair dataset for training
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
         - name: withLexicalFeatures
           in: query
-          description: withLexicalFeatures
+          description: 'If *true*, lexical features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
         - name: withSyntacticFeatures
           in: query
-          description: withSyntacticFeatures
+          description: 'If *true*, syntactic features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
       responses:
         '200':
           description: OK
@@ -234,7 +249,8 @@ paths:
     post:
       tags:
         - fesvm-controller
-      summary: FESVMTrain
+      summary: Train a SVM model
+      description: 'Given a set of labelled duplicate and not-duplicate pairs of requirements, the system trains a SVM classifier with the defined configuration parameters.'
       operationId: FESVMTrainUsingPOST
       consumes:
         - application/json
@@ -243,45 +259,50 @@ paths:
       parameters:
         - name: C
           in: query
-          description: C
+          description: The value of the *C* parameter
           required: false
           type: number
           default: 1
           format: double
+          allowEmptyValue: false
         - name: kernel
           in: query
-          description: kernel
+          description: 'The type of kernel to be used (*LINEAR*, *RBF*)'
           required: false
           type: string
           default: RBF
+          allowEmptyValue: false
           enum:
             - LINEAR
             - RBF
         - in: body
           name: schema
-          description: schema
+          description: The pair dataset for training
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
         - name: sigma
           in: query
-          description: sigma
+          description: The value of the *sigma* parameter (only used for RBF)
           required: false
           type: number
           default: 0.01
           format: double
+          allowEmptyValue: false
         - name: withLexicalFeatures
           in: query
-          description: withLexicalFeatures
+          description: 'If *true*, lexical features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
         - name: withSyntacticFeatures
           in: query
-          description: withSyntacticFeatures
+          description: 'If *true*, syntactic features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
       responses:
         '200':
           description: OK
@@ -298,7 +319,8 @@ paths:
     post:
       tags:
         - fesvm-controller
-      summary: FESVMTrainAndTest
+      summary: Cross-validation
+      description: 'Given a set of duplicate and not-duplicate pairs of requirements, the system runs a *k*-cross-validation and provides the aggregate confusion matrix results.'
       operationId: FESVMTrainAndTestUsingPOST
       consumes:
         - application/json
@@ -307,51 +329,57 @@ paths:
       parameters:
         - name: C
           in: query
-          description: C
+          description: The value of the *C* parameter
           required: false
           type: number
           default: 1
           format: double
+          allowEmptyValue: false
         - name: k
           in: query
-          description: k
+          description: The number of folds to split the data for the cross-validation
           required: true
           type: integer
           format: int32
+          allowEmptyValue: false
         - name: kernel
           in: query
-          description: kernel
+          description: 'The type of kernel to be used (*LINEAR*, *RBF*)'
           required: false
           type: string
           default: RBF
+          allowEmptyValue: false
           enum:
             - LINEAR
             - RBF
         - in: body
           name: schema
-          description: schema
+          description: The pair dataset for training
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
         - name: sigma
           in: query
-          description: sigma
+          description: The value of the *sigma* parameter (only used for RBF)
           required: false
           type: number
           default: 0.01
           format: double
+          allowEmptyValue: false
         - name: withLexicalFeatures
           in: query
-          description: withLexicalFeatures
+          description: 'If *true*, lexical features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
         - name: withSyntacticFeatures
           in: query
-          description: withSyntacticFeatures
+          description: 'If *true*, syntactic features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
       responses:
         '200':
           description: OK
@@ -370,7 +398,8 @@ paths:
     post:
       tags:
         - fesvm-controller
-      summary: FESVMTrainAndTestWithOptimization
+      summary: Cross-validation with configuration optimization
+      description: 'Given a set of duplicate and not-duplicate pairs of requirements, the system runs a *k*-cross-validation and provides the aggregate confusion matrix results for all possible combinations between the request configuration parameters.'
       operationId: FESVMTrainAndTestWithOptimizationUsingPOST
       consumes:
         - application/json
@@ -379,54 +408,61 @@ paths:
       parameters:
         - name: C_values
           in: query
-          description: C_values
-          required: true
+          description: The values of the *C* parameter to be tested
+          required: false
           type: array
           items:
             type: number
             format: double
           collectionFormat: multi
+          allowEmptyValue: false
         - name: k
           in: query
-          description: k
+          description: The number of folds to split the data for the cross-validation
           required: true
           type: integer
           format: int32
+          allowEmptyValue: false
         - name: kernel
           in: query
-          description: kernel
-          required: true
+          description: 'The type of kernel to be used (*LINEAR*, *RBF*)'
+          required: false
           type: string
+          default: RBF
+          allowEmptyValue: false
           enum:
             - LINEAR
             - RBF
         - in: body
           name: schema
-          description: schema
+          description: The pair dataset for training
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
         - name: sigma_values
           in: query
-          description: sigma_values
+          description: The values of the *sigma* parameter to be tested (only used for RBF)
           required: false
           type: array
           items:
             type: number
             format: double
           collectionFormat: multi
+          allowEmptyValue: false
         - name: withLexicalFeatures
           in: query
-          description: withLexicalFeatures
+          description: 'If *true*, lexical features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
         - name: withSyntacticFeatures
           in: query
-          description: withSyntacticFeatures
+          description: 'If *true*, syntactic features are used'
           required: false
           type: boolean
           default: true
+          allowEmptyValue: false
       responses:
         '200':
           description: OK
@@ -447,27 +483,30 @@ paths:
     get:
       tags:
         - requirement-controller
-      summary: getRequirements
+      summary: Export requirements
+      description: Export a set of requirements of the system.
       operationId: getRequirementsUsingGET
       produces:
         - '*/*'
       parameters:
         - name: projects
           in: query
-          description: projects
+          description: A list of project ids to be exported
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+          allowEmptyValue: false
         - name: requirements
           in: query
-          description: requirements
+          description: A list of requirement ids to be exported
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+          allowEmptyValue: false
       responses:
         '200':
           description: OK
@@ -483,7 +522,8 @@ paths:
     post:
       tags:
         - requirement-controller
-      summary: addRequirements
+      summary: Import requirements
+      description: 'Import a set of requirements to the system, performs a Basic NLP pipeline preprocess to their natural language data, and store them into the database.'
       operationId: addRequirementsUsingPOST
       consumes:
         - application/json
@@ -492,7 +532,7 @@ paths:
       parameters:
         - in: body
           name: openReqSchema
-          description: openReqSchema
+          description: Request body object with the requirements in OpenReq JSON schema format
           required: true
           schema:
             $ref: '#/definitions/OpenReqSchema'
@@ -511,7 +551,8 @@ paths:
     delete:
       tags:
         - requirement-controller
-      summary: dropDatabase
+      summary: Drops the database
+      description: Deletes all existing requirements.
       operationId: dropDatabaseUsingDELETE
       produces:
         - '*/*'
@@ -529,21 +570,22 @@ paths:
     get:
       tags:
         - requirement-controller
-      summary: getRequirement
+      summary: Get a requirement
+      description: Export a specific requirement of the system.
       operationId: getRequirementUsingGET
       produces:
         - '*/*'
       parameters:
         - name: reqId
           in: path
-          description: reqId
+          description: The requirement id to be exported
           required: true
           type: string
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Requirement'
+            $ref: '#/definitions/OpenReqSchema'
         '401':
           description: Unauthorized
         '403':
@@ -554,14 +596,15 @@ paths:
     delete:
       tags:
         - requirement-controller
-      summary: deleteRequirement
+      summary: Delete a requirement
+      description: Deletes a specific requirement of the system.
       operationId: deleteRequirementUsingDELETE
       produces:
         - '*/*'
       parameters:
         - name: reqId
           in: path
-          description: reqId
+          description: The requirement id to be deleted
           required: true
           type: string
       responses:
@@ -644,55 +687,6 @@ definitions:
         items:
           $ref: '#/definitions/OpenReqRequirement'
     title: OpenReqSchema
-  Requirement:
-    type: object
-    properties:
-      components:
-        type: array
-        items:
-          type: string
-      description:
-        type: string
-      descriptionTokens:
-        type: array
-        items:
-          type: string
-      descriptionTokensWithSentenceBoundaries:
-        type: array
-        items:
-          type: string
-      id:
-        type: string
-      priority:
-        type: string
-        enum:
-          - NE
-          - P0
-          - P1
-          - P2
-          - P3
-          - P4
-          - P5
-          - NOT_DEFINED
-      project:
-        type: string
-      summary:
-        type: string
-      summaryTokens:
-        type: array
-        items:
-          type: string
-      summaryTokensWithSentenceBoundaries:
-        type: array
-        items:
-          type: string
-      type:
-        type: string
-      versions:
-        type: array
-        items:
-          type: string
-    title: Requirement
   Stats:
     type: object
     properties:
@@ -712,4 +706,3 @@ definitions:
         type: integer
         format: int32
     title: Stats
-

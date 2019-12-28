@@ -29,12 +29,14 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         ApiInfo apiInfo = new ApiInfo(
-                "Requirements similarity detection",
-                "This API is an integrative tool for initializing, using and testing the requirement " +
-                        "similarity detection approaches developed in Quim Motger master thesis",
-                "0.0.1",
+                "Requirements Similarity detection tool",
+                "\n" +
+                        "The Requirements Similarity system is a Java-based web service deployed as a REST API that " +
+                        "allows software engineers to test and evaluate similarity algorithms between requirement " +
+                        "items in a software engineering (SE) project.",
+                "1.0.0",
                 null,
-                "jmotger@essi.upc.edu",
+                "jmotger@uoc.edu",
                 "APACHE LICENSE, VERSION 2.0",
                 "https://www.apache.org/licenses/LICENSE-2.0.txt"
         );
