@@ -1,5 +1,7 @@
 # Requirements Similarity
 
+[![CodeFactor](https://www.codefactor.io/repository/github/quim-motger/tfm/badge)](https://www.codefactor.io/repository/github/quim-motger/tfm)
+
 ## Table of contents
 
 * [General overview](#general-overview)
