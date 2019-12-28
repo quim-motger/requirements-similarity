@@ -1,5 +1,8 @@
 # Requirements Similarity
 
+[![Inline docs](http://inch-ci.org/github/quim-motger/tfm.svg?branch=master)](http://inch-ci.org/github/quim-motger/tfm)
+
+
 ## Table of contents
 
 * [General overview](#general-overview)
