@@ -88,9 +88,35 @@ The figure below depicts a general overview of the Requirements Similarity syste
 
 ![](img/general-overview.png)
 
+Concerning the **Requirements Similarity system**, it is built as a decoupled microservice designed in a scalable 3 layer architecture including: interface/controller (RESTful API); service/business logic (modules); and the data layer (requirements DB).
 
+There are two independent modules:
+
+- The **Data Management module** implements all features regarding the requirements management data operations. All read, delete, write and update operations are processed in this module. Additionally, the insert of new requirements is used to apply a basic initial NLP preprocess, which is used by all the algorithms. This basic pipeline includes: Sentence Boundary Disambiguation, Capitalization, Stop Word Removal, Tokenization and Stemming.
+
+- The **Similarity Detection module** develops all domain logic handling the evaluation of requirements similarity algorithms. There are two main components: the BM25FService and the FESVMService. Each one of them implements the features required for each algorithm. Additional classes are designed to extract and decouple some additional features required by each algorithm from the logic of the services.
 
 ![](img/class-diagram.png)
+
+Software developers that might be interested in extending the system with new algorithms would only require to do the following steps:
+
+1. Implement a new controller class similar to BM25FController and FESVMController, exposing all available features for the new algorithm.
+
+2. Implement a new service class similar to BM25FService and FESVMService which uses the RequirementService to read requirements data. This service class will include all domain-specific logic required by the algorithm.
+
+Concerning the **Qt's public JIRA issue repository**, this project provides additional Python scripts to export issues from this repository and import them to the Requirements Similarity system. Additionally, a list of duplicate and not-duplicate requirements is provided for validation purposes. This information is located under the `{project}/scripts` and the `{project}/json-files` folders respectively.
+
+Concerning the data import/export scripts:
+
+- `export-all.py`	- Export all Qt's public JIRA issues from January 2009 to November 2019 and stores them in a JSON file
+- `load_requirements.py` - Import all requirements in the `export-all.py` output file to a local instance of the Requirements Similarity service
+
+Additional scripts for study and validation purposes are provided
+
+Concerning the data files:
+
+- `requirement-pairs.json` - Contains a list of requirement pairs from the Qt's public JIRA repository which are identified as duplicates (1436) and not-duplicates (1499)
+
 
 ### Sources
 
