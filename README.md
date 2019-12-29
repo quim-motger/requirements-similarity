@@ -10,6 +10,7 @@
 * [How to run](#how-to-run)
 * [How to use the service](#how-to-use-the-service)
 * [Notes for developers](#notes-for-developers)
+* [Release](#release)
 * [References](#references)
 * [License](#license)
 
@@ -119,6 +120,11 @@ Concerning the data files:
 
 - `requirement-pairs.json` - Contains a list of requirement pairs from the Qt's public JIRA repository which are identified as duplicates (1436) and not-duplicates (1499)
 
+### Release
+
+A stable release (v1.0) is published at: https://github.com/quim-motger/tfm/releases/tag/v1.0
+
+This release includes a .zip file with a runnable jar to deploy and test the tool, with the required models and files.
 
 ### Sources
 
