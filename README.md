@@ -130,7 +130,7 @@ Additionally, 3 OpenReq JSON instances for testing and usage purposes are provid
 
 ### Release
 
-A stable release (v1.0) is published at: https://github.com/quim-motger/tfm/releases/tag/v1.0
+A stable release (v1.0) is published at: https://github.com/quim-motger/tfm/releases/tag/v1.1
 
 This release includes a .zip file with a runnable jar to deploy and test the tool, with the required models and files.
 
