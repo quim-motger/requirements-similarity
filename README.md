@@ -120,6 +120,14 @@ Concerning the data files:
 
 - `requirement-pairs.json` - Contains a list of requirement pairs from the Qt's public JIRA repository which are identified as duplicates (1436) and not-duplicates (1499)
 
+Additionally, 3 OpenReq JSON instances for testing and usage purposes are provided at `src/main/resources/request_examples`. These files are:
+
+- `requirementsAndProjects.json` - A JSON file in the OpenReq Schema containing a subset of the requirements and projects used for the validation
+
+- `duplicates.json` - A JSON file in the OpenReq Schema containing a subset of the duplicate and not-duplicate relations used for the validation
+
+- `OpenReqSchema.json` - A JSON file in the OpenReq Schema containing the requirements, the projects and the duplicates in the previous files
+
 ### Release
 
 A stable release (v1.0) is published at: https://github.com/quim-motger/tfm/releases/tag/v1.0
