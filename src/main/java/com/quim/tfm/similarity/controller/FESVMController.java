@@ -55,7 +55,7 @@ public class FESVMController {
             " the system runs a *k*-cross-validation and provides the aggregate confusion matrix results.")
     public Stats FESVMTrainAndTest(@ApiParam(value = "The pair dataset for training", required = true)
                                        @RequestBody OpenReqSchema schema,
-                                   @ApiParam(value = "The number of folds to split the data for the cross-validation", required = true)
+                                   @ApiParam(value = "The number of folds to split the data for the cross-validation", required = true, defaultValue = "10")
                                    @RequestParam int k,
                                    @ApiParam(value = "If *true*, lexical features are used")
                                        @RequestParam(required = false, defaultValue = "true") boolean withLexicalFeatures,
@@ -78,7 +78,7 @@ public class FESVMController {
             " possible combinations between the request configuration parameters.")
     public HashMap<String, Stats> FESVMTrainAndTestWithOptimization(@ApiParam(value = "The pair dataset for training", required = true)
                                                                         @RequestBody OpenReqSchema schema,
-                                                                    @ApiParam(value = "The number of folds to split the data for the cross-validation", required = true)
+                                                                    @ApiParam(value = "The number of folds to split the data for the cross-validation", required = true, defaultValue = "10")
                                                                     @RequestParam int k,
                                                                     @ApiParam(value = "The type of kernel to be used (*LINEAR*, *RBF*)")
                                                                     @RequestParam(required = false, defaultValue = "RBF") Kernel kernel,

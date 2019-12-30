@@ -25,7 +25,7 @@ public class BM25FController {
                                       @RequestBody @Valid OpenReqSchema schema,
                                   @ApiParam(value = "The list of projects to use as corpus. If empty, all projects are used")
                                   @RequestParam(required = false) List<String> projectList,
-                                  @ApiParam(value = "The number of most similar duplicates to return", required = true)
+                                  @ApiParam(value = "The number of most similar duplicates to return", required = true, defaultValue = "20")
                                   @RequestParam Integer k) {
         return BM25FService.bm25f_req(schema, projectList, k);
     }
@@ -50,7 +50,7 @@ public class BM25FController {
 
     @PostMapping("/test")
     @ApiOperation(value = "recall-rate@k", notes = "Given a set of requirements and a set of known duplicates, a recall-rate@k analysis is performed")
-    public HashMap<Integer, Double> bm25fTest(@ApiParam(value = "The number of most similar duplicates to return", required = true)
+    public HashMap<Integer, Double> bm25fTest(@ApiParam(value = "The number of most similar duplicates to return", required = true, defaultValue = "20")
                                                   @RequestParam Integer k,
                                               @ApiParam(value = "The list of projects to use as corpus. If empty, all projects are used")
                                               @RequestParam(required = false) List<String> projectList,

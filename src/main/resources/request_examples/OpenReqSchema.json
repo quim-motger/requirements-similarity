@@ -1,0 +1,965 @@
+{
+  "requirements": [
+    {
+      "id": "AUTOSUITE-479",
+      "name": "Add Documentation about the limitations of the control_panel template",
+      "text": "The control_panel doesn't support all qface features, these limitations need to be documented: e.g. no model support, no struct support",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Task"
+        },
+        {
+          "id": "components",
+          "name": "Qt IVI"
+        },
+        {
+          "id": "versions",
+          "name": "5.11"
+        }
+      ]
+    },
+    {
+      "id": "PYSIDE-339",
+      "name": "Fix  build warnings",
+      "text": "[just for the record]h2. QtCore* [fixed] enum 'QSysInfo::WinVersion' does not have a type entry or is not an enum.\tenum 'QSysInfo::MacVersion' does not have a type entry or is not an enum: \tdeprecated* signature 'parent()const' for function modification in\t'QSortFilterProxyModel' not found. Possible candidates: \tparent(QModelIndex)const in QSortFilterProxyModel:    qtbase/src/corelib/itemmodels/qsortfilterproxymodel.h:123\t* There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'QJsonDocument::rawData(int * size)c onst'. qtbase/src/corelib/json/qjsondocument.h:96* enum 'AllocationOption' does not have a type entry or is not an enum:         qtbase/src/corelib/tools/qarraydata.h:84          * [fixed] enum 'Qt::EnterKeyType' does not have a type entry or is not an enum:  qtbase/src/corelib/global/qnamespace.h:1371    * template baseclass 'QListSpecialMethods<T>' of 'QList' is not known  qtbase/src/corelib/tools/qlist.h:66h2. QtNetwork* There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const quint8 *' in function       'QHostAddress::setAddress(const quint8 * ip6Addr)'.* there's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'bool *' in function 'QHostAddress::toIPv4Address(bool * ok) const'.* There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'const quint8 *' in function 'QHostAddress::QHostAddress(const quint8 * ip6Addr)'. qtbase/src/network/kernel/qhostaddress.hh2. QtGui* Unable to decide type of property: 'QScreen' in class 'QGuiApplication' qtbase/src/gui/kernel/qguiapplication.h:73                                    * [fixed]  enum 'QPixmap::ShareMode' is specified in typesystem, but not declared Qt 4, X11 legacyh2. QtQml*  enum 'QmlCurrentSingletonTypeRegistrationVersion' does not have a type entry or is not an enum qtdeclarative/src/qml/qml/qqml.h:544* enum 'QML_HAS_ATTACHED_PROPERTIES' does not have a type entry or is not an enum qtdeclarative/src/qml/qml/qqml.h:62* enum 'QJSEngine::Extension' does not have a type entry or is not an enum    qtdeclarative/src/qml/jsapi/qjsengine.h:88 * There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'bool *' in function QQmlExpression::evaluate(bool * valueIsUndefined)'.   qtdeclarative/src/qml/qml/qqmlexpression.h:81* class not found for setup inheritance 'QQmlParserStatus', class 'QQuickItem' inherits from unknown base class 'QQmlParserStatus' qtdeclarative/src/qml/qml/qqmlparserstatus.h* class not found for setup inheritance 'QQmlImageProviderBase', class 'QQuickImageProvider' inherits from unknown base class  QQmlImageProviderBase' \tqtdeclarative/src/quick/util/qquickimageprovider.h:81 , QmlImageProviderBase at qtdeclarative/src/qml/qml/qqmlengine.h:48\th2. QtQuick* There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'bool *' in function 'QQuickItem::itemTransform(QQuickItem * arg__1, bool * arg__2) const'. qtdeclarative/src/quick/items/qquickitem.h:312  , method marked as \\internal\t",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P5"
+        },
+        {
+          "id": "type",
+          "name": "Task"
+        },
+        {
+          "id": "components",
+          "name": "PySide"
+        },
+        {
+          "id": "versions",
+          "name": "dev"
+        }
+      ]
+    },
+    {
+      "id": "PYSIDE-352",
+      "name": "pyside2uic does not compile web views properly",
+      "text": "When I use pyside2uic.compileUiDir on a .ui file that contains a QWebView. The bottom of the compiled .py file contains the import statement: from PySide import QtWebKit. It should be PySide2, not PySide, right?",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P3"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "PySide"
+        },
+        {
+          "id": "versions",
+          "name": "dev"
+        }
+      ]
+    },
+    {
+      "id": "PYSIDE-361",
+      "name": "pyside2uic creates a PySide1 import for QWebView",
+      "text": "If a .ui file using a QWebView is compiled with pyside2uic, the wrong import statement will be created:from PySide import QtWebKitshould be:from PySide2 import QtWebKit",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Other"
+        },
+        {
+          "id": "versions",
+          "name": "dev"
+        }
+      ]
+    },
+    {
+      "id": "PYSIDE-453",
+      "name": "warnings when build QtCore",
+      "text": "Python 3.5 with Qt 5.6.3(latest 5.6 branch): {code}~/pyside-setup/testenv3_build/py3.5-qt5.6.3-64bit-release/pyside2/PySide2/QtCore$ make clean; make...[ 10%] Running generator for QtCore...** WARNING scope not found for function definition:QListSpecialMethods<QString>::self\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::self\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::sort\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::removeDuplicates\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::join\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::join\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::filter\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::replaceInStrings\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::replaceInStrings\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::filter\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::replaceInStrings\tdefinition *ignored*** WARNING scope not found for function definition:QListSpecialMethods<QString>::filter\tdefinition *ignored*** WARNING scope not found for function definition:QtPrivate::IsMetaTypePair<T,true>::registerConverter\tdefinition *ignored*Generating class model...                    [OK]Generating enum model...                     qt.shiboken: enum 'QML_HAS_ATTACHED_PROPERTIES' does not have a type entry or is not an enum[WARNING]qt.shiboken: enum 'QmlCurrentSingletonTypeRegistrationVersion' does not have a type entry or is not an enumGenerating namespace model...                [WARNING]Resolving typedefs...                        [OK]Fixing class inheritance...                  qt.shiboken: template baseclass 'QListSpecialMethods<T>' of 'QList' is not known[WARNING]Detecting inconsistencies in class model...  [OK][OK]qt.shiboken: signature 'parent()const' for function modification in 'QSortFilterProxyModel' not found. Possible candidates: parent(QModelIndex)const in QSortFilterProxyModelqt.shiboken: There's no user provided way (conversion rule, argument removal, custom code, etc) to handle the primitive argument type 'int *' in function 'QJsonDocument::rawData(int * size) const'.Done, 4060ms, 5 warnings (484 known issues)...{code}",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Shiboken"
+        },
+        {
+          "id": "versions",
+          "name": "dev"
+        }
+      ]
+    },
+    {
+      "id": "QBS-952",
+      "name": "QtCreator crashes in case of any error in setupRunEnvironment",
+      "text": "In case there is any non-syntactical problem with a module's setupRunEnvironment script, QtCreator crashes immediately. As a trivial example, use a module that has a setupRunEnvironment script like this:{code}    setupRunEnvironment: {        spark    }{code}The reason for the crash is that qbs::RunEnvironment::runEnvironment throws a qbs::ErrorInfo exception (\"Error while setting up run environment: ReferenceError: Can't find variable: spark\") that is never catched in QtCreator.This is supposed to be a bug in Qbs, since the public API is designed in a way that no exceptions must ever pass the API boundary.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "General\nQt Creator Integration"
+        },
+        {
+          "id": "versions",
+          "name": "1.4.3\n1.4.4\n1.4.5\n1.5.0"
+        }
+      ]
+    },
+    {
+      "id": "QT3DS-350",
+      "name": "Qt3DSRegistry is unused and can be removed",
+      "text": "",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P3"
+        },
+        {
+          "id": "type",
+          "name": "Technical task"
+        },
+        {
+          "id": "components",
+          "name": "Editor Application"
+        },
+        {
+          "id": "versions",
+          "name": "Open Source Release"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-50308",
+      "name": "Typo and broken compilation in qnativesocketengine_unix",
+      "text": "OS: FreeBSD 10I think it is just typo or copy-paste.Anyway compilation is broken.Suggested changes:{code}diff --git a/src/network/socket/qnativesocketengine_unix.cpp b/src/network/socket/qnativesocketengine_unix.cppindex 8626a6b..6a740f4 100644--- a/src/network/socket/qnativesocketengine_unix.cpp+++ b/src/network/socket/qnativesocketengine_unix.cpp@@ -994,7 +994,7 @@ qint64 QNativeSocketEnginePrivate::nativeSendDatagram(const char *data, qint64 l #  elif defined(IP_SENDSRCADDR)             struct in_addr *data = reinterpret_cast<in_addr *>(CMSG_DATA(cmsgptr));             cmsgptr->cmsg_type = IP_SENDSRCADDR;-            addr->s_addr = htonl(header.senderAddress.toIPv4Address());+            data->s_addr = htonl(header.senderAddress.toIPv4Address()); #  endif             cmsgptr->cmsg_level = IPPROTO_IP;             msg.msg_controllen += CMSG_SPACE(sizeof(*data));{code}",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Network: Sockets"
+        },
+        {
+          "id": "versions",
+          "name": "5.6.0 Beta"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-50336",
+      "name": "Screen is not resized after rotation on Windows Phone 10",
+      "text": "The screen is not resized after rotation on Windows Phone 10. When the screen is touched after rotation then it correctly resizes.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "GUI: Painting"
+        },
+        {
+          "id": "versions",
+          "name": "5.6.0 Beta"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-55322",
+      "name": "Changing persistent storage path after page load causes crash",
+      "text": "See the attached example (main.cpp) for details. Load a page first then set new persistent storage path by QWebEngineProfile::setPersistentStoragePath function. The application crashes:{code}\"/Users/stampho/Library/Application Support/persistent-storage-path/QtWebEngine/Default\"\"/tmp/persistent-storage\"[57878:46867:0815/160214:ERROR:visitedlink_master.cc(73)] Failed to open file /tmp/persistent-storage/Visited Links[57878:36099:0815/160214:FATAL:weak_ptr.h(220)] Check failed: get() != nullptr. 0   QtWebEngineCore                     0x000000010d82f353 _ZN4base5debug10StackTraceC1Ev + 191   QtWebEngineCore                     0x000000010d849039 _ZN7logging10LogMessageD2Ev + 732   QtWebEngineCore                     0x000000010fabc7d1 _ZNK4base7WeakPtrIN3net20HttpServerPropertiesEEptEv + 973   QtWebEngineCore                     0x000000010fb77e33 _ZN3net11SpdySession16RecordHistogramsEv + 8834   QtWebEngineCore                     0x000000010fb773f3 _ZN3net11SpdySessionD2Ev + 2275   QtWebEngineCore                     0x000000010fb7824e _ZN3net11SpdySessionD0Ev + 146   QtWebEngineCore                     0x000000010fb89d0f _ZN3net15SpdySessionPool24RemoveUnavailableSessionERKN4base7WeakPtrINS_11SpdySessionEEE + 5757   QtWebEngineCore                     0x000000010fb8991c _ZN3net15SpdySessionPoolD2Ev + 2208   QtWebEngineCore                     0x000000010fabc0bb _ZN3net18HttpNetworkSessionD2Ev + 3639   QtWebEngineCore                     0x000000010c8dcdb0 _ZN15QtWebEngineCore25URLRequestContextGetterQt17generateHttpCacheEv + 88010  QtWebEngineCore                     0x000000010c8daf7a _ZN15QtWebEngineCore25URLRequestContextGetterQt18generateAllStorageEv + 7411  QtWebEngineCore                     0x000000010d82f893 _ZN4base5debug13TaskAnnotator7RunTaskEPKcRKNS_11PendingTaskE + 21112  QtWebEngineCore                     0x000000010d8586dc _ZN4base11MessageLoop7RunTaskERKNS_11PendingTaskE + 60413  QtWebEngineCore                     0x000000010d858a2c _ZN4base11MessageLoop21DeferOrRunPendingTaskERKNS_11PendingTaskE + 4414  QtWebEngineCore                     0x000000010d858c2b _ZN4base11MessageLoop6DoWorkEv + 31515  QtWebEngineCore                     0x000000010d8222c1 _ZN4base19MessagePumpLibevent3RunEPNS_11MessagePump8DelegateE + 46516  QtWebEngineCore                     0x000000010d858212 _ZN4base11MessageLoop10RunHandlerEv + 21017  QtWebEngineCore                     0x000000010d873b17 _ZN4base7RunLoop3RunEv + 18318  QtWebEngineCore                     0x000000010d85774a _ZN4base11MessageLoop3RunEv + 10619  QtWebEngineCore                     0x000000010e89f8d8 _ZN7content17BrowserThreadImpl11IOThreadRunEPN4base11MessageLoopE + 2420  QtWebEngineCore                     0x000000010e89fab4 _ZN7content17BrowserThreadImpl3RunEPN4base11MessageLoopE + 37221  QtWebEngineCore                     0x000000010d898e0c _ZN4base6Thread10ThreadMainEv + 46022  QtWebEngineCore                     0x000000010d8936f8 _ZN4base12_GLOBAL__N_110ThreadFuncEPv + 10423  libsystem_pthread.dylib             0x00007fff85d9c99d _pthread_body + 13124  libsystem_pthread.dylib             0x00007fff85d9c91a _pthread_body + 025  libsystem_pthread.dylib             0x00007fff85d9a351 thread_start + 13{code}Widget is tested, most probably Quick API is also affected because assert is triggered in chromium. The error message regarding to the missing Visited Links file is not relevant. The crash is reproducible with existing local storage directory too.I've also tested this with 5.7 and couldn't reproduce this issue. All platforms seem to be affected I could reproduce this on Linux, Windows and OS X.This issue can be also reproduced by demobrowser: change value in Settings->Privacy->Persistent Data Path field and the browser crashes.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "WebEngine"
+        },
+        {
+          "id": "versions",
+          "name": "5.8.0 Alpha"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-55875",
+      "name": "Quick Controls 2 + Software backend crashes on Windows",
+      "text": "Run a Quick Controls 2 app with QT_QUICK_BACKEND=software on Windows. With the 5.8 branch it crashes due to a null QPaintDevice returned from the backingstore.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Quick: Controls 2"
+        },
+        {
+          "id": "versions",
+          "name": "5.8.0 Alpha"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-57939",
+      "name": "Regression from 5.7.1: Race condition with texture updates",
+      "text": "When changing the texture assigned to a material's Parameter, there is a race condition between the load texture job (executing on a threadpool thread) setting the dirty flag on the corresponding GLTexture object, and the OpenGL submission thread clearing the dirty flag when processing textures.Patch coming up to fix this.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P0"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Qt3D"
+        },
+        {
+          "id": "versions",
+          "name": "5.8.0 RC"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-59540",
+      "name": "QtWebView examples not visible in the Welcome screen",
+      "text": "The QtWebView example (minibrowser) is missing in on the Welcome screen The example is present in the example folder.Tested with the online installer (qt-unified-testclient-mac-x64-2.0.5-1-online_130.dmg)",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Packaging & Installer"
+        },
+        {
+          "id": "versions",
+          "name": "5.9.0 Beta 1"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-62531",
+      "name": "Configure fails to parse default search paths from compiler output while using ICC",
+      "text": "Configure fails using ICC:{code}set PATH=/opt/intel/compilers_and_libraries_2017.3.191/linux/bin/intel64:/opt/intel/bin:/opt/cmake-3.6.2/bin:/opt/squish/package/bin:/opt/squish/package/bin:/home/qt/bin:/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/gamesset LD_LIBRARY_PATH=/opt/intel/lib/intel64:bash /home/qt/work/qt/qtbase/configure -R . -platform linux-icc-32 -openssl -opensource -confirm-license -nomake tests -verbose -prefix /home/qt/work/install -developer-build -no-pch -nomake examples{code}...{code}icpc -o \"../bin/qmake\" project.o option.o property.o main.o ioutils.o proitems.o qmakevfs.o qmakeglobals.o qmakeparser.o qmakeevaluator.o qmakebuiltins.o makefile.o unixmake2.o unixmake.o mingw_make.o winmakefile.o projectgenerator.o meta.o makefiledeps.o metamakefile.o xmloutput.o pbuilder_pbx.o msvc_vcproj.o msvc_vcxproj.o msvc_nmake.o msvc_objectmodel.o msbuild_objectmodel.o qtextcodec.o qutfcodec.o qstring.o qstring_compat.o qstringbuilder.o qtextstream.o qiodevice.o qringbuffer.o qdebug.o qmalloc.o qglobal.o qarraydata.o qbytearray.o qbytearraymatcher.o qdatastream.o qbuffer.o qlist.o qfiledevice.o qfile.o qfilesystementry.o qfilesystemengine.o qfsfileengine.o qfsfileengine_iterator.o qregexp.o qbitarray.o qdir.o qdiriterator.o quuid.o qhash.o qfileinfo.o qdatetime.o qstringlist.o qabstractfileengine.o qtemporaryfile.o qmap.o qmetatype.o qsettings.o qsystemerror.o qvariant.o qvsnprintf.o qlocale.o qlocale_tools.o qlinkedlist.o qnumeric.o qcryptographichash.o qxmlstream.o qxmlutils.o qlogging.o qoperatingsystemversion.o qjson.o qjsondocument.o qjsonparser.o qjsonarray.o qjsonobject.o qjsonvalue.o qfilesystemengine_unix.o qfilesystemiterator_unix.o qfsfileengine_unix.o qlocale_unix.o  qlibraryinfo.o   -Wl,--gc-sectionsInfo: creating cache file /home/qt/work/qt/qtbase/.qmake.cacheCommand line: -R . -platform linux-icc-32 -openssl -opensource -confirm-license -nomake tests -verbose -prefix /home/qt/work/install -developer-build -no-pch -nomake examplesProject ERROR: failed to parse default search paths from compiler output{code}",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Build System"
+        },
+        {
+          "id": "versions",
+          "name": "5.9"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-66641",
+      "name": "QtWebBrowser fails to launch with QtLauncher Demo",
+      "text": "{code}ERROR:zygote_host_impl_linux.cc(88)] Running as root without --no-sandbox is not supported. See https://crbug.com/638180.{code}",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Device Creation"
+        },
+        {
+          "id": "versions",
+          "name": "5.11.0 Alpha"
+        }
+      ]
+    },
+    {
+      "id": "QTBUG-69146",
+      "name": "Translation of own Qt texts not working on Qt Device Creation image for Raspberry Pi 3",
+      "text": "Whereas the sample code included in the Qt documentation for [Internationalization|http://doc.qt.io/qt-5/internationalization.html] works well in Linux Desktop (Debian at least), it doesn't work when using the Boot2Qt Raspberry Pi 3 installation. Custom .qm translation files are successfully loaded and used but, it doesn't take effect for .qm system files for every language. For example:QTranslator qtTranslator; qtTranslator.load(\"qt_\" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath)); app.installTranslator(&qtTranslator);The qt_XX.qm files are located and loaded with no errors but they are not used correctly in GUI (QDialogButtonBox buttons, QFileDialog, ...). The 'Yes', 'No', 'Ok', 'Cancel' or 'Open' texts are not translated.Workaround: Copy the files qtquick1_XX.qm and qtscript_XX.qm from the Linux Desktop Qt translations folder to the Raspberry Pi Qt translations folder (/usr/share/translations/). I can't tell if this is a bug for later or earlier versions to 5.9.1 or for other platforms.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Device Creation"
+        },
+        {
+          "id": "versions",
+          "name": "5.11.1\n5.9.1"
+        }
+      ]
+    },
+    {
+      "id": "QTCREATORBUG-16354",
+      "name": "QtC make my outside builds failing",
+      "text": "When i open a cmake project in QtC and for some reason want to do some manual cmake call / make in the build directory of this QtC project from terminal, then my cmake call randomly fails.I noticed that each time this occurs it's when I see QtC rescanning my cmake project and triggering a cmake call on its own (ie: i did not triggered the run cmake action).",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Project & Build Management"
+        },
+        {
+          "id": "versions",
+          "name": "Qt Creator 4.0.0"
+        }
+      ]
+    },
+    {
+      "id": "QTCREATORBUG-16393",
+      "name": "LLDB: incorrect code in LldbEngine::runCommand function",
+      "text": "LLDB debugger doesn't start on Linux due to a bug. Function LldbEngine::runCommand is called *before* the lldb is initialized (from fetch modules). Instead of ignoring the request, it shuts down the engine. This code in qt-creator/src/plugins/debugger/lldb/lldbengine.cpp:128:{quote}void LldbEngine::runCommand(const DebuggerCommand &cmd){   QTC_ASSERT(m_lldbProc.state() == QProcess::Running, notifyEngineIll());{quote}Should be replaced with this code:{quote}void LldbEngine::runCommand(const DebuggerCommand &cmd){    if( m_lldbProc.state() == QProcess::Running ){{quote}",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Debugger"
+        },
+        {
+          "id": "versions",
+          "name": "Qt Creator 4.0.0"
+        }
+      ]
+    },
+    {
+      "id": "QTCREATORBUG-17547",
+      "name": "Crash upon inaccurate dropping of a dragged bookmarked",
+      "text": "Whenever I try to drag&drop bookmark somewhere inside bookmark list and a small bar which shows the future position of a bookmark  does NOT appear Qt Creator crashes.Reproduced it multiple times, steps:1) create two bookmarks2) drag one of them somewhere inside the list so that small black bar does not appear3) drop it4) crash",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Help System"
+        },
+        {
+          "id": "versions",
+          "name": "Qt Creator 4.0.2\nQt Creator 4.2.0"
+        }
+      ]
+    },
+    {
+      "id": "QTCREATORBUG-17714",
+      "name": "qsTranslate is not supported in Qt Designer",
+      "text": "While qsTr and qsTrId are supported in the QtQuick Designer, qsTranslate is not. This is a major issue for applications which have existing translations setup for use with qsTranslate and are now starting to use Qt Quick Designer.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Suggestion"
+        },
+        {
+          "id": "components",
+          "name": "Quick Designer"
+        },
+        {
+          "id": "versions",
+          "name": "Qt Creator 4.2.1"
+        }
+      ]
+    },
+    {
+      "id": "QTCREATORBUG-20257",
+      "name": "Implement NetworkManager class for QTelemetry library",
+      "text": "Create sample base class for sending telemetry data to REST-server backend: * -QTelemetry::INetworkManager - Interface abstract class- * -QTelemetry::QNetworkManager – base class for actually sending JSON data to backend- * -Test REST-API server - dummy or DB based (SQLite or PostgreSQL), based on Node.JS Express or [QttpServer|https://supamii.github.io/qttpserver/].-",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Sub-task"
+        },
+        {
+          "id": "components",
+          "name": "All Other Issues"
+        },
+        {
+          "id": "versions",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "id": "QTIFW-764",
+      "name": "Installer crashes when setting \"gui.setSilent(true)\"",
+      "text": "When setting \"gui.setSilent(true)\", the installer will crash.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "General"
+        },
+        {
+          "id": "versions",
+          "name": "3.1.0"
+        }
+      ]
+    },
+    {
+      "id": "QTIFW-814",
+      "name": "Make online downloads more fault tolerant",
+      "text": "If the online connection drops down while downloading content attempt to restart downloading the given package again. The re-try count should be estimated.From the past we have seen that some download mirrors work more or less reliably. If the installer could re-try downloading the packages in these casesthe user would not have to restart the whole installer.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Task"
+        },
+        {
+          "id": "components",
+          "name": "General"
+        },
+        {
+          "id": "versions",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "id": "QTIFW-829",
+      "name": "crashes under windows when not having the focus",
+      "text": "The QTIFW crashes in the PerformInstallationForm on the windows-platform when the installer-window loses the focus before changing to PerformInstallationPage. The reason is a missing check for a NULL-pointer around line 190 in performinstallationform.cpp:#ifdef Q_OS_WIN    if (m_taskButton) {        if (!m_taskButton->window())                m_taskButton->setWindow(QApplication::activeWindow()->windowHandle());        m_taskButton->progress()->setValue(progressPercentage);    }#endifshould be:#ifdef Q_OS_WIN    if (m_taskButton) {        if (!m_taskButton->window() && QApplication::activeWindow())                m_taskButton->setWindow(QApplication::activeWindow()->windowHandle());        m_taskButton->progress()->setValue(progressPercentage);    }#endifA patch is attached too.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "General"
+        },
+        {
+          "id": "versions",
+          "name": "2.0.1\n3.1.0\nSome future release"
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-1023",
+      "name": "Publish provision logs",
+      "text": "",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Task"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-1028",
+      "name": "Provisioning logs are not accessible on testresults.qt.io",
+      "text": "The log files when provisioning machines in the CI system as a result of changes to qt5/coin/provisioning are not uploaded to testresults.qt.io.This is a regression from commit 04db36c0dd25e5b3cd71eb2b7c3d792934e58a77",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P2"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": "unversioned"
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-1037",
+      "name": "Integrations are failed with comment 'Could not parse build log :('",
+      "text": "Builds are failed quite often with comment 'Could not parse build log :('. The real root cause is different but it is hard to study because coin overwrite these failed logs after successfully build. But what I found the real issues in the logs are:** sh: /System/Library/Frameworks/Python.framework/Versions/2.7/bin/rm: No such file or directory      ** \"C:/Program Files/Git/bin/sh.exe\": g++: command not foundI browsed through qt5.git integration in '5.8.0' and '5.8' branches during December and noticed ~50% of flakiness is due to this issue! So it is definitely worth of studying & fixing",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": "unversioned"
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-1210",
+      "name": "Garbage Collector is not run in Coin",
+      "text": "We do not run the garbage collector automatically, so we're in constant danger of running out of disk space. Last happened this morning. *Unpacking sources fails after enabling nightly builds with garbage collector:*agent:2017/05/30 13:16:12 build.go:343: Executing instruction 6 of 23agent:2017/05/30 13:16:12 storageclient.go:381: Unpacking sources \"/home/vmbuilder/ci-working-dir/storage/qt/qtcanvas3d/c16fc5a2d8dbe1ba172347f67101027139af2cfd/sources_win.tar.gz\" in \"c:\\Users\\qt\\work\\qt\\qtcanvas3d\"agent:2017/05/30 13:16:12 retry.go:24: Operation failed with an error: EOFagent:2017/05/30 13:16:12 retry.go:25: Trying again (attempt: 1 ) after sleep of 5s seconds...agent:2017/05/30 13:16:17 storageclient.go:381: Unpacking sources \"/home/vmbuilder/ci-working-dir/storage/qt/qtcanvas3d/c16fc5a2d8dbe1ba172347f67101027139af2cfd/sources_win.tar.gz\" in \"c:\\Users\\qt\\work\\qt\\qtcanvas3d\"agent:2017/05/30 13:16:17 retry.go:24: Operation failed with an error: EOFagent:2017/05/30 13:16:17 retry.go:25: Trying again (attempt: 2 ) after sleep of 10s seconds...agent:2017/05/30 13:16:27 storageclient.go:381: Unpacking sources \"/home/vmbuilder/ci-working-dir/storage/qt/qtcanvas3d/c16fc5a2d8dbe1ba172347f67101027139af2cfd/sources_win.tar.gz\" in \"c:\\Users\\qt\\work\\qt\\qtcanvas3d\"agent:2017/05/30 13:16:27 retry.go:24: Operation failed with an error: EOFagent:2017/05/30 13:16:27 retry.go:25: Trying again (attempt: 3 ) after sleep of 15s seconds...agent:2017/05/30 13:16:42 storageclient.go:381: Unpacking sources \"/home/vmbuilder/ci-working-dir/storage/qt/qtcanvas3d/c16fc5a2d8dbe1ba172347f67101027139af2cfd/sources_win.tar.gz\" in \"c:\\Users\\qt\\work\\qt\\qtcanvas3d\"agent:2017/05/30 13:16:42 retry.go:24: Operation failed with an error: EOFagent:2017/05/30 13:16:42 retry.go:25: Trying again (attempt: 4 ) after sleep of 20s seconds...agent:2017/05/30 13:17:02 storageclient.go:381: Unpacking sources \"/home/vmbuilder/ci-working-dir/storage/qt/qtcanvas3d/c16fc5a2d8dbe1ba172347f67101027139af2cfd/sources_win.tar.gz\" in \"c:\\Users\\qt\\work\\qt\\qtcanvas3d\"agent:2017/05/30 13:17:02 agent.go:165: Build failedagent:2017/05/30 13:17:02 agent.go:120: ERROR building: EOF *Log:*[https://testresults.qt.io/coin/logview/qt/qtcanvas3d/9c5686b6851fb903574ee4a404915c5da3c9c22b/WindowsWindows_7x86WindowsWindows_7x86Mingw53qtci-windows-7-x86-2-657433DebugAndRelease_Release_OpenGLDynamic_DisableTests/9a6ee9c520220b7d18c220f82e962111c3bf70eb/build_1496136686/buildlog.txt.gz]  *Similar problem with another Linux build:*[http://ci-files01-hki.ci.local:8080/coin/logview/qt/tqtc-qmlcompiler/d00ae3468deeb412ea1a9cf0d21d41c9c0372527/LinuxOpenSuse_13_01x86_64LinuxOpenSuse_13_01x86_64GCCqtci-linux-OpenSuSE-13.01-x86_64-1db9baDeveloperBuild_NoPch/b6f1c5fc379c2534c837f4f3abfb084e0b346421/build_1496141942/buildlog.txt.gz] ",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P1"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": "unversioned"
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-535",
+      "name": "Improve compiler message parsing by wrapper script",
+      "text": "The parse_build_log approach to parsing compiler messages is inherently flawed.  Though it generally does a good job, it will always be prone to making minor mistakes, since the build log itself is ambiguous.Here's an example:{noformat:title=http://testresults.qt-project.org/ci/QtBase_master_Integration/build_03093/linux-g%2B%2B-32_Ubuntu_10.04_x86/log.txt.gz}    ../../include/QtCore/../../src/corelib/tools/qvector.h:72: note: initialized from here    ../../include/QtCore/../../src/corelib/tools/qstring.h:907: note: initialized from here    ../../include/QtCore/../../src/corelib/tools/qvector.h:72: note: initialized from here    ../../include/QtCore/../../src/corelib/tools/qvector.h:279: note: initialized from here    ../../include/QtCore/../../src/corelib/tools/qstring.h:907: note: initialized from here    compiling util/qsystemtrayicon_qpa.cpp    ../../include/QtCore/../../src/corelib/tools/qstring.h:907: note: initialized from here    ../../include/QtCore/../../src/corelib/tools/qvector.h:72: note: initialized from here    util/qsystemtrayicon_qpa.cpp: In member function 'void QSystemTrayIconPrivate::showMessage_sys(const QString&, const QString&, QSystemTrayIcon::MessageIcon, int)':    util/qsystemtrayicon_qpa.cpp:142: error: incomplete type 'QApplication' used in nested name specifier    util/qsystemtrayicon_qpa.cpp:142: error: incomplete type 'QStyle' used in nested name specifier    util/qsystemtrayicon_qpa.cpp:145: error: incomplete type 'QApplication' used in nested name specifier    util/qsystemtrayicon_qpa.cpp:145: error: incomplete type 'QStyle' used in nested name specifier    util/qsystemtrayicon_qpa.cpp:148: error: incomplete type 'QApplication' used in nested name specifier    util/qsystemtrayicon_qpa.cpp:148: error: incomplete type 'QStyle' used in nested name specifier    util/qsystemtrayicon_qpa.cpp:140: warning: enumeration value 'NoIcon' not handled in switch    util/qsystemtrayicon_qpa.cpp:135: warning: unused variable 'q'    make[2]: *** [.obj/release-shared/qsystemtrayicon_qpa.o] Error 1    make[1]: *** [sub-widgets-make_default-ordered] Error 2    make: *** [module-qtbase] Error 2{noformat}Here, the script extracted the relevant details, but also various useless \" note: initialized from here\" messages.  The script does this because it has no way of knowing _which_ warning or error the \"initialized from here\" lines belong to; it has to guess, and in this case it guessed wrong.It would be nice, though low priority, if we could make the parsing completely accurate.  The only way I can think of to do this would be to modify or wrap the compilers, or implement some build system support, capturing and reformatting the compiler's output so that, when a particular file fails to compile, we know _exactly_ what the compiler output for that file.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P4"
+        },
+        {
+          "id": "type",
+          "name": "User Story"
+        },
+        {
+          "id": "components",
+          "name": "Test scripts"
+        },
+        {
+          "id": "versions",
+          "name": ""
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-966",
+      "name": "Web UI: Logs view character encoding broken on Safari browser",
+      "text": "When opening build log from Coin details view on OS X & Safari (9.0.2) log character encoding is broken (see attached screen capture). Build log content is working correctly with Chrome and Firefox .",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "P4"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": "unversioned"
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-984",
+      "name": "CI's log-after-build-failure shows garbage",
+      "text": "After a build has failed, the CI shows a \"log\" and a \"raw log\" link. The \"raw log\" will download a file, but \"log\" will show garbage. See attached screenshot.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": "2014q1"
+        }
+      ]
+    },
+    {
+      "id": "QTQAINFRA-993",
+      "name": "Log pages on Coin show garbled text on Safari on macOS",
+      "text": "For example: http://10.212.3.36:8080/coin/logview/qt-labs/qbs/3d0918ee62d1b13c0c406bd9cb64f599385763ea/OSXOSX_10_10x86_64OSXOSX_10_10x86_64Clangqtci-osx-10.10-x86_64DebugAndRelease_Release/1b7c5e905af15c79fe64a00c98d93a793844f35b/buildlog.txt.gz",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Bug"
+        },
+        {
+          "id": "components",
+          "name": "Coin (obsolete)"
+        },
+        {
+          "id": "versions",
+          "name": "unversioned"
+        }
+      ]
+    },
+    {
+      "id": "QTSYSADM-310",
+      "name": "Delete account",
+      "text": "Hi.How I can remove myself from Qt's JIRA? Please do it if possible.",
+      "requirementParts": [
+        {
+          "id": "priority",
+          "name": "NE"
+        },
+        {
+          "id": "type",
+          "name": "Task"
+        },
+        {
+          "id": "components",
+          "name": ""
+        },
+        {
+          "id": "versions",
+          "name": ""
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "PYSIDE",
+      "specifiedRequirements": [
+        "PYSIDE-339",
+        "PYSIDE-352",
+        "PYSIDE-361",
+        "PYSIDE-453"
+      ]
+    },
+    {
+      "id": "QBS",
+      "specifiedRequirements": [
+        "QBS-952"
+      ]
+    },
+    {
+      "id": "QT3DS",
+      "specifiedRequirements": [
+        "QT3DS-350"
+      ]
+    },
+    {
+      "id": "QTSYSADM",
+      "specifiedRequirements": [
+        "QTSYSADM-310"
+      ]
+    },
+    {
+      "id": "QTCREATORBUG",
+      "specifiedRequirements": [
+        "QTCREATORBUG-16354",
+        "QTCREATORBUG-16393",
+        "QTCREATORBUG-17547",
+        "QTCREATORBUG-17714",
+        "QTCREATORBUG-20257"
+      ]
+    },
+    {
+      "id": "QTIFW",
+      "specifiedRequirements": [
+        "QTIFW-764",
+        "QTIFW-814",
+        "QTIFW-829"
+      ]
+    },
+    {
+      "id": "QTQAINFRA",
+      "specifiedRequirements": [
+        "QTQAINFRA-1023",
+        "QTQAINFRA-1028",
+        "QTQAINFRA-1037",
+        "QTQAINFRA-1210",
+        "QTQAINFRA-535",
+        "QTQAINFRA-966",
+        "QTQAINFRA-984",
+        "QTQAINFRA-993"
+      ]
+    },
+    {
+      "id": "QTBUG",
+      "specifiedRequirements": [
+        "QTBUG-50308",
+        "QTBUG-50336",
+        "QTBUG-55322",
+        "QTBUG-55875",
+        "QTBUG-57939",
+        "QTBUG-59540",
+        "QTBUG-62531",
+        "QTBUG-66641",
+        "QTBUG-69146"
+      ]
+    },
+    {
+      "id": "AUTOSUITE",
+      "specifiedRequirements": [
+        "AUTOSUITE-479"
+      ]
+    }
+  ],
+    "dependencies": [
+      {
+        "fromid": "PYSIDE-453",
+        "toid": "PYSIDE-339",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "PYSIDE-352",
+        "toid": "PYSIDE-361",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTIFW-814",
+        "toid": "QTIFW-5",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTIFW-829",
+        "toid": "QTIFW-764",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTQAINFRA-984",
+        "toid": "QTQAINFRA-966",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTQAINFRA-993",
+        "toid": "QTQAINFRA-966",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTQAINFRA-1037",
+        "toid": "QTQAINFRA-995",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTQAINFRA-535",
+        "toid": "QTQAINFRA-995",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTQAINFRA-1028",
+        "toid": "QTQAINFRA-1023",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "QTVSADDINBUG-447",
+        "toid": "QTVSADDINBUG-407",
+        "dependency_type": "duplicates",
+        "status": "accepted"
+      },
+      {
+        "fromid": "AUTOSUITE-479",
+        "toid": "QTBUG-66641",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTBUG-57939",
+        "toid": "QTBUG-62531",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QBS-952",
+        "toid": "QTCREATORBUG-17714",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTCREATORBUG-16393",
+        "toid": "QTBUG-52266",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTCREATORBUG-17547",
+        "toid": "QTBUG-69146",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTBUG-50308",
+        "toid": "QTCREATORBUG-16354",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTBUG-55875",
+        "toid": "QT3DS-350",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTSYSADM-310",
+        "toid": "QTBUG-55322",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTBUG-50336",
+        "toid": "QTQAINFRA-1210",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      },
+      {
+        "fromid": "QTCREATORBUG-20257",
+        "toid": "QTBUG-59540",
+        "dependency_type": "duplicates",
+        "status": "rejected"
+      }
+    ]
+}
