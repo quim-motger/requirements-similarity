@@ -10,6 +10,7 @@
 * [How to run](#how-to-run)
 * [How to use the service](#how-to-use-the-service)
 * [Notes for developers](#notes-for-developers)
+* [Release](#release)
 * [References](#references)
 * [License](#license)
 
@@ -17,13 +18,13 @@
 
 The Requirements Similarity system is a Java-based web service deployed as a REST API that allows software engineers to test and evaluate similarity algorithms between requirement items in a software engineering (SE) project.
 
-The main purpose of this tool is **to integrate in a decoupled, isolated tool the management of requirements data** in large SE projects **and the evaluation and detection of duplicated requirements**, using natural language and metadata features.
+The main purpose of this tool is **to integrate into a decoupled, isolated tool the management of requirements data** in large SE projects **and the evaluation and detection of duplicated requirements**, using natural language and metadata features.
 
 Version 1.0.0 includes the evaluation of two different algorithms:
 
 1. An adaptation of a duplicate detection algorithm based on the BM25F information retrieval algorithm, inspired by [1]
 
-2. An adaptation of a feature extraction with supervised classification using Support Vector Machine classifiers, inspired by [2]
+2. An adaptation of a feature extraction process with supervised classification using Support Vector Machine classifiers, inspired by [2]
 
 The system designed is based on a microservice architecture inside the OpenReq project [3], whose goal is *"to build an intelligent decision system for community-driven requirements engineering"*.
 
@@ -119,6 +120,11 @@ Concerning the data files:
 
 - `requirement-pairs.json` - Contains a list of requirement pairs from the Qt's public JIRA repository which are identified as duplicates (1436) and not-duplicates (1499)
 
+### Release
+
+A stable release (v1.0) is published at: https://github.com/quim-motger/tfm/releases/tag/v1.0
+
+This release includes a .zip file with a runnable jar to deploy and test the tool, with the required models and files.
 
 ### Sources
 
