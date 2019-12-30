@@ -1,0 +1,826 @@
+{
+  "dependencies": [
+    {
+      "fromid": "QTQAINFRA-2102",
+      "toid": "QTQAINFRA-1677",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2102",
+      "toid": "QTQAINFRA-1677",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-632",
+      "toid": "PYSIDE-585",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-632",
+      "toid": "PYSIDE-585",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-606",
+      "toid": "PYSIDE-612",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-606",
+      "toid": "PYSIDE-612",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-647",
+      "toid": "PYSIDE-632",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-647",
+      "toid": "PYSIDE-632",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-670",
+      "toid": "PYSIDE-658",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-670",
+      "toid": "PYSIDE-658",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-668",
+      "toid": "PYSIDE-769",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-668",
+      "toid": "PYSIDE-769",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-720",
+      "toid": "PYSIDE-719",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-720",
+      "toid": "PYSIDE-719",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-760",
+      "toid": "PYSIDE-756",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-760",
+      "toid": "PYSIDE-756",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-525",
+      "toid": "PYSIDE-779",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-525",
+      "toid": "PYSIDE-779",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1097",
+      "toid": "QTIFW-975",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1097",
+      "toid": "QTIFW-975",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1128",
+      "toid": "QTIFW-1114",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1128",
+      "toid": "QTIFW-1114",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1122",
+      "toid": "QTIFW-349",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1122",
+      "toid": "QTIFW-349",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1157",
+      "toid": "QTIFW-957",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1157",
+      "toid": "QTIFW-957",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1195",
+      "toid": "QTIFW-349",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1195",
+      "toid": "QTIFW-349",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1685",
+      "toid": "QTQAINFRA-1731",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1685",
+      "toid": "QTQAINFRA-1731",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1691",
+      "toid": "QTQAINFRA-1687",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1691",
+      "toid": "QTQAINFRA-1687",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1747",
+      "toid": "QTQAINFRA-1711",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1747",
+      "toid": "QTQAINFRA-1711",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1644",
+      "toid": "QTQAINFRA-1713",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1644",
+      "toid": "QTQAINFRA-1713",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1597",
+      "toid": "QTQAINFRA-1715",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1597",
+      "toid": "QTQAINFRA-1715",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2117",
+      "toid": "QTQAINFRA-1722",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2117",
+      "toid": "QTQAINFRA-1722",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1837",
+      "toid": "QTQAINFRA-1836",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1837",
+      "toid": "QTQAINFRA-1836",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2139",
+      "toid": "QTQAINFRA-2039",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2139",
+      "toid": "QTQAINFRA-2039",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2135",
+      "toid": "QTQAINFRA-2153",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-2135",
+      "toid": "QTQAINFRA-2153",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-984",
+      "toid": "QTIFW-1147",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-984",
+      "toid": "QTIFW-1147",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-462",
+      "toid": "PYSIDE-333",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-462",
+      "toid": "PYSIDE-333",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-483",
+      "toid": "PYSIDE-482",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-483",
+      "toid": "PYSIDE-482",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-359",
+      "toid": "PYSIDE-484",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-359",
+      "toid": "PYSIDE-484",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-503",
+      "toid": "PYSIDE-432",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-503",
+      "toid": "PYSIDE-432",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-917",
+      "toid": "QTIFW-902",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-917",
+      "toid": "QTIFW-902",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-860",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-860",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-992",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-992",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-963",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-963",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-980",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-980",
+      "toid": "QTIFW-934",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-989",
+      "toid": "QTIFW-990",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-989",
+      "toid": "QTIFW-990",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1071",
+      "toid": "QTIFW-1069",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-1071",
+      "toid": "QTIFW-1069",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1065",
+      "toid": "QTQAINFRA-1320",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1065",
+      "toid": "QTQAINFRA-1320",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1070",
+      "toid": "QTQAINFRA-1036",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1070",
+      "toid": "QTQAINFRA-1036",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1210",
+      "toid": "QTQAINFRA-1080",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1210",
+      "toid": "QTQAINFRA-1080",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1081",
+      "toid": "QTQAINFRA-995",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1081",
+      "toid": "QTQAINFRA-995",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1372",
+      "toid": "QTQAINFRA-1266",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1372",
+      "toid": "QTQAINFRA-1266",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1321",
+      "toid": "QTQAINFRA-975",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1321",
+      "toid": "QTQAINFRA-975",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1568",
+      "toid": "QTQAINFRA-1643",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1568",
+      "toid": "QTQAINFRA-1643",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1581",
+      "toid": "QTQAINFRA-1642",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1581",
+      "toid": "QTQAINFRA-1642",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1616",
+      "toid": "QTQAINFRA-1620",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1616",
+      "toid": "QTQAINFRA-1620",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1651",
+      "toid": "QTQAINFRA-1016",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1651",
+      "toid": "QTQAINFRA-1016",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-308",
+      "toid": "PYSIDE-219",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-308",
+      "toid": "PYSIDE-219",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-325",
+      "toid": "PYSIDE-156",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-325",
+      "toid": "PYSIDE-156",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-436",
+      "toid": "PYSIDE-332",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-436",
+      "toid": "PYSIDE-332",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-453",
+      "toid": "PYSIDE-339",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-453",
+      "toid": "PYSIDE-339",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-352",
+      "toid": "PYSIDE-361",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "PYSIDE-352",
+      "toid": "PYSIDE-361",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-814",
+      "toid": "QTIFW-5",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-814",
+      "toid": "QTIFW-5",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-829",
+      "toid": "QTIFW-764",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTIFW-829",
+      "toid": "QTIFW-764",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-984",
+      "toid": "QTQAINFRA-966",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-984",
+      "toid": "QTQAINFRA-966",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-993",
+      "toid": "QTQAINFRA-966",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-993",
+      "toid": "QTQAINFRA-966",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1037",
+      "toid": "QTQAINFRA-995",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1037",
+      "toid": "QTQAINFRA-995",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-535",
+      "toid": "QTQAINFRA-995",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-535",
+      "toid": "QTQAINFRA-995",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1028",
+      "toid": "QTQAINFRA-1023",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1028",
+      "toid": "QTQAINFRA-1023",
+      "dependency_type": "duplicates",
+      "status": "accepted"
+    },
+    {
+      "fromid": "QTQAINFRA-1559",
+      "toid": "QTQAINFRA-1075",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1559",
+      "toid": "QTQAINFRA-1075",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "PYSIDE-558",
+      "toid": "QTQAINFRA-1303",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1416",
+      "toid": "QTQAINFRA-1316",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1416",
+      "toid": "QTQAINFRA-1316",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1455",
+      "toid": "PYSIDE-474",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1818",
+      "toid": "QTQAINFRA-1475",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1818",
+      "toid": "QTQAINFRA-1475",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1474",
+      "toid": "PYSIDE-345",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1804",
+      "toid": "QTQAINFRA-1244",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1804",
+      "toid": "QTQAINFRA-1244",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "PYSIDE-355",
+      "toid": "QTQAINFRA-1803",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "PYSIDE-349",
+      "toid": "QTQAINFRA-1607",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-2170",
+      "toid": "QTQAINFRA-1908",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-2170",
+      "toid": "QTQAINFRA-1908",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "PYSIDE-613",
+      "toid": "QTQAINFRA-2122",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1180",
+      "toid": "QTIFW-864",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTIFW-1177",
+      "toid": "QTIFW-818",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTIFW-1177",
+      "toid": "QTIFW-818",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1896",
+      "toid": "QTQAINFRA-1010",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1896",
+      "toid": "QTQAINFRA-1010",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1969",
+      "toid": "QTQAINFRA-1615",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    },
+    {
+      "fromid": "QTQAINFRA-1969",
+      "toid": "QTQAINFRA-1615",
+      "dependency_type": "duplicates",
+      "status": "rejected"
+    }
+  ]
+}
