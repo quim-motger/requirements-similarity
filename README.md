@@ -10,6 +10,7 @@
 * [How to run](#how-to-run)
 * [How to use the service](#how-to-use-the-service)
 * [Notes for developers](#notes-for-developers)
+* [GUI tool](#gui-tool)
 * [Release](#release)
 * [References](#references)
 * [License](#license)
@@ -127,6 +128,10 @@ Additionally, 3 OpenReq JSON instances for testing and usage purposes are provid
 - `duplicates.json` - A JSON file in the OpenReq Schema containing a subset of the duplicate and not-duplicate relations used for the validation
 
 - `OpenReqSchema.json` - A JSON file in the OpenReq Schema containing the requirements, the projects and the duplicates in the previous files
+
+### GUI tool
+
+A Java based GUI tool is available at https://github.com/quim-motger/requirements-similarity-gui
 
 ### Release
 
